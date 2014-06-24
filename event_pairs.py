@@ -61,63 +61,67 @@ class Event_pairs:
             "tenminste |bijna |ongeveer |maar |slechts |pakweg |ruim |"
             "krap |(maar )?een kleine |"
             "(maar )?iets (meer|minder) dan )?" + (nums) + " " + 
-            (timeunits) + r"( nog)? te gaan"])
-        d1 = re.compile((nums) + " " + (months) + "(\b|$)")
-        d2 = re.compile(r"[1-3]?\d(-|/)[1-12]")
+            (timeunits) + r"( nog)? te gaan",(nums) + " " + (months) + 
+            "(\b|$)",r"[1-3]?\d(-|/)[1-12]"])
+        # d1 = re.compile((nums) + " " + (months) + "(\b|$)")
+        # d2 = re.compile(r"[1-3]?\d(-|/)[1-12]")
 
         ns = convert_nums.keys()
         timeus = convert_timeunit.keys()
+        lines = []
         for tweet in new_tweets:
             text = tweet.strip().split("\t")[-1].lower()
             if re.findall('|'.join(list_patterns), text):
                 units = re.findall('|'.join(list_patterns), text)[0]
-                nud = {}
-                for unit in units:
-                    if unit in ns:
-                        nud["num"] = convert_nums[unit]
-                    elif re.match(r"\d+",unit):
-                        nud["num"] = int(unit)
-                    elif unit in timeus:
-                        nud["timeunit"] = convert_timeunit[unit]
-                if nud["timeunit"]: 
-                    days = nud["timeunit"] * nud["num"]
+                lines.append(text)
+                print units,text,
+                # nud = {}
+                # for unit in units:
+                #     if unit in ns:
+                #         nud["num"] = convert_nums[unit]
+                #     elif re.match(r"\d+",unit):
+                #         nud["num"] = int(unit)
+                #     elif unit in timeus:
+                #         nud["timeunit"] = convert_timeunit[unit]
+                # if nud["timeunit"]: 
+                #     days = nud["timeunit"] * nud["num"]
                 # print re.findall('|'.join(list_patterns), text),text
                 # lines.append(text)
-                print text,nud,days
+                #print text,nud,days
             # if m1.search(text) or m2.search(text) or m3.search(text):
             #     lines.append(text)
             # if d2.search(text):
             #     lines.append(text)
 
-        # print len(lines)
+        print len(lines)
 
 
-    # def extract_date(self):
+    def extract_date(self):
         
-    #     for instance in self.instances:
-    #         ws = " ".join(instance.wordsequence)
-    #         if dates.search(ws):
-    #             tweet_date = time_functions.return_datetime(instance.date,setting="vs")
-    #             sh = dates.search(ws)
-    #             if re.search(r"\d+",sh.groups()[0]):
-    #                 day = int(sh.groups()[0])
-    #             else:
-    #                 day = convert_nums[sh.groups()[0]]
-    #             month = convert_month[sh.groups()[1]]
-    # #                
-    #             #print month,ws,sh.groups()
-    #             try:
-    #                 date = datetime.datetime(tweet_date.year,month,day,0,0,0)
-    #                 feature = "date_" + date.strftime("%d-%m-%Y")
-    #             except:
-    #                 continue
-    #             # dif = time_functions.timerel(date,tweet_date,"day")
-    #             # if dif < 0:
-    #             #     date += datetime.timedelta(days=365)
-    #             # feature = str(time_functions.timerel(date,tweet_date,"day")) + "_days"
-    #             #print sh.groups(),feature
-    #             instance.features.append(feature)  
-    #     # quit()
+        for instance in self.instances:
+            ws = " ".join(instance.wordsequence)
+            if dates.search(ws):
+                tweet_date = time_functions.return_datetime(instance.date,setting="vs")
+                sh = dates.search(ws)
+                if re.search(r"\d+",sh.groups()[0]):
+                    day = int(sh.groups()[0])
+                else:
+                    day = convert_nums[sh.groups()[0]]
+                month = convert_month[sh.groups()[1]]
+    #                
+                #print month,ws,sh.groups()
+                try:
+                    date = datetime.datetime(tweet_date.year,month,day,0,0,0)
+                    feature = "date_" + date.strftime("%d-%m-%Y")
+                except:
+                    continue
+                # dif = time_functions.timerel(date,tweet_date,"day")
+                # if dif < 0:
+                #     date += datetime.timedelta(days=365)
+                # feature = str(time_functions.timerel(date,tweet_date,"day")) + "_days"
+                #print sh.groups(),feature
+                instance.features.append(feature)  
+        # quit()
 
     # def extract_weekday(self):
     #     future=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag|morgenmorgenavond|morgenmiddag|morgenochtend|overmorgen|weekend|maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag|maandagavond|dinsdagavond|woensdagavond|donderdagavond|vrijdagavond|zaterdagavond|zondagavond)")       
