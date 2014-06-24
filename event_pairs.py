@@ -26,7 +26,7 @@ class Event_pairs:
         timeunits = (r"(dag|dagje|dagen|daagjes|nacht|nachtje|nachten|nachtjes|week|weekje|weken|"
             "weekjes|maand|maandje|maanden|maandjes)")
         # check = re.compile(r"\b(dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)\b",re.IGNORECASE)
-        days = re.compile(r"(over|nog) (slechts |pakweg )?(een kleine |iets (meer|minder) dan )?" + (nums) + " " + (timeunits),re.IGNORECASE)
+        days = re.compile(r"(over|nog )?(slechts |pakweg )?(een kleine |iets (meer|minder) dan )?" + (nums) + " " + (timeunits) + "( tot)?",re.IGNORECASE)
         # days1 = re.compile(r"(over|nog) pakweg " + (nums) + " " + (timeunits),re.IGNORECASE)
         # days2 = re.compile(r"nog slechts (een kleine )?" + (nums) + " " + (timeunits),re.IGNORECASE)
         days3 = re.compile((nums) + " " + (timeunits) + " tot",re.IGNORECASE)
