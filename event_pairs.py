@@ -57,7 +57,8 @@ class Event_pairs:
         lines = []
         for tweet in new_tweets:
             text = tweet.strip().split("\t")[-1].lower()
-            if m1.search(text) or m2.search(text) or m3.search(text) or d.search(text):
+            #if m1.search(text) or m2.search(text) or m3.search(text) or d.search(text):
+            if d.search(text):
                 lines.append(text)
 
         print lines,len(lines)
