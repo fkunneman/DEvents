@@ -52,18 +52,27 @@ class Event_pairs:
             "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
             "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
             (nums) + " " + (timeunits) + r"( nog)? te gaan")
+        list_patterns = ([r"(over|nog) (minimaal |maximaal |tenminste |"
+            "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
+            "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
+            (nums) + " " + (timeunits), (nums) + " " + (timeunits) + r"( slapen)? tot", r"met( nog)? (minimaal |maximaal |tenminste |"
+            "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
+            "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
+            (nums) + " " + (timeunits) + r"( nog)? te gaan"])
         d1 = re.compile((nums) + " " + (months) + "(\b|$)")
         d2 = re.compile(r"[1-3]?\d(-|/)[1-12]")
 
         lines = []
         for tweet in new_tweets:
             text = tweet.strip().split("\t")[-1].lower()
-            # if m1.search(text) or m2.search(text) or m3.search(text) or d.search(text):
+            if re.findall('|'.join(list_patterns), text):
+                print re.findall('|'.join(list_patterns), text)
+            # if m1.search(text) or m2.search(text) or m3.search(text):
             #     lines.append(text)
-            if d2.search(text):
-                lines.append(text)
+            # if d2.search(text):
+            #     lines.append(text)
 
-        print lines,len(lines)
+        # print lines,len(lines)
 
 
     # def extract_date(self):
