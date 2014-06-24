@@ -39,7 +39,7 @@ class Event_pairs:
         # days7 = re.compile(r"(over|nog) " + (nums) + " " + (timeunits),re.IGNORECASE)
         # days8 = re.compile(r"(over|nog) (ruim|krap|een kleine|ongeveer|bijna) " + (nums) + " " + (timeunits),re.IGNORECASE)
         # days9 = re.compile(r"(over|nog) (maar |slechts |minimaal |maximaal |tenminste )?" + (nums) + " " + (timeunits),re.IGNORECASE)
-        days10 = re.compile(r"met (nog)? (minimaal |maximaal |tenminste |"
+        days10 = re.compile(r"met( nog)? (minimaal |maximaal |tenminste |"
             "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
             "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
             (nums) + " " + (timeunits) + r"( nog)? te gaan")
