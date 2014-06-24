@@ -28,7 +28,7 @@ class Event_pairs:
             "november":11,"dec":12, "december":12}
         convert_timeunit = {"dagen":1, "daagjes":1, "dag":1,"dagje":1,
             "nachten":1,"nachtjes":1,"nacht":1,"nachtje":1,"weken":7,
-            "weekjes":7,"week":1,"weekje":1,"maanden":30,
+            "weekjes":7,"week":7,"weekje":7,"maanden":30,
             "maandjes":30,"maand": 30,"maandje":30}
 
         nums = (r"(\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|"
@@ -70,7 +70,7 @@ class Event_pairs:
         for tweet in new_tweets:
             text = tweet.strip().split("\t")[-1].lower()
             if re.findall('|'.join(list_patterns), text):
-                units = re.findall('|'.join(list_patterns), text)
+                units = re.findall('|'.join(list_patterns), text)[0]
                 nud = {}
                 for unit in units:
                     if unit in ns:
@@ -80,7 +80,7 @@ class Event_pairs:
                     elif unit in timeus:
                         nud["timeunit"] = convert_timeunit[unit]
                 if nud["timeunit"]: 
-                    days = nud["num"] * nud["num"]
+                    days = nud["timeunit"] * nud["num"]
                 # print re.findall('|'.join(list_patterns), text),text
                 # lines.append(text)
                 print text,nud,days
