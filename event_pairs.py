@@ -11,6 +11,7 @@ class Event_pairs:
                 self.tweets.append(tweet)
 
     def extract_date(self,new_tweets):
+
         convert_nums = {"een":1, "twee":2, "drie":3, "vier":4,
             "vijf":5, "zes":6, "zeven":7, "acht":8, "negen":9, 
             "tien":10, "elf":11, "twaalf":12, "dertien":13,
@@ -20,19 +21,28 @@ class Event_pairs:
             "vierentwintig":24,"vijfentwintig":25,"zesentwintig":26,
             "zevenentwintig":27,"achtentwintig":28,"negenentwintig":29,
             "dertig":30}
+        convert_month = {"jan":1, "januari":1, "feb":2, "februari":2,
+            "mrt":3, "maart":3, "apr":4, "april":4, "mei":5, "jun":6,
+            "juni":6, "jul":7, "juli":7, "aug":8, "augustus":8,
+            "sep":9, "september":9, "okt":10, "oktober":10, "nov":11,
+            "november":11,"dec":12, "december":12}
         convert_timeunit = {"dagen":1, "daagjes":1, "nachten":1, 
             "nachtjes":1, "week": 7, "weken":7, "weekjes":7,
             "maand": 30, "maanden":30, "maandjes":30}
+
         nums = (r"(\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|"
             "tien|elf|twaalf|dertien|veertien|vijftien|zestien|"
             "zeventien|achtien|negentien|twintig|eenentwintig|"
             "tweeentwintig|drieentwintig|vierentwintig|vijfentwintig|"
             "zesentwintig|zevenentwintig|achtentwintig|negenentwintig|"
             "dertig)")
+        months = (r"(jan|januari|feb|februari|mrt|maart|apr|april|mei|"
+            "jun|juni|jul|juli|aug|augustus|sep|september|okt|oktober|"
+            "nov|november|dec|december)")
         timeunits = (r"(dag|dagje|dagen|daagjes|nacht|nachtje|nachten|"
             "nachtjes|week|weekje|weken|weekjes|maand|maandje|maanden|"
             "maandjes)")
-        # check = re.compile(r"\b(dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)\b",re.IGNORECASE)
+
         m1 = re.compile(r"(over|nog) (minimaal |maximaal |tenminste |"
             "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
             "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
@@ -42,20 +52,19 @@ class Event_pairs:
             "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
             "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
             (nums) + " " + (timeunits) + r"( nog)? te gaan")
+        d = re.compile((nums) + " " + (months) + "(\b|$)")
 
         lines = []
         for tweet in new_tweets:
             text = tweet.strip().split("\t")[-1].lower()
-            if m1.search(text) or m2.search(text) or m3.search(text):
+            if m1.search(text) or m2.search(text) or m3.search(text) or d.search(text):
                 lines.append(text)
+
         print lines,len(lines)
 
 
-
     # def extract_date(self):
-    #     convert_nums = {"een":1, "twee":2, "drie":3, "vier":4, "vijf":5, "zes":6, "zeven":7, "acht":8, "negen":9, "tien":10, "elf":11, "twaalf":12, "dertien":13, "veertien":14, "vijftien":15, "zestien":16, "zeventien":17, "achtien":18, "negentien":19, "twintig":20}
-    #     convert_month = {"jan":1, "januari":1, "feb":2, "februari":2, "mrt":3, "maart":3, "apr":4, "april":4, "mei":5, "jun":6, "juni":6, "jul":7, "juli":7, "aug":8, "augustus":8, "sep":9, "september":9, "okt":10, "oktober":10, "nov":11, "november":11, "dec":12, "december":12}
-    #     dates = re.compile(r"([1,2,3]?\d|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achtien|negentien|twintig) (jan|januari|feb|februari|mrt|maart|apr|april|mei|jun|juni|jul|juli|aug|augustus|sep|september|okt|oktober|nov|november|dec|december)(\b|$)",re.IGNORECASE)
+        
     #     for instance in self.instances:
     #         ws = " ".join(instance.wordsequence)
     #         if dates.search(ws):
@@ -127,11 +136,18 @@ class Event_pairs:
 
     class Tweet:
         """Class containing the characteristics of a tweet that mentions an entity and time"""
+        def __init__(self,tweet):
+
+            self.id = ""
+            self.user = ""
+            self.
+
         def __init__(self,units):
                 self.id = units[0]
                 self.user = units[1]
                 self.date = units[2]
-                self.entities = units[3:]
+                self.text = units[3]
+                self.entities = units[4:]
 
         def set_date(self,date):
             self.date = date
