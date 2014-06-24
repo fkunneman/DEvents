@@ -41,7 +41,7 @@ class Event_pairs:
 
         for tweet in new_tweets:
             text = tweet.strip().split("\t")[-1]
-            if days.search(text) or days1.search(text):
+            if days.search(text):
                 print text
 
     # def extract_date(self):
