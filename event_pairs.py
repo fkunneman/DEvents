@@ -52,13 +52,15 @@ class Event_pairs:
             "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
             "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
             (nums) + " " + (timeunits) + r"( nog)? te gaan")
-        d = re.compile((nums) + " " + (months) + "(\b|$)")
+        d1 = re.compile((nums) + " " + (months) + "(\b|$)")
+        d2 = re.compile(r"[1-3]?\d(-|/| )[1-12]((-|/| )[2000-2020])?")
 
         lines = []
         for tweet in new_tweets:
             text = tweet.strip().split("\t")[-1].lower()
-            #if m1.search(text) or m2.search(text) or m3.search(text) or d.search(text):
-            if d.search(text):
+            # if m1.search(text) or m2.search(text) or m3.search(text) or d.search(text):
+            #     lines.append(text)
+            if d2.search(text):
                 lines.append(text)
 
         print lines,len(lines)
