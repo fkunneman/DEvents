@@ -68,32 +68,40 @@ class Event_pairs:
 
         ns = convert_nums.keys()
         timeus = convert_timeunit.keys()
-        lines = []
+        ms = convert_months.keys()
+        #lines = []
         for tweet in new_tweets:
             text = tweet.strip().split("\t")[-1].lower()
             if re.findall('|'.join(list_patterns), text):
                 units = re.findall('|'.join(list_patterns), text)[0]
-                lines.append(text)
-                print units,text
-                # nud = {}
-                # for unit in units:
-                #     if unit in ns:
-                #         nud["num"] = convert_nums[unit]
-                #     elif re.match(r"\d+",unit):
-                #         nud["num"] = int(unit)
-                #     elif unit in timeus:
-                #         nud["timeunit"] = convert_timeunit[unit]
-                # if nud["timeunit"]: 
-                #     days = nud["timeunit"] * nud["num"]
-                # print re.findall('|'.join(list_patterns), text),text
-                # lines.append(text)
-                #print text,nud,days
+                #lines.append(text)
+#                print units,text
+                nud = {}
+                for unit in units:
+                    if unit in ns:
+                        nud["num"] = convert_nums[unit]
+                    elif re.match(r"\d+",unit):
+                        if nud["num"]:
+                            nud["month"] = int(unit)
+                        else:
+                            nud["num"] = int(unit)
+                    elif unit in timeus:
+                        nud["timeunit"] = convert_timeunit[unit]
+                    elif unit in ms:
+                        nud["month"] = convert_month[unit]
+                if nud["timeunit"]: 
+                    days = nud["timeunit"] * nud["num"]
+                elif nud["month"]:
+                    days = nud["num"] + "-" + nud["month"]
+                #print re.findall('|'.join(list_patterns), text),text
+                #lines.append(text)
+                print text,nud,days
             # if m1.search(text) or m2.search(text) or m3.search(text):
             #     lines.append(text)
             # if d2.search(text):
             #     lines.append(text)
 
-        print len(lines)
+        #print len(lines)
 
 
     # def extract_date(self):
