@@ -96,32 +96,32 @@ class Event_pairs:
         print len(lines)
 
 
-    def extract_date(self):
+    # def extract_date(self):
         
-        for instance in self.instances:
-            ws = " ".join(instance.wordsequence)
-            if dates.search(ws):
-                tweet_date = time_functions.return_datetime(instance.date,setting="vs")
-                sh = dates.search(ws)
-                if re.search(r"\d+",sh.groups()[0]):
-                    day = int(sh.groups()[0])
-                else:
-                    day = convert_nums[sh.groups()[0]]
-                month = convert_month[sh.groups()[1]]
-    #                
-                #print month,ws,sh.groups()
-                try:
-                    date = datetime.datetime(tweet_date.year,month,day,0,0,0)
-                    feature = "date_" + date.strftime("%d-%m-%Y")
-                except:
-                    continue
-                # dif = time_functions.timerel(date,tweet_date,"day")
-                # if dif < 0:
-                #     date += datetime.timedelta(days=365)
-                # feature = str(time_functions.timerel(date,tweet_date,"day")) + "_days"
-                #print sh.groups(),feature
-                instance.features.append(feature)  
-        # quit()
+    #     for instance in self.instances:
+    #         ws = " ".join(instance.wordsequence)
+    #         if dates.search(ws):
+    #             tweet_date = time_functions.return_datetime(instance.date,setting="vs")
+    #             sh = dates.search(ws)
+    #             if re.search(r"\d+",sh.groups()[0]):
+    #                 day = int(sh.groups()[0])
+    #             else:
+    #                 day = convert_nums[sh.groups()[0]]
+    #             month = convert_month[sh.groups()[1]]
+    # #                
+    #             #print month,ws,sh.groups()
+    #             try:
+    #                 date = datetime.datetime(tweet_date.year,month,day,0,0,0)
+    #                 feature = "date_" + date.strftime("%d-%m-%Y")
+    #             except:
+    #                 continue
+    #             # dif = time_functions.timerel(date,tweet_date,"day")
+    #             # if dif < 0:
+    #             #     date += datetime.timedelta(days=365)
+    #             # feature = str(time_functions.timerel(date,tweet_date,"day")) + "_days"
+    #             #print sh.groups(),feature
+    #             instance.features.append(feature)  
+    #     # quit()
 
     # def extract_weekday(self):
     #     future=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag|morgenmorgenavond|morgenmiddag|morgenochtend|overmorgen|weekend|maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag|maandagavond|dinsdagavond|woensdagavond|donderdagavond|vrijdagavond|zaterdagavond|zondagavond)")       
