@@ -53,7 +53,7 @@ class Event_pairs:
             "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
             (nums) + " " + (timeunits) + r"( nog)? te gaan")
         d1 = re.compile((nums) + " " + (months) + "(\b|$)")
-        d2 = re.compile(r"[1-3]?\d(-|/| )[1-12]((-|/| )[2000-2020])?")
+        d2 = re.compile(r"[1-3]?\d(-|/)[1-12]")
 
         lines = []
         for tweet in new_tweets:
