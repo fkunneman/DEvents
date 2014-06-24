@@ -137,10 +137,8 @@ class Event_pairs:
     class Tweet:
         """Class containing the characteristics of a tweet that mentions an entity and time"""
         def __init__(self,tweet):
-
             self.id = ""
             self.user = ""
-            self.
 
         def __init__(self,units):
                 self.id = units[0]
