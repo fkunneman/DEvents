@@ -48,11 +48,11 @@ class Event_pairs:
         lines = []
         for tweet in new_tweets:
             text = tweet.strip().split("\t")[-1].lower()
-            if days.search(text):
-                lines.append(text)
-            elif days3.search(text):
-                lines.append(text)
-            elif days10.search(text):
+#            if days.search(text):
+#                lines.append(text)
+#            elif days3.search(text):
+#                lines.append(text)
+            if days10.search(text):
                 lines.append(text)
         print lines,len(lines)
 
