@@ -26,20 +26,24 @@ class Event_pairs:
         timeunits = (r"(dag|dagje|dagen|daagjes|nacht|nachtje|nachten|nachtjes|week|weekje|weken|"
             "weekjes|maand|maandje|maanden|maandjes)")
         # check = re.compile(r"\b(dagen|daagjes|nachten|nachtjes|weken|weekjes|maanden|maandjes)\b",re.IGNORECASE)
-        days = re.compile(r"(over|nog) (bijna |ongeveer |maar |slechts |"
-            "pakweg |ruim |krap |(maar )?een kleine |(maar )?iets (meer|"
-            "minder) dan )?" + (nums) + " " + (timeunits))
+        days = re.compile(r"(over|nog) (minimaal |maximaal |tenminste |"
+            "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
+            "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
+            (nums) + " " + (timeunits))
         # days1 = re.compile(r"(over|nog) pakweg " + (nums) + " " + (timeunits),re.IGNORECASE)
         # days2 = re.compile(r"nog slechts (een kleine )?" + (nums) + " " + (timeunits),re.IGNORECASE)
         days3 = re.compile((nums) + " " + (timeunits) + r"( slapen)? tot")
-        days4 = re.compile(r"(met )?nog (een kleine |maar |slechts )?" + (nums) + " " + (timeunits),re.IGNORECASE)
+        # days4 = re.compile(r"(met )?nog (een kleine |maar |slechts )?" + (nums) + " " + (timeunits),re.IGNORECASE)
         # days5 = re.compile(r"nog (maar )?" + (nums) + " " + (timeunits),re.IGNORECASE)
         # days6 = re.compile((nums) + " " + (timeunits) + r"( slapen)? tot",re.IGNORECASE)
         # days7 = re.compile(r"(over|nog) " + (nums) + " " + (timeunits),re.IGNORECASE)
         # days8 = re.compile(r"(over|nog) (ruim|krap|een kleine|ongeveer|bijna) " + (nums) + " " + (timeunits),re.IGNORECASE)
-        days9 = re.compile(r"(over|nog) (maar |slechts |minimaal |maximaal |tenminste )?" + (nums) + " " + (timeunits),re.IGNORECASE)
-        days10 = re.compile(r"met (nog)? (maar |slechts )?(1|een) (dag|week|maand|jaar)( nog)? te gaan",re.IGNORECASE)
-        days11 = re.compile(r"met (nog)? (maar|slechts)?( een| 1) (dag|week|maand) te gaan",re.IGNORECASE)
+        # days9 = re.compile(r"(over|nog) (maar |slechts |minimaal |maximaal |tenminste )?" + (nums) + " " + (timeunits),re.IGNORECASE)
+        days10 = re.compile(r"met (nog)? (minimaal |maximaal |tenminste |"
+            "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
+            "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
+            (nums) + " " + (timeunits) + r"( nog)? te gaan")
+        # days11 = re.compile(r"met (nog)? (maar|slechts)?( een| 1) (dag|week|maand) te gaan",re.IGNORECASE)
 
         lines = []
         for tweet in new_tweets:
@@ -47,6 +51,8 @@ class Event_pairs:
             if days.search(text):
                 lines.append(text)
             elif days3.search(text):
+                lines.append(text)
+            elif days10.search(text):
                 lines.append(text)
         print lines,len(lines)
 
