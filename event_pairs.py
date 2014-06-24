@@ -66,13 +66,14 @@ class Event_pairs:
         for tweet in new_tweets:
             text = tweet.strip().split("\t")[-1].lower()
             if re.findall('|'.join(list_patterns), text):
-                print re.findall('|'.join(list_patterns), text)
+                print re.findall('|'.join(list_patterns), text),text
+                lines.append(text)
             # if m1.search(text) or m2.search(text) or m3.search(text):
             #     lines.append(text)
             # if d2.search(text):
             #     lines.append(text)
 
-        # print lines,len(lines)
+        print len(lines)
 
 
     # def extract_date(self):
