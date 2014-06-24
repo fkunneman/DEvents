@@ -1,8 +1,9 @@
 
+import re
 
 class Event_pairs:
 
-    def __init__(self,eventtweets=False):
+    def __init__(self,eventtweets):
         self.tweets = []
         if eventtweets:
             for et in eventtweets:
