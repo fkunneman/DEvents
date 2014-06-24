@@ -44,7 +44,7 @@ class Event_pairs:
             text = tweet.strip().split("\t")[-1]
             if days.search(text):
                 lines.append(text)
-            elif days3.search(text)
+            elif days3.search(text):
                 lines.append(text)
         print lines,len(lines)
 
