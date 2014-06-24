@@ -20,60 +20,76 @@ class Event_pairs:
             "eenentwintig":21,"tweeentwintig":22,"drieentwintig":23,
             "vierentwintig":24,"vijfentwintig":25,"zesentwintig":26,
             "zevenentwintig":27,"achtentwintig":28,"negenentwintig":29,
-            "dertig":30}
+            "dertig":30,"eenendertig":31}
         convert_month = {"jan":1, "januari":1, "feb":2, "februari":2,
             "mrt":3, "maart":3, "apr":4, "april":4, "mei":5, "jun":6,
             "juni":6, "jul":7, "juli":7, "aug":8, "augustus":8,
             "sep":9, "september":9, "okt":10, "oktober":10, "nov":11,
             "november":11,"dec":12, "december":12}
-        convert_timeunit = {"dagen":1, "daagjes":1, "nachten":1, 
-            "nachtjes":1, "week": 7, "weken":7, "weekjes":7,
-            "maand": 30, "maanden":30, "maandjes":30}
+        convert_timeunit = {"dagen":1, "daagjes":1, "dag":1,"dagje":1,
+            "nachten":1,"nachtjes":1,"nacht":1,"nachtje":1,"weken":7,
+            "weekjes":7,"week":1,"weekje":1,"maanden":30,
+            "maandjes":30,"maand": 30,"maandje":30}
 
         nums = (r"(\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|"
             "tien|elf|twaalf|dertien|veertien|vijftien|zestien|"
             "zeventien|achtien|negentien|twintig|eenentwintig|"
             "tweeentwintig|drieentwintig|vierentwintig|vijfentwintig|"
             "zesentwintig|zevenentwintig|achtentwintig|negenentwintig|"
-            "dertig)")
+            "dertig|eenendertig)")
         months = (r"(jan|januari|feb|februari|mrt|maart|apr|april|mei|"
             "jun|juni|jul|juli|aug|augustus|sep|september|okt|oktober|"
             "nov|november|dec|december)")
-        timeunits = (r"(dag|dagje|dagen|daagjes|nacht|nachtje|nachten|"
-            "nachtjes|week|weekje|weken|weekjes|maand|maandje|maanden|"
-            "maandjes)")
+        timeunits = (r"(dagen|daagjes|dag|dagje|nachten|"
+            "nachtjes|nacht|nachtje|weken|weekjes|week|weekje|maanden|"
+            "maandjes|maand|maandje)")
 
-        m1 = re.compile(r"(over|nog) (minimaal |maximaal |tenminste |"
-            "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
-            "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
-            (nums) + " " + (timeunits))
-        m2 = re.compile((nums) + " " + (timeunits) + r"( slapen)? tot")
-        m3 = re.compile(r"met( nog)? (minimaal |maximaal |tenminste |"
-            "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
-            "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
-            (nums) + " " + (timeunits) + r"( nog)? te gaan")
+        # m1 = re.compile(r"(over|nog) (minimaal |maximaal |tenminste |"
+        #     "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
+        #     "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
+        #     (nums) + " " + (timeunits))
+        # m2 = re.compile((nums) + " " + (timeunits) + r"( slapen)? tot")
+        # m3 = re.compile(r"met( nog)? (minimaal |maximaal |tenminste |"
+        #     "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
+        #     "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
+        #     (nums) + " " + (timeunits) + r"( nog)? te gaan")
         list_patterns = ([r"(over|nog) (minimaal |maximaal |tenminste |"
             "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
             "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
-            (nums) + " " + (timeunits), (nums) + " " + (timeunits) + r"( slapen)? tot", r"met( nog)? (minimaal |maximaal |tenminste |"
-            "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
-            "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
-            (nums) + " " + (timeunits) + r"( nog)? te gaan"])
+            (nums) + " " + (timeunits), (nums) + " " + (timeunits) + 
+            r"( slapen)? tot", r"met( nog)? (minimaal |maximaal |"
+            "tenminste |bijna |ongeveer |maar |slechts |pakweg |ruim |"
+            "krap |(maar )?een kleine |"
+            "(maar )?iets (meer|minder) dan )?" + (nums) + " " + 
+            (timeunits) + r"( nog)? te gaan"])
         d1 = re.compile((nums) + " " + (months) + "(\b|$)")
         d2 = re.compile(r"[1-3]?\d(-|/)[1-12]")
 
-        lines = []
+        ns = convert_nums.keys()
+        timeus = convert_timeunit.keys()
         for tweet in new_tweets:
             text = tweet.strip().split("\t")[-1].lower()
             if re.findall('|'.join(list_patterns), text):
-                print re.findall('|'.join(list_patterns), text),text
-                lines.append(text)
+                units = re.findall('|'.join(list_patterns), text)
+                nud = {}
+                for unit in units:
+                    if unit in ns:
+                        nud["num"] = convert_nums[unit]
+                    elif re.match(r"\d+",unit):
+                        nud["num"] = int(unit)
+                    elif unit in timeus:
+                        nud["timeunit"] = convert_timeunit[unit]
+                if nud["timeunit"]: 
+                    days = nud["num"] * nud["num"]
+                # print re.findall('|'.join(list_patterns), text),text
+                # lines.append(text)
+                print text,nud,days
             # if m1.search(text) or m2.search(text) or m3.search(text):
             #     lines.append(text)
             # if d2.search(text):
             #     lines.append(text)
 
-        print len(lines)
+        # print len(lines)
 
 
     # def extract_date(self):
