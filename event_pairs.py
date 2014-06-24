@@ -62,7 +62,7 @@ class Event_pairs:
             "krap |(maar )?een kleine |"
             "(maar )?iets (meer|minder) dan )?" + (nums) + " " + 
             (timeunits) + r"( nog)? te gaan",(nums) + " " + (months) + 
-            "(\b|$)",r"([1-3]?\d)(-|/)([1-12])"])
+            "(\b|$)",r"([1,2,3]?\d)(-|/)([1,2,3,4,5,6,7,8,9,10,11,12])"])
         # d1 = re.compile((nums) + " " + (months) + "(\b|$)")
         # d2 = re.compile(r"[1-3]?\d(-|/)[1-12]")
 
