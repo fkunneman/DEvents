@@ -74,7 +74,7 @@ class Event_pairs:
             if re.findall('|'.join(list_patterns), text):
                 units = re.findall('|'.join(list_patterns), text)[0]
                 lines.append(text)
-                print units,text,
+                print units,text
                 # nud = {}
                 # for unit in units:
                 #     if unit in ns:
