@@ -140,7 +140,7 @@ class Event_pairs:
                     if dsi[2] in range(2010,2020) and \
                         dsi[1] in range(1,13) and \
                         dsi[0] in range(1,32):
-                        return datetime.date(ds[2],ds[1],
+                        return datetime.date(dsi[2],dsi[1],
                             dsi[0])
                 elif re.search("/",da):
                     if "year" in nud:
