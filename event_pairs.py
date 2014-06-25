@@ -76,11 +76,14 @@ class Event_pairs:
             "tenminste |bijna |ongeveer |maar |slechts |pakweg |ruim |"
             "krap |(maar )?een kleine |"
             "(maar )?iets (meer|minder) dan )?" + (nums) + " " + 
-            (timeunits) + r"( nog)? te gaan",r"(\b|^)" + (nums) + " " + (months) + r"( (\d{2,}))?"
-            "(\b|$)",r"(\b|^)([1,2,3]?\d)(-|/)(0?(1|2|3|4|5|6|7|8|9|10|11|12))(-|/)?(\d{2,4})?(\b|$)"])
+            (timeunits) + r"( nog)? te gaan",r"(\b|^)" + (nums) + " " +
+            (months) + r"( (\d{2,4}))?(\b|$)",r"(\b|^)(\d{1,2}-\d{1,2})"
+            r"(-\d{2,4})?(\b|$)",r"(\b|^)(\d{2,4})?/?(\d{1,2}/\d{1,2})"
+            "(\b|$)"])
         # d1 = re.compile((nums) + " " + (months) + "(\b|$)")
         # d2 = re.compile(r"[1-3]?\d(-|/)[1-12]")
-
+        date_eu = re.compile(r"(\d{1,2})-(\d{1,2})-?(\d{2,4})?")
+        date_vs = re.compile(r"(\d{2,4})?/?(\d{1,2})/(\d{1,2})")
         ns = convert_nums.keys()
         timeus = convert_timeunit.keys()
         ms = convert_month.keys()
@@ -95,29 +98,42 @@ class Event_pairs:
             for unit in units:
                 if unit in ns:
                     nud["num"] = convert_nums[unit]
-                elif re.match(r"\d+",unit):
-                    if "num" in nud:
-                        nud["month"] = int(unit)
-                    else:
-                        nud["num"] = int(unit)
                 elif unit in timeus:
                     nud["timeunit"] = convert_timeunit[unit]
                 elif unit in ms:
                     nud["month"] = convert_month[unit]
+                elif re.search("-",unit) or re.search("/",unit):
+                    nud["date"] = unit
+                elif re.match(r"\d+",unit):
+                    if int(unit) in range(2010,2020):
+                        nud["year"] = int(unit)
+                    elif "num" in nud: 
+                        if int(unit) in range(1,13):
+                            nud["month"] = int(unit)
+                    else:
+                        nud["num"] = int(unit)
+
             if "timeunit" in nud: 
                 days = nud["timeunit"] * nud["num"]
                 return date + datetime.timedelta(days=days)
             elif "month" in nud:
                 m = nud["month"]
                 d = nud["num"]
-                y = date.year
+                if "year" in nud:
+                    y = nud["year"]
+                else:
+                    y = date.year
                 print tweet,units,d,m,y
-                if m < date.month:
-                    y += 1
-                elif m == date.month:
-                    if d < date.day:
-                        y += 1
                 return datetime.date(y,m,d)
+            elif "date" in nud:
+                print "date",nud["date"]
+                da = nud["date"]
+                if re.search("-",da):
+                    ds = date_eu.search(da).groups()
+                    print "dseu",ds
+                elif re.search("/",da):
+                    ds = date_vs.search(da).groups()
+                    print "dsvs",ds
             else:
                 return False
             #print re.findall('|'.join(list_patterns), text),text
