@@ -135,12 +135,14 @@ class Event_pairs:
                         ds = date_eu.search(da + nud["year"]).groups()
                     else:
                         ds = date_eu.search(da).groups()
+                    print ds,tweet
                     return datetime.date(int(ds[2]),int(ds[1]),int(ds[0]))
                 elif re.search("/",da):
                     if "year" in nud:
                         ds = date_vs.search(nud["year"] + da).groups()
                     else:
                         ds = date_vs.search(da).groups()
+                    print ds
                     return datetime.date(int(ds[0]),int(ds[1]),int(ds[2]))
             else:
                 return False
