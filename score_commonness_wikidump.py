@@ -12,11 +12,11 @@ list_patterns = (["{{","}}","^:","^;","^\#","^:","^<","^afbeelding:",
     '^[\!\|]'])
 
 #for each page
-for event, elem in etree.iterparse(wiki, events=('start', 'end', 'start-ns', 'end-ns')):
+for event, elem in etree.iterparse(wiki, events=('start', 'end', 
+    'start-ns', 'end-ns')):
     if event == 'end':
         if elem.tag == '{http://www.mediawiki.org/xml/export-0.8/}text':
-            print '****************************************************'
-            #print elem.text
+            all_text = ""
             b = elem.text.lower().split("\n")
             for u in b:
                 if re.match(r'^\s*$',u) or re.findall('|'.join(list_patterns),u):
@@ -25,7 +25,7 @@ for event, elem in etree.iterparse(wiki, events=('start', 'end', 'start-ns', 'en
                     u = u.replace(',',' ,')
                     u = u.replace('.',' .')
                     u = u.replace(':',' :')
-                    print u
-            print '****************************************************'
+                    all_text = all_text + u
+                    print all_text, "\n******"
             
 
