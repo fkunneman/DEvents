@@ -17,7 +17,7 @@ class Event_pairs:
             tokens = tweet.strip().split("\t")
             text = tokens[-1].lower()
             date = time_functions.return_datetime(tokens[3],setting="vs")
-            dateref = extract_date(text,date):
+            dateref = extract_date(text,date)
             if dateref:
                 dtweet = Tweet()
                 dtweet.set_date(dateref)
