@@ -23,9 +23,10 @@ class Event_pairs:
                 dateref = self.extract_date(text,date)
                 if dateref:
                     dtweet = self.Tweet()
-                    dtweet.set_rdate(dateref)
+                    units = [tokens[1],tokens[2],date,text,dateref]
+                    dtweet.set_meta(units)
                     self.tweets.append(dtweet)
-        print [x.rdate for x in self.tweets]
+        print [(x.text,x.dateref) for x in self.tweets]
 
     def extract_date(self,tweet,date):
 
@@ -136,8 +137,7 @@ class Event_pairs:
                         ds = date_eu.search(da + nud["year"]).groups()
                     else:
                         ds = date_eu.search(da).groups()
-                    print ds
-                    dsi = [int(x) for x in ds if != None]
+                    dsi = [int(x) for x in ds if x != None]
                     if  dsi[1] in range(1,13) and \
                         dsi[0] in range(1,32):
                         if ds[2] == None:
@@ -152,12 +152,14 @@ class Event_pairs:
                         ds = date_vs.search(nud["year"] + da).groups()
                     else:
                         ds = date_vs.search(da).groups()
-                    print ds
-                    dsi = [int(x) for x in ds]
-                    if dsi[0] in range(2010,2020) and \
-                        dsi[1] in range(1,13) and \
-                        dsi[2] in range(1,32):
-                        return datetime.date(dsi[0],dsi[1],dsi[2])
+                    dsi = [int(x) for x in ds if x != None]
+                    if dsi[0] in range(1,13) and \
+                        dsi[1] in range(1,32):
+                        return datetime.date(date.year,dsi[0],dsi[1])
+                    elif dsi[0] in range(2010,2020):
+                        if dsi[1] in range(1,13) and \
+                            dsi[2] in range(1,32):
+                            return datetime.date(dsi[0],dsi[1],dsi[2])
             else:
                 return False
             #print re.findall('|'.join(list_patterns), text),text
@@ -256,10 +258,9 @@ class Event_pairs:
             self.user = units[1]
             self.date = units[2]
             self.text = units[3]
-            self.entities = units[4:]
-
-        def set_rdate(self,date):
-            self.rdate = date
+            self.dateref = units[4]
+            if len(units) > 4:
+                self.entities = units[5:]
 
         def set_entities(self,entities):
             self.entities = entities
