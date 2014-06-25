@@ -78,7 +78,7 @@ class Event_pairs:
             "(maar )?iets (meer|minder) dan )?" + (nums) + " " + 
             (timeunits) + r"( nog)? te gaan",r"(\b|^)" + (nums) + " " +
             (months) + r"( (\d{2,4}))?(\b|$)",r"(\b|^)(\d{1,2}-\d{1,2})"
-            r"(-\d{2,4})?(\b|$)",r"(\b|^)(\d{2,4})?/?(\d{1,2}/\d{1,2})"
+            r"(-\d{2,4})?(\b|$)",r"(\b|^)(\d{2,4}/)?(\d{1,2}/\d{1,2})"
             "(\b|$)"])
         # d1 = re.compile((nums) + " " + (months) + "(\b|$)")
         # d2 = re.compile(r"[1-3]?\d(-|/)[1-12]")
@@ -103,8 +103,10 @@ class Event_pairs:
                     nud["timeunit"] = convert_timeunit[unit]
                 elif unit in ms:
                     nud["month"] = convert_month[unit]
-                elif re.search("-",unit) or re.search("/",unit):
+                elif re.search(r"\d{1,2}-\d{1,2}",unit) or re.search(r"\d{1,2}/\d{1,2}",unit):
                     nud["date"] = unit
+                elif re.search(r"-\d{2,4}",unit) or re.search(r"\d{2,4}/",unit):
+                    nud["year"] = unit
                 elif re.match(r"\d+",unit):
                     if int(unit) in range(2010,2020):
                         nud["year"] = int(unit)
@@ -131,11 +133,19 @@ class Event_pairs:
                 print "date",nud["date"]
                 da = nud["date"]
                 if re.search("-",da):
-                    ds = date_eu.search(da).groups()
+                    if "year" in nud:
+                        ds = date_eu.search(da + nud["year"]).groups()
+                    else:
+                        ds = date_eu.search(da).groups()
                     print "dseu",ds
                 elif re.search("/",da):
-                    ds = date_vs.search(da).groups()
+                    if "year" in nud:
+                        ds = date_vs.search(nud["year"] + da).groups()
+                    else:
+                        ds = date_vs.search(da).groups()
                     print "dsvs",ds
+                if "year" in nud:
+                    ys = 
             else:
                 return False
             #print re.findall('|'.join(list_patterns), text),text
