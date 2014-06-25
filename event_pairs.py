@@ -90,7 +90,7 @@ class Event_pairs:
         #lines = []
         # for tweet in new_tweets:
             # text = tweet.strip().split("\t")[-1].lower()
-        print "tweet",tweet
+#        print "tweet",tweet
         if re.findall('|'.join(list_patterns), tweet):
             units = re.findall('|'.join(list_patterns), tweet)[0]
             #lines.append(text)
@@ -144,8 +144,6 @@ class Event_pairs:
                     else:
                         ds = date_vs.search(da).groups()
                     print "dsvs",ds
-                if "year" in nud:
-                    ys = 
             else:
                 return False
             #print re.findall('|'.join(list_patterns), text),text
