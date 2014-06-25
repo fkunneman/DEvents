@@ -22,6 +22,9 @@ for event, elem in etree.iterparse(wiki, events=('start', 'end', 'start-ns', 'en
                 if re.match(r'^\s*$',u) or re.findall('|'.join(list_patterns),u):
                     continue
                 else:
+                    u = u.replace(',',' ,')
+                    u = u.replace('.',' .')
+                    u = u.replace(':',' :')
                     print u
             print '****************************************************'
             
