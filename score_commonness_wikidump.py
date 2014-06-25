@@ -22,10 +22,23 @@ for event, elem in etree.iterparse(wiki, events=('start', 'end',
                 if re.match(r'^\s*$',u) or re.findall('|'.join(list_patterns),u):
                     continue
                 else:
-                    u = u.replace(',',' ,')
-                    u = u.replace('.',' .')
-                    u = u.replace(':',' :')
                     all_text = all_text + u
-                    print all_text, "\n******"
-            
+                all_text = all_text.replace(',',' ,')
+                all_text = all_text.replace('.',' .')
+                all_text = all_text.replace(':',' :')
+            atfile = tmp + "page.txt"
+            with open(atfile,'w',encoding='utf-8') as f:
+                f.write(all_text)
+            classfile = tmp + "page.colibri.cls"
+            classencoder = colibricore.ClassEncoder()
+            classencoder.build(atfile)
+            classencoder.save(classfile)
+            corpusfile = tmp + "page.colibri.dat"
+            classencoder.encodefile(atfile, corpusfile)
+            corpusdata = colibricore.IndexedCorpus(corpusfile)
+            for sentence in corpusdata.sentences():
+                for fivegram in sentence.ngrams(5):
+                    print(fivegram.tostring(classdecoder))
+            print "***********************************************"
+
 
