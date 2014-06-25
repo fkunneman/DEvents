@@ -111,6 +111,7 @@ class Event_pairs:
                 m = nud["month"]
                 d = nud["num"]
                 y = date.year
+                print tweet,d,m,y
                 if m < date.month:
                     y += 1
                 elif m == date.month:
