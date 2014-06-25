@@ -1,6 +1,7 @@
 
 import sys
 import re
+import codecs
 import colibricore
 import xml.etree.ElementTree as etree
 
@@ -27,8 +28,9 @@ for event, elem in etree.iterparse(wiki, events=('start', 'end',
                 all_text = all_text.replace('.',' .')
                 all_text = all_text.replace(':',' :')
             atfile = tmp + "page.txt"
-            with open(atfile,'w',encoding='utf-8') as f:
-                f.write(all_text)
+            f = codecs.open(atfile,'w','utf-8')
+            f.write(all_text)
+            f.close()
             classfile = tmp + "page.colibri.cls"
             classencoder = colibricore.ClassEncoder()
             classencoder.build(atfile)
