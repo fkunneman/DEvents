@@ -23,10 +23,11 @@ for event, elem in etree.iterparse(wiki, events=('start', 'end',
                 if re.match(r'^\s*$',u) or re.findall('|'.join(list_patterns),u):
                     continue
                 else:
+                    u = u.replace(',',' ,')
+                    u = u.replace('.',' .')
+                    u = u.replace(':',' :') 
                     all_text = all_text + u
-                all_text = all_text.replace(',',' ,')
-                all_text = all_text.replace('.',' .')
-                all_text = all_text.replace(':',' :')
+
             atfile = tmp + "page.txt"
             f = codecs.open(atfile,'w','utf-8')
             f.write(all_text)
