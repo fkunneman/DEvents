@@ -9,7 +9,8 @@ class Event_pairs:
         self.tweets = []
         if eventtweets:
             for et in eventtweets:
-                tweet = self.Tweet(et)
+                tweet = self.Tweet()
+                tweet.set_meta(et)
                 self.tweets.append(tweet)
 
     def select_date_tweets(self,new_tweets):
@@ -209,7 +210,7 @@ class Event_pairs:
             self.id = ""
             self.user = ""
 
-        def __init__(self,units):
+        def set_meta(self,units):
             self.id = units[0]
             self.user = units[1]
             self.date = units[2]
