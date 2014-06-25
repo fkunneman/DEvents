@@ -136,17 +136,23 @@ class Event_pairs:
                         ds = date_eu.search(da + nud["year"]).groups()
                     else:
                         ds = date_eu.search(da).groups()
-                    dsi = [int(x) for x in ds]
-                    if dsi[2] in range(2010,2020) and \
-                        dsi[1] in range(1,13) and \
+                    print ds
+                    dsi = [int(x) for x in ds if != None]
+                    if  dsi[1] in range(1,13) and \
                         dsi[0] in range(1,32):
-                        return datetime.date(dsi[2],dsi[1],
-                            dsi[0])
+                        if ds[2] == None:
+                            return datetime.date(date.year,dsi[1],
+                                dsi[0])
+                        else:
+                            if dsi[2] in range(2010,2020):
+                                return datetime.date(dsi[2],dsi[1],
+                                    dsi[0]) 
                 elif re.search("/",da):
                     if "year" in nud:
                         ds = date_vs.search(nud["year"] + da).groups()
                     else:
                         ds = date_vs.search(da).groups()
+                    print ds
                     dsi = [int(x) for x in ds]
                     if dsi[0] in range(2010,2020) and \
                         dsi[1] in range(1,13) and \
