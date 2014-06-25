@@ -113,6 +113,7 @@ class Event_pairs:
                             nud["month"] = int(unit)
                     else:
                         nud["num"] = int(unit)
+            print units,nud
 
             if "timeunit" in nud: 
                 days = nud["timeunit"] * nud["num"]
