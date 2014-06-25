@@ -90,6 +90,7 @@ class Event_pairs:
         #lines = []
         # for tweet in new_tweets:
             # text = tweet.strip().split("\t")[-1].lower()
+        print "tweet",tweet
         if re.findall('|'.join(list_patterns), tweet):
             units = re.findall('|'.join(list_patterns), tweet)[0]
             #lines.append(text)
