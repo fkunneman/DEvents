@@ -68,7 +68,7 @@ class Event_pairs:
 
         ns = convert_nums.keys()
         timeus = convert_timeunit.keys()
-        ms = convert_months.keys()
+        ms = convert_month.keys()
         #lines = []
         for tweet in new_tweets:
             text = tweet.strip().split("\t")[-1].lower()
@@ -81,7 +81,7 @@ class Event_pairs:
                     if unit in ns:
                         nud["num"] = convert_nums[unit]
                     elif re.match(r"\d+",unit):
-                        if nud["num"]:
+                        if "num" in nud:
                             nud["month"] = int(unit)
                         else:
                             nud["num"] = int(unit)
@@ -89,10 +89,10 @@ class Event_pairs:
                         nud["timeunit"] = convert_timeunit[unit]
                     elif unit in ms:
                         nud["month"] = convert_month[unit]
-                if nud["timeunit"]: 
+                if "timeunit" in nud: 
                     days = nud["timeunit"] * nud["num"]
-                elif nud["month"]:
-                    days = nud["num"] + "-" + nud["month"]
+                elif "month" in nud:
+                    days = str(nud["num"]) + "-" + str(nud["month"])
                 #print re.findall('|'.join(list_patterns), text),text
                 #lines.append(text)
                 print text,nud,days
