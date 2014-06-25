@@ -1,5 +1,7 @@
 
 import re
+import time_functions
+import datetime
 
 class Event_pairs:
 
@@ -10,7 +12,18 @@ class Event_pairs:
                 tweet = Tweet(et)
                 self.tweets.append(tweet)
 
-    def extract_date(self,new_tweets):
+    def select_date_tweets(self,new_tweets):
+        for tweet in new_tweets:
+            tokens = tweet.strip().split("\t")
+            text = tokens[-1].lower()
+            date = time_functions.return_datetime(tokens[3],setting="vs")
+            dateref = extract_date(text,date):
+            if dateref:
+                dtweet = Tweet()
+                dtweet.set_date(dateref)
+                self.tweets.append(dtweet)
+
+    def extract_date(self,tweet,date):
 
         convert_nums = {"een":1, "twee":2, "drie":3, "vier":4,
             "vijf":5, "zes":6, "zeven":7, "acht":8, "negen":9, 
@@ -70,32 +83,43 @@ class Event_pairs:
         timeus = convert_timeunit.keys()
         ms = convert_month.keys()
         #lines = []
-        for tweet in new_tweets:
-            text = tweet.strip().split("\t")[-1].lower()
-            if re.findall('|'.join(list_patterns), text):
-                units = re.findall('|'.join(list_patterns), text)[0]
-                #lines.append(text)
+        # for tweet in new_tweets:
+            # text = tweet.strip().split("\t")[-1].lower()
+        if re.findall('|'.join(list_patterns), tweet):
+            units = re.findall('|'.join(list_patterns), tweet)[0]
+            #lines.append(text)
 #                print units,text
-                nud = {}
-                for unit in units:
-                    if unit in ns:
-                        nud["num"] = convert_nums[unit]
-                    elif re.match(r"\d+",unit):
-                        if "num" in nud:
-                            nud["month"] = int(unit)
-                        else:
-                            nud["num"] = int(unit)
-                    elif unit in timeus:
-                        nud["timeunit"] = convert_timeunit[unit]
-                    elif unit in ms:
-                        nud["month"] = convert_month[unit]
-                if "timeunit" in nud: 
-                    days = nud["timeunit"] * nud["num"]
-                elif "month" in nud:
-                    days = str(nud["num"]) + "-" + str(nud["month"])
-                #print re.findall('|'.join(list_patterns), text),text
-                #lines.append(text)
-                print text,nud,days
+            nud = {}
+            for unit in units:
+                if unit in ns:
+                    nud["num"] = convert_nums[unit]
+                elif re.match(r"\d+",unit):
+                    if "num" in nud:
+                        nud["month"] = int(unit)
+                    else:
+                        nud["num"] = int(unit)
+                elif unit in timeus:
+                    nud["timeunit"] = convert_timeunit[unit]
+                elif unit in ms:
+                    nud["month"] = convert_month[unit]
+            if "timeunit" in nud: 
+                days = nud["timeunit"] * nud["num"]
+                return date + datetime.timedelta(days=days)
+            elif "month" in nud:
+                m = nud["month"]
+                d = nud["num"]
+                y = date.year
+                if m < date.month:
+                    y += 1
+                elif m == date.month:
+                    if d < date.day:
+                        y += 1
+                return datetime.date(y,m,d)
+            else:
+                return False
+            #print re.findall('|'.join(list_patterns), text),text
+            #lines.append(text)
+            # print text,nud,days
             # if m1.search(text) or m2.search(text) or m3.search(text):
             #     lines.append(text)
             # if d2.search(text):
@@ -177,7 +201,7 @@ class Event_pairs:
 
     class Tweet:
         """Class containing the characteristics of a tweet that mentions an entity and time"""
-        def __init__(self,tweet):
+        def __init__(self):
             self.id = ""
             self.user = ""
 
