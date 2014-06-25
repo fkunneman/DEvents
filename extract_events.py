@@ -14,5 +14,5 @@ args = parser.parse_args()
 
 ep = Event_pairs(args.m)
 tweetfile = codecs.open(args.i,"r","utf-8")
-ep.extract_date(tweetfile.readlines())
+ep.select_date_tweets(tweetfile.readlines())
 tweetfile.close()
