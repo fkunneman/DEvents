@@ -12,6 +12,18 @@ class Event_pairs:
                 tweet = Tweet(et)
                 self.tweets.append(tweet)
 
+    def select_date_tweets(self,new_tweets):
+        for tweet in new_tweets:
+            tokens = tweet.strip().split("\t")
+            text = tokens[-1].lower()
+            date = time_functions.return_datetime(tokens[3],
+                setting="vs")
+            dateref = self.extract_date(text,date)
+            if dateref:
+                dtweet = Tweet()
+                dtweet.set_date(dateref)
+                self.tweets.append(dtweet)
+
     def extract_date(self,tweet,date):
 
         convert_nums = {"een":1, "twee":2, "drie":3, "vier":4,
@@ -116,17 +128,7 @@ class Event_pairs:
 
         #print len(lines)
 
-    def select_date_tweets(self,new_tweets):
-        for tweet in new_tweets:
-            tokens = tweet.strip().split("\t")
-            text = tokens[-1].lower()
-            date = time_functions.return_datetime(tokens[3],
-                setting="vs")
-            dateref = extract_date(text,date)
-            if dateref:
-                dtweet = Tweet()
-                dtweet.set_date(dateref)
-                self.tweets.append(dtweet)
+
 
 
 
