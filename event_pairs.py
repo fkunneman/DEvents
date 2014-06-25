@@ -24,6 +24,7 @@ class Event_pairs:
                 dtweet = self.Tweet()
                 dtweet.set_date(dateref)
                 self.tweets.append(dtweet)
+        print self.tweets
 
     def extract_date(self,tweet,date):
 
@@ -115,7 +116,6 @@ class Event_pairs:
                             nud["month"] = int(unit)
                     else:
                         nud["num"] = int(unit)
-            print units,nud
 
             if "timeunit" in nud: 
                 days = nud["timeunit"] * nud["num"]
@@ -127,23 +127,21 @@ class Event_pairs:
                     y = nud["year"]
                 else:
                     y = date.year
-                print tweet,units,d,m,y
                 return datetime.date(y,m,d)
             elif "date" in nud:
-                print "date",nud["date"]
                 da = nud["date"]
                 if re.search("-",da):
                     if "year" in nud:
                         ds = date_eu.search(da + nud["year"]).groups()
                     else:
                         ds = date_eu.search(da).groups()
-                    print "dseu",ds
+                    return datetime.date(int(ds[2]),int(ds[1]),int(ds[0]))
                 elif re.search("/",da):
                     if "year" in nud:
                         ds = date_vs.search(nud["year"] + da).groups()
                     else:
                         ds = date_vs.search(da).groups()
-                    print "dsvs",ds
+                    return datetime.date(int(ds[0]),int(ds[1]),int(ds[2]))
             else:
                 return False
             #print re.findall('|'.join(list_patterns), text),text
