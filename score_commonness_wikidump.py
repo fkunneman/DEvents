@@ -37,9 +37,9 @@ for infile in infiles:
         for sentence in corpusdata.sentences():
             for i in range(1,6):
                 for ngrams in sentence.ngrams(i):
-                    print i,ngrams
-                    for ngram in ngrams.tostring(classdecoder):
-                        ngramcounters[i-1][ngram]["count"] += 1
+                    ng = ngrams.tostring(classdecoder)
+                    #ng = ngram.tostring(classdecoder)
+                    ngramcounters[i-1][ng]["count"] += 1
         anchors = js["annotations"]
         surface = [x["surface_form"].lower() for x in anchors]
         for ngram in surface:
