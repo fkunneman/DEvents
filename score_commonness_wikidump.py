@@ -8,7 +8,8 @@ import json
 import colibricore
 
 tmp = sys.argv[1]
-infiles = sys.argv[2:]
+outdir = sys.argv[2]
+infiles = sys.argv[3:]
 
 five = defaultdict(lambda : defaultdict(int))
 four = defaultdict(lambda : defaultdict(int))
@@ -48,5 +49,12 @@ for infile in infiles:
                 ngramcounters[num_grams-1][ngram]["anchor"] += 1
                 ngramcounters[num_grams-1][ngram]["count"] += 1
     f.close()
-    print(three)
-    quit()
+
+for i,c in enumerate(ngramcounters):
+    out = sorted([[x,c[x]["anchor"],c[x]["count"]] for x in c.keys()],
+        key = lambda y: y[1],reverse=True)
+    outfile = open(outdir + str(i+1) + "_grams.txt","w",encoding="utf-8")
+    for line in out:
+        outfile.write(" ".join(line) + "\n")
+    outfile.close()
+
