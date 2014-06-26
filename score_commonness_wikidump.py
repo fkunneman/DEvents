@@ -43,7 +43,8 @@ for infile in infiles:
         surface = [x["surface_form"].lower() for x in anchors]
         for ngram in surface:
             num_grams = len(ngram.split(" "))
-            ngramcounters[num_grams-1][ngram]["anchor"] += 1
+            if num_grams <= 5:
+                ngramcounters[num_grams-1][ngram]["anchor"] += 1
     f.close()
-    print three
+    print(three)
     quit()
