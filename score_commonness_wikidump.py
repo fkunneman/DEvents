@@ -12,7 +12,6 @@ tmp = sys.argv[1]
 outdir = sys.argv[2]
 infiles = sys.argv[3:]
 
-
 classfile = tmp + "_page.colibri.cls"
 
 textfile = tmp + "_page.txt"
@@ -38,8 +37,6 @@ classencoder.encodefile(textfile, corpusfile)
 
 print("Loading class decoder",file=sys.stderr)
 classdecoder = colibricore.ClassDecoder(classfile)
-
-
 
 anchormodel = colibricore.UnindexedPatternModel()
 print("Counting anchors",file=sys.stderr)
@@ -81,6 +78,3 @@ for ngram, count in patternmodel.items():
 
 for outfile in outfiles:
     outfile.close()
-
-
-
