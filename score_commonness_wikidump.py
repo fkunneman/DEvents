@@ -10,11 +10,12 @@ import colibricore
 tmp = sys.argv[1]
 infiles = sys.argv[2:]
 
-five = defaultdict(lambda : {})
-four = defaultdict(lambda : {})
-three = defaultdict(lambda : {})
-two = defaultdict(lambda : {})
-one = defaultdict(lambda : {})
+five = defaultdict(lambda : defaultdict(int))
+four = defaultdict(lambda : defaultdict(int))
+three = defaultdict(lambda : defaultdict(int))
+two = defaultdict(lambda : defaultdict(int))
+one = defaultdict(lambda : defaultdict(int))
+ngramcounters = [one,two,three,four,five]
 exclude = set(string.punctuation)
 for infile in infiles:
     f = open(infile,encoding = "utf-8")
@@ -34,9 +35,15 @@ for infile in infiles:
         classdecoder = colibricore.ClassDecoder(classfile)
         corpusdata = colibricore.IndexedCorpus(corpusfile)
         for sentence in corpusdata.sentences():
-            for fivegram in sentence.ngrams(5):
-                print(fivegram.tostring(classdecoder).split("\n"))                
+            for i in range(1,6):
+            for ngrams in sentence.ngrams(i):
+                for ngram in ngrams.tostring(classdecoder):
+                    ngramcounters[i-1][ngram]["count"] += 1
         anchors = js["annotations"]
-        print([x["surface_form"].lower() for x in anchors])
+        surface = [x["surface_form"].lower() for x in anchors]
+        for ngram in surface:
+            num_grams = len(ngram.split(" "))
+            ngramcounters[num_grams-1][ngram]["anchor"] += 1
     f.close()
+    print three
     quit()
