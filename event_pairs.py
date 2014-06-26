@@ -48,6 +48,8 @@ class Event_pairs:
             "nachten":1,"nachtjes":1,"nacht":1,"nachtje":1,"weken":7,
             "weekjes":7,"week":7,"weekje":7,"maanden":30,
             "maandjes":30,"maand": 30,"maandje":30}
+        weekdays=["maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag","zondag"]
+        spec_days=["morgen","overmorgen"]
 
         nums = (r"(\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|"
             "tien|elf|twaalf|dertien|veertien|vijftien|zestien|"
@@ -62,190 +64,165 @@ class Event_pairs:
             "nachtjes|nacht|nachtje|weken|weekjes|week|weekje|maanden|"
             "maandjes|maand|maandje)")
 
-        # m1 = re.compile(r"(over|nog) (minimaal |maximaal |tenminste |"
+        # list_patterns = ([r"(over|nog) (minimaal |maximaal |tenminste |"
         #     "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
         #     "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
-        #     (nums) + " " + (timeunits))
-        # m2 = re.compile((nums) + " " + (timeunits) + r"( slapen)? tot")
-        # m3 = re.compile(r"met( nog)? (minimaal |maximaal |tenminste |"
-        #     "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
-        #     "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
-        #     (nums) + " " + (timeunits) + r"( nog)? te gaan")
-        list_patterns = ([r"(over|nog) (minimaal |maximaal |tenminste |"
-            "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
-            "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
-            (nums) + " " + (timeunits), (nums) + " " + (timeunits) + 
-            r"( slapen)? tot", r"met( nog)? (minimaal |maximaal |"
-            "tenminste |bijna |ongeveer |maar |slechts |pakweg |ruim |"
-            "krap |(maar )?een kleine |"
-            "(maar )?iets (meer|minder) dan )?" + (nums) + " " + 
-            (timeunits) + r"( nog)? te gaan",r"(\b|^)" + (nums) + " " +
-            (months) + r"( (\d{2,4}))?(\b|$)",r"(\b|^)(\d{1,2}-\d{1,2})"
-            r"(-\d{2,4})?(\b|$)",r"(\b|^)(\d{2,4}/)?(\d{1,2}/\d{1,2})"
-            "(\b|$)"])
-        # d1 = re.compile((nums) + " " + (months) + "(\b|$)")
-        # d2 = re.compile(r"[1-3]?\d(-|/)[1-12]")
+        #     (nums) + " " + (timeunits), (nums) + " " + (timeunits) + 
+        #     r"( slapen)? tot", r"met( nog)? (minimaal |maximaal |"
+        #     "tenminste |bijna |ongeveer |maar |slechts |pakweg |ruim |"
+        #     "krap |(maar )?een kleine |"
+        #     "(maar )?iets (meer|minder) dan )?" + (nums) + " " + 
+        #     (timeunits) + r"( nog)? te gaan",r"(\b|^)" + (nums) + " " +
+        #     (months) + r"( (\d{2,4}))?(\b|$)",r"(\b|^)(\d{1,2}-\d{1,2})"
+        #     r"(-\d{2,4})?(\b|$)",r"(\b|^)(\d{2,4}/)?(\d{1,2}/\d{1,2})"
+        #     "(\b|$)",r"(\b|$)(maandag|dinsdag|woensdag|donderdag|vrijdag|"
+        #     "zaterdag|zondag|morgen|overmorgen)"])
+        list_patterns = ([r"(\b|$)(maandag|dinsdag|woensdag|donderdag|vrijdag|"
+            "zaterdag|zondag|morgen|overmorgen)"])
+
         date_eu = re.compile(r"(\d{1,2})-(\d{1,2})-?(\d{2,4})?")
         date_vs = re.compile(r"(\d{2,4})?/?(\d{1,2})/(\d{1,2})")
         ns = convert_nums.keys()
         timeus = convert_timeunit.keys()
         ms = convert_month.keys()
-        #lines = []
-        # for tweet in new_tweets:
-            # text = tweet.strip().split("\t")[-1].lower()
-#        print "tweet",tweet
         if re.findall('|'.join(list_patterns), tweet):
             units = re.findall('|'.join(list_patterns), tweet)[0]
-            #lines.append(text)
-#                print units,text
             nud = {}
+            print text,units
             for unit in units:
-                if unit in ns:
-                    nud["num"] = convert_nums[unit]
-                elif unit in timeus:
-                    nud["timeunit"] = convert_timeunit[unit]
-                elif unit in ms:
-                    nud["month"] = convert_month[unit]
-                elif re.search(r"\d{1,2}-\d{1,2}",unit) or re.search(r"\d{1,2}/\d{1,2}",unit):
-                    nud["date"] = unit
-                elif re.search(r"-\d{2,4}",unit) or re.search(r"\d{2,4}/",unit):
-                    nud["year"] = unit
-                elif re.match(r"\d+",unit):
-                    if int(unit) in range(2010,2020):
-                        nud["year"] = int(unit)
-                    elif "num" in nud: 
-                        if int(unit) in range(1,13):
-                            nud["month"] = int(unit)
-                    else:
-                        nud["num"] = int(unit)
+                # if unit in ns:
+                #     nud["num"] = convert_nums[unit]
+                # elif unit in timeus:
+                #     nud["timeunit"] = convert_timeunit[unit]
+                # elif unit in ms:
+                #     nud["month"] = convert_month[unit]
+                # elif re.search(r"\d{1,2}-\d{1,2}",unit) or re.search(r"\d{1,2}/\d{1,2}",unit):
+                #     nud["date"] = unit
+                # elif re.search(r"-\d{2,4}",unit) or re.search(r"\d{2,4}/",unit):
+                #     nud["year"] = unit
+                # elif re.match(r"\d+",unit):
+                #     if int(unit) in range(2010,2020):
+                #         nud["year"] = int(unit)
+                #     elif "num" in nud: 
+                #         if int(unit) in range(1,13):
+                #             nud["month"] = int(unit)
+                #     else:
+                #         nud["num"] = int(unit)
+                # elif unit in weekdays:
+                #     nud["weekday"] = unit
+                # elif unit in spec_days:
+                #     nud["sday"] = unit
+                if unit in weekdays:
+                    nud["weekday"] = unit
+                elif unit in spec_days:
+                    nud["sday"] = unit
 
-            if "timeunit" in nud: 
-                days = nud["timeunit"] * nud["num"]
-                return date + datetime.timedelta(days=days)
-            elif "month" in nud:
-                m = nud["month"]
-                d = nud["num"]
-                if "year" in nud:
-                    y = nud["year"]
+            # if "timeunit" in nud: 
+            #     days = nud["timeunit"] * nud["num"]
+            #     return date + datetime.timedelta(days=days)
+            # elif "month" in nud:
+            #     m = nud["month"]
+            #     d = nud["num"]
+            #     if "year" in nud:
+            #         y = nud["year"]
+            #     else:
+            #         y = date.year
+            #     return datetime.date(y,m,d)
+            # elif "date" in nud:
+            #     da = nud["date"]
+            #     if re.search("-",da):
+            #         if "year" in nud:
+            #             ds = date_eu.search(da + nud["year"]).groups()
+            #         else:
+            #             ds = date_eu.search(da).groups()
+            #         dsi = [int(x) for x in ds if x != None]
+            #         if  dsi[1] in range(1,13) and \
+            #             dsi[0] in range(1,32):
+            #             if ds[2] == None:
+            #                 return datetime.date(date.year,dsi[1],
+            #                     dsi[0])
+            #             else:
+            #                 if dsi[2] in range(2010,2020):
+            #                     return datetime.date(dsi[2],dsi[1],
+            #                         dsi[0]) 
+            #     elif re.search("/",da):
+            #         if "year" in nud:
+            #             ds = date_vs.search(nud["year"] + da).groups()
+            #         else:
+            #             ds = date_vs.search(da).groups()
+            #         dsi = [int(x) for x in ds if x != None]
+            #         if dsi[0] in range(1,13) and \
+            #             dsi[1] in range(1,32):
+            #             return datetime.date(date.year,dsi[0],dsi[1])
+            #         elif dsi[0] in range(2010,2020):
+            #             if dsi[1] in range(1,13) and \
+            #                 dsi[2] in range(1,32):
+            #                 return datetime.date(dsi[0],dsi[1],dsi[2])
+            if "weekday" in nud:
+                tweet_weekday=date.weekday()
+                ref_weekday=weekdays.index(nud["weekday"])
+                if ref_weekday == tweet_weekday:
+                    days_ahead = 7
+                elif tweet_weekday < ref_weekday:
+                    days_ahead = ref_weekday - tweet_weekday
                 else:
-                    y = date.year
-                return datetime.date(y,m,d)
-            elif "date" in nud:
-                da = nud["date"]
-                if re.search("-",da):
-                    if "year" in nud:
-                        ds = date_eu.search(da + nud["year"]).groups()
-                    else:
-                        ds = date_eu.search(da).groups()
-                    dsi = [int(x) for x in ds if x != None]
-                    if  dsi[1] in range(1,13) and \
-                        dsi[0] in range(1,32):
-                        if ds[2] == None:
-                            return datetime.date(date.year,dsi[1],
-                                dsi[0])
-                        else:
-                            if dsi[2] in range(2010,2020):
-                                return datetime.date(dsi[2],dsi[1],
-                                    dsi[0]) 
-                elif re.search("/",da):
-                    if "year" in nud:
-                        ds = date_vs.search(nud["year"] + da).groups()
-                    else:
-                        ds = date_vs.search(da).groups()
-                    dsi = [int(x) for x in ds if x != None]
-                    if dsi[0] in range(1,13) and \
-                        dsi[1] in range(1,32):
-                        return datetime.date(date.year,dsi[0],dsi[1])
-                    elif dsi[0] in range(2010,2020):
-                        if dsi[1] in range(1,13) and \
-                            dsi[2] in range(1,32):
-                            return datetime.date(dsi[0],dsi[1],dsi[2])
+                    days_ahead = ref_weekday + (7-tweet_weekday)
+                print date,date + datetime.timedelta(days=days_ahead),days_ahead,nud["weekday"]
+                return date + datetime.timedelta(days=days_ahead)
+            elif "sday" in nud:
+                u = nud["sday"]
+                print "sday",nud["sday"]
+                if u == "morgen":
+                    return date + datetime.timedelta(days=1)
+                elif u == "overmorgen":
+                    return date + datetime.timedelta(days=2)
             else:
                 return False
-            #print re.findall('|'.join(list_patterns), text),text
-            #lines.append(text)
-            # print text,nud,days
-            # if m1.search(text) or m2.search(text) or m3.search(text):
-            #     lines.append(text)
-            # if d2.search(text):
-            #     lines.append(text)
-
-        #print len(lines)
 
 
+    def extract_weekday(self):
+        future=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag|morgenmorgenavond|morgenmiddag|morgenochtend|overmorgen|weekend|maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag|maandagavond|dinsdagavond|woensdagavond|donderdagavond|vrijdagavond|zaterdagavond|zondagavond)")       
+        today=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag)",re.IGNORECASE)
+        tomorrow=re.compile(r"(morgen|morgenavond|morgenmiddag|morgenochtend)",re.IGNORECASE)
+        day_after_t=re.compile(r"overmorgen",re.IGNORECASE)
+        weekend=re.compile(r"\b(weekend)\b",re.IGNORECASE)
+        weekday=re.compile(r"(maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)(avond|middag|ochtend)?",re.IGNORECASE)
+        weekdays=["maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag","zondag"]
 
+        for instance in self.instances:
+            ws = " ".join(instance.wordsequence)
+            da = False
+            if weekend.search(ws,re.IGNORECASE) or weekday.search(ws):
+                da = True
+                tweet_date=time_functions.return_datetime(instance.date,setting="vs")
+                tweet_weekday=tweet_date.weekday()
+                if weekend.search(ws):
+                    ref_weekday=weekdays.index("zaterdag")
+                else:
+                    ref_weekday=weekdays.index(weekday.search(ws).groups()[0])
+                if ref_weekday == tweet_weekday:
+                    days_ahead = 0
+                elif tweet_weekday < ref_weekday:
+                    days_ahead = ref_weekday - tweet_weekday
+                else:
+                    days_ahead = ref_weekday + (7-tweet_weekday)
+            elif today.search(ws):
+                da = True
+                days_ahead = 0
+            elif tomorrow.search(ws):
+                da = True
+                days_ahead = 1
+            elif day_after_t.search(ws):
+                da = True
+                days_ahead = 2
 
-
-    # def extract_date(self):
-        
-    #     for instance in self.instances:
-    #         ws = " ".join(instance.wordsequence)
-    #         if dates.search(ws):
-    #             tweet_date = time_functions.return_datetime(instance.date,setting="vs")
-    #             sh = dates.search(ws)
-    #             if re.search(r"\d+",sh.groups()[0]):
-    #                 day = int(sh.groups()[0])
-    #             else:
-    #                 day = convert_nums[sh.groups()[0]]
-    #             month = convert_month[sh.groups()[1]]
-    # #                
-    #             #print month,ws,sh.groups()
-    #             try:
-    #                 date = datetime.datetime(tweet_date.year,month,day,0,0,0)
-    #                 feature = "date_" + date.strftime("%d-%m-%Y")
-    #             except:
-    #                 continue
-    #             # dif = time_functions.timerel(date,tweet_date,"day")
-    #             # if dif < 0:
-    #             #     date += datetime.timedelta(days=365)
-    #             # feature = str(time_functions.timerel(date,tweet_date,"day")) + "_days"
-    #             #print sh.groups(),feature
-    #             instance.features.append(feature)  
-    #     # quit()
-
-    # def extract_weekday(self):
-    #     future=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag|morgenmorgenavond|morgenmiddag|morgenochtend|overmorgen|weekend|maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag|maandagavond|dinsdagavond|woensdagavond|donderdagavond|vrijdagavond|zaterdagavond|zondagavond)")       
-    #     today=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag)",re.IGNORECASE)
-    #     tomorrow=re.compile(r"(morgen|morgenavond|morgenmiddag|morgenochtend)",re.IGNORECASE)
-    #     day_after_t=re.compile(r"overmorgen",re.IGNORECASE)
-    #     weekend=re.compile(r"\b(weekend)\b",re.IGNORECASE)
-    #     weekday=re.compile(r"(maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)(avond|middag|ochtend)?",re.IGNORECASE)
-    #     weekdays=["maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag","zondag"]
-
-    #     for instance in self.instances:
-    #         ws = " ".join(instance.wordsequence)
-    #         da = False
-    #         if weekend.search(ws,re.IGNORECASE) or weekday.search(ws):
-    #             da = True
-    #             tweet_date=time_functions.return_datetime(instance.date,setting="vs")
-    #             tweet_weekday=tweet_date.weekday()
-    #             if weekend.search(ws):
-    #                 ref_weekday=weekdays.index("zaterdag")
-    #             else:
-    #                 ref_weekday=weekdays.index(weekday.search(ws).groups()[0])
-    #             if ref_weekday == tweet_weekday:
-    #                 days_ahead = 0
-    #             elif tweet_weekday < ref_weekday:
-    #                 days_ahead = ref_weekday - tweet_weekday
-    #             else:
-    #                 days_ahead = ref_weekday + (7-tweet_weekday)
-    #         elif today.search(ws):
-    #             da = True
-    #             days_ahead = 0
-    #         elif tomorrow.search(ws):
-    #             da = True
-    #             days_ahead = 1
-    #         elif day_after_t.search(ws):
-    #             da = True
-    #             days_ahead = 2
-
-    #         if da:
-    #             days_ahead = int(days_ahead)
-    #             tweet_datetime = time_functions.return_datetime(instance.date,time=instance.time,setting="vs")
-    #             event_datetime = tweet_datetime + datetime.timedelta(days = days_ahead)
-    #             feature = "date_" + event_datetime.strftime("%d-%m-%Y")
-    #             #print ws,feature                
-    #             instance.features.append(feature)
+            if da:
+                days_ahead = int(days_ahead)
+                tweet_datetime = time_functions.return_datetime(instance.date,time=instance.time,setting="vs")
+                event_datetime = tweet_datetime + datetime.timedelta(days = days_ahead)
+                feature = "date_" + event_datetime.strftime("%d-%m-%Y")
+                #print ws,feature                
+                instance.features.append(feature)
 
     class Tweet:
         """Class containing the characteristics of a tweet that mentions an entity and time"""
