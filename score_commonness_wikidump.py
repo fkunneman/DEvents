@@ -21,8 +21,7 @@ for infile in infiles:
         #text = text.replace(':',' :')
         text = ''.join(ch for ch in text if ch not in exclude)
         textfile = tmp + "_page.txt"
-        with open(textfile,'w',encoding='utf-8') as g:
-            
+        with open(textfile,'w',encoding='utf-8') as g:      
             g.write(text)
         classfile = tmp + "page.colibri.cls"
         classencoder = colibricore.ClassEncoder()
@@ -31,9 +30,13 @@ for infile in infiles:
         corpusfile = tmp + "page.colibri.dat"
         classencoder.encodefile(textfile, corpusfile)
         classdecoder = colibricore.ClassDecoder(classfile)
-        corpusdata = colibricore.IndexedCorpus(corpusfile)
-        for sentence in corpusdata.sentences():
-            for fivegram in sentence.ngrams(5):
-                print(fivegram.tostring(classdecoder))
+        model = colibricore.UnindexedPatternModel()
+        model.train(corpusfile, options)
+        for pattern in model:
+            print(pattern.tostring(classdecoder))
+        # corpusdata = colibricore.IndexedCorpus(corpusfile)
+        # for sentence in corpusdata.sentences():
+        #     for fivegram in sentence.ngrams(5):
+        #         print(fivegram.tostring(classdecoder))
     f.close()
     quit()
