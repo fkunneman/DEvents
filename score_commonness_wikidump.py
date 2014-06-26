@@ -1,60 +1,85 @@
+from __future__ import print_function, unicode_literals, division, absolute_import
 
 import sys
-import re
 import string
-from collections import defaultdict
 
 import json
 import colibricore
+
+exclude = set(string.punctuation)
 
 tmp = sys.argv[1]
 outdir = sys.argv[2]
 infiles = sys.argv[3:]
 
-five = defaultdict(lambda : defaultdict(int))
-four = defaultdict(lambda : defaultdict(int))
-three = defaultdict(lambda : defaultdict(int))
-two = defaultdict(lambda : defaultdict(int))
-one = defaultdict(lambda : defaultdict(int))
-ngramcounters = [one,two,three,four,five]
-exclude = set(string.punctuation)
-for infile in infiles:
-    f = open(infile,encoding = "utf-8")
-    for l in f.readlines():
-        js = json.loads(l)
-        text = js["text"].lower()
-        text = ''.join(ch for ch in text if ch not in exclude)
-        textfile = tmp + "_page.txt"
-        with open(textfile,'w',encoding='utf-8') as g:      
-            g.write(text)
-        classfile = tmp + "page.colibri.cls"
-        classencoder = colibricore.ClassEncoder()
-        classencoder.build(textfile)
-        classencoder.save(classfile)
-        corpusfile = tmp + "page.colibri.dat"
-        classencoder.encodefile(textfile, corpusfile)
-        classdecoder = colibricore.ClassDecoder(classfile)
-        corpusdata = colibricore.IndexedCorpus(corpusfile)
-        for sentence in corpusdata.sentences():
-            for i in range(1,6):
-                for ngrams in sentence.ngrams(i):
-                    ng = ngrams.tostring(classdecoder)
-                    #ng = ngram.tostring(classdecoder)
-                    ngramcounters[i-1][ng]["count"] += 1
-        anchors = js["annotations"]
-        surface = [x["surface_form"].lower() for x in anchors]
-        for ngram in surface:
-            num_grams = len(ngram.split(" "))
-            if num_grams <= 5:
-                ngramcounters[num_grams-1][ngram]["anchor"] += 1
-                ngramcounters[num_grams-1][ngram]["count"] += 1
-    f.close()
 
-for i,c in enumerate(ngramcounters):
-    out = sorted([[x,c[x]["anchor"],c[x]["count"]] for x in c.keys()],
-        key = lambda y: y[1],reverse=True)
-    outfile = open(outdir + str(i+1) + "_grams.txt","w",encoding="utf-8")
-    for line in out:
-        outfile.write(" ".join(line) + "\n")
+classfile = tmp + "_page.colibri.cls"
+
+textfile = tmp + "_page.txt"
+corpusfile = tmp + "_page.colibri.dat"
+
+print("Writing all texts to temporary file" ,file=sys.stderr)
+with open(textfile,'w',encoding='utf-8') as g:
+    for i, infile in enumerate(infiles):
+        with open(infile,encoding = "utf-8") as f:
+            for l in f.readlines():
+                js = json.loads(l)
+                text = js["text"].lower()
+                text = ''.join(ch for ch in text if ch not in exclude)
+                g.write(text.strip() + "\n")
+
+print("Building class encoder",file=sys.stderr)
+classencoder = colibricore.ClassEncoder()
+classencoder.build(textfile)
+classencoder.save(classfile)
+
+print("Encoding corpus data",file=sys.stderr)
+classencoder.encodefile(textfile, corpusfile)
+
+print("Loading class decoder",file=sys.stderr)
+classdecoder = colibricore.ClassDecoder(classfile)
+
+
+
+anchormodel = colibricore.UnindexedPatternModel()
+print("Counting anchors",file=sys.stderr)
+
+for i, infile in enumerate(infiles):
+    with open(infile,encoding = "utf-8") as f:
+        for l in f.readlines():
+            js = json.loads(l)
+            text = js["text"].lower()
+            text = ''.join(ch for ch in text if ch not in exclude)
+
+            anchors = js["annotations"]
+            surface = [x["surface_form"].strip().lower() for x in anchors]
+            for ngram in surface:
+                if ngram:
+                    pattern = classencoder.buildpattern(ngram)
+                    if pattern.unknown():
+                        print("WARNING: Anchor has unknown part " +  ngram + ", skipping... (" + pattern.tostring(classdecoder) + ")" ,file=sys.stderr)
+                    else:
+                        if len(pattern) <= 5:
+                            anchormodel.add(pattern) #(will count +1  if already exists)
+
+print("Anchors found: ", len(anchormodel),file=sys.stderr)
+
+print("Counting n-grams, constrained by anchors",file=sys.stderr)
+options = colibricore.PatternModelOptions(mintokens=1, maxlength=5)
+patternmodel = colibricore.UnindexedPatternModel()
+patternmodel.train(corpusfile, options, anchormodel) #(last argument constrains the training to patterns only occuring in that model, i.e the intersectino of these models, saves heaps of space)
+
+
+outfiles = []
+for i in range(1,6):
+    outfiles.append( open(outdir + str(i) + "_grams.txt",'w',encoding='utf-8') )
+
+for ngram, count in patternmodel.items():
+    i = len(ngram)
+    anchorcount = anchormodel[ngram]
+    outfiles[i-1].write( ngram.tostring(classdecoder) + "\t"+ str(anchorcount)  + "\t" + str(count) + "\t" + str(anchorcount / count)+ "\n" )
+
+for outfile in outfiles:
     outfile.close()
+
 
