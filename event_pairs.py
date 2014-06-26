@@ -20,6 +20,7 @@ class Event_pairs:
                 text = tokens[-1].lower()
                 date = time_functions.return_datetime(tokens[3],
                     setting="vs")
+                print text
                 dateref = self.extract_date(text,date)
                 if dateref:
                     dtweet = self.Tweet()
