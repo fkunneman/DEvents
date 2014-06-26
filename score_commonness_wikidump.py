@@ -37,6 +37,7 @@ for infile in infiles:
         for sentence in corpusdata.sentences():
             for i in range(1,6):
                 for ngrams in sentence.ngrams(i):
+                    print i,ngrams
                     for ngram in ngrams.tostring(classdecoder):
                         ngramcounters[i-1][ngram]["count"] += 1
         anchors = js["annotations"]
@@ -44,6 +45,7 @@ for infile in infiles:
         for ngram in surface:
             num_grams = len(ngram.split(" "))
             ngramcounters[num_grams-1][ngram]["anchor"] += 1
+            ngramcounters[num_grams-1][ngram]["count"] += 1
     f.close()
     print three
     quit()
