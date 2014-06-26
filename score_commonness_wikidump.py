@@ -9,17 +9,20 @@ import colibricore
 tmp = sys.argv[1]
 infiles = sys.argv[2:]
 
+exclude = set(string.punctuation)
 for infile in infiles:
     f = open(infile,encoding = "utf-8")
     for l in f.readlines():
         js = json.loads(l)
         text = js["text"]
-        text = text.replace(',',' ,')
-        text = text.replace('.',' .')
-        text = text.replace(':',' :') 
+        #text = text.replace(',',' ,')
+        #text = text.replace('.',' .')
+        #text = text.replace(':',' :')
+        text = ''.join(ch for ch in text if ch not in exclude)
         textfile = tmp + "_page.txt"
         options = colibricore.PatternModelOptions(maxlength=7)
         with open(textfile,'w',encoding='utf-8') as g:
+            
             g.write(text)
         classfile = tmp + "page.colibri.cls"
         classencoder = colibricore.ClassEncoder()
