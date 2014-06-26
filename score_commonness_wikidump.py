@@ -9,13 +9,13 @@ import colibricore
 tmp = sys.argv[1]
 infiles = sys.argv[2:]
 
-options = colibricore.PatternModelOptions(maxlength=7)
+options = colibricore.PatternModelOptions(mintokens=1,maxlength=7)
 exclude = set(string.punctuation)
 for infile in infiles:
     f = open(infile,encoding = "utf-8")
     for l in f.readlines():
         js = json.loads(l)
-        text = js["text"]
+        text = js["text"].lower()
         #text = text.replace(',',' ,')
         #text = text.replace('.',' .')
         #text = text.replace(':',' :')
@@ -38,5 +38,7 @@ for infile in infiles:
         # for sentence in corpusdata.sentences():
         #     for fivegram in sentence.ngrams(5):
         #         print(fivegram.tostring(classdecoder))
+        anchors = js["annotations"]
+        print([x["surface_form"].lower() for x in anchors])
     f.close()
     quit()
