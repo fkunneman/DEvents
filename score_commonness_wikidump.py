@@ -9,7 +9,7 @@ tmp = sys.argv[1]
 infiles = sys.argv[2:]
 
 for infile in infiles:
-    f = open(infile,"r","utf-8"):
+    f = open(infile,encoding = "utf-8")
     for l in f.readlines():
         js = json.loads(l)
         text = js["text"]
@@ -18,8 +18,8 @@ for infile in infiles:
         text = text.replace(':',' :') 
         textfile = tmp + "_page.txt"
         options = colibricore.PatternModelOptions(maxlength=7)
-        with open(textfile,'w','utf-8') as g:
-            tf.write(text)
+        with open(textfile,'w',encoding='utf-8') as g:
+            g.write(text)
         classfile = tmp + "page.colibri.cls"
         classencoder = colibricore.ClassEncoder()
         classencoder.build(textfile)
