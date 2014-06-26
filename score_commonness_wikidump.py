@@ -1,6 +1,7 @@
 
 import sys
 import re
+import string
 
 import json
 import colibricore
