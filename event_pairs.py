@@ -20,14 +20,13 @@ class Event_pairs:
                 text = tokens[-1].lower()
                 date = time_functions.return_datetime(tokens[3],
                     setting="vs")
-                print text
                 dateref = self.extract_date(text,date)
                 if dateref:
                     dtweet = self.Tweet()
                     units = [tokens[1],tokens[2],date,text,dateref]
                     dtweet.set_meta(units)
                     self.tweets.append(dtweet)
-        print [(x.text,x.dateref) for x in self.tweets]
+#        print [(x.text,x.dateref) for x in self.tweets]
 
     def extract_date(self,tweet,date):
 
@@ -89,7 +88,7 @@ class Event_pairs:
         if re.findall('|'.join(list_patterns), tweet):
             units = re.findall('|'.join(list_patterns), tweet)[0]
             nud = {}
-            print text,units
+            print tweet,units
             for unit in units:
                 # if unit in ns:
                 #     nud["num"] = convert_nums[unit]
