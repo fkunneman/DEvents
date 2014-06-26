@@ -36,9 +36,9 @@ for infile in infiles:
         corpusdata = colibricore.IndexedCorpus(corpusfile)
         for sentence in corpusdata.sentences():
             for i in range(1,6):
-            for ngrams in sentence.ngrams(i):
-                for ngram in ngrams.tostring(classdecoder):
-                    ngramcounters[i-1][ngram]["count"] += 1
+                for ngrams in sentence.ngrams(i):
+                    for ngram in ngrams.tostring(classdecoder):
+                        ngramcounters[i-1][ngram]["count"] += 1
         anchors = js["annotations"]
         surface = [x["surface_form"].lower() for x in anchors]
         for ngram in surface:
