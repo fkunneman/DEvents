@@ -54,7 +54,7 @@ for i, infile in enumerate(infiles):
             text = text.replace(',',' ,')
             text = text.replace('.',' .')
             text = text.replace(':',' :')
-
+            print('0000000000000000000000000',text)
             anchors = js["annotations"]
             surface1 = [x["surface_form"].strip().lower() for x in anchors]
             surface = [''.join(ch for ch in x["surface_form"].strip().lower() if ch not in exclude) for x in anchors]
