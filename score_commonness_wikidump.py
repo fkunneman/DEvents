@@ -25,7 +25,10 @@ with open(textfile,'w',encoding='utf-8') as g:
             for l in f.readlines():
                 js = json.loads(l)
                 text = js["text"].lower()
-                text = ''.join(ch for ch in text if ch not in exclude)
+                #text = ''.join(ch for ch in text if ch not in exclude)
+                text = text.replace(',',' ,')
+                text = text.replace('.',' .')
+                text = text.replace(':',' :')
                 g.write(text.strip() + "\n")
 
 print("Building class encoder",file=sys.stderr)
