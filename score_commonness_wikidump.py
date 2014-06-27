@@ -46,7 +46,10 @@ for i, infile in enumerate(infiles):
         for l in f.readlines():
             js = json.loads(l)
             text = js["text"].lower()
-            text = ''.join(ch for ch in text if ch not in exclude)
+            # text = ''.join(ch for ch in text if ch not in exclude)
+            text = text.replace(',',' ,')
+            text = text.replace('.',' .')
+            text = text.replace(':',' :')
 
             anchors = js["annotations"]
             surface = [x["surface_form"].strip().lower() for x in anchors]
