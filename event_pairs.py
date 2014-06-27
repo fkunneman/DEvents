@@ -88,10 +88,6 @@ class Event_pairs:
         ms = convert_month.keys()
         if re.findall('|'.join(list_patterns), tweet):
             units = re.findall('|'.join(list_patterns), tweet)[0]
-            print tweet
-            print units
-            y = " ".join([x for x in units if len(x) > 0])       
-            print y,tweet.split(y)
             nud = {}
             for unit in units:
                 if unit in ns:
