@@ -1,17 +1,22 @@
 
 import re
-import time_functions
 import datetime
+from collections import defaultdict
+import codecs
+
+import time_functions
+
 
 class Event_pairs:
 
-    def __init__(self,eventtweets):
+    def __init__(self):
         self.tweets = []
-        if eventtweets:
-            for et in eventtweets:
-                tweet = self.Tweet()
-                tweet.set_meta(et)
-                self.tweets.append(tweet)
+
+    def append_eventtweets(self,eventtweets):
+        for et in eventtweets:
+            tweet = self.Tweet()
+            tweet.set_meta(et)
+            self.tweets.append(tweet)   
 
     def select_date_tweets(self,new_tweets):
         for tweet in new_tweets:
@@ -25,12 +30,26 @@ class Event_pairs:
                     dtweet = self.Tweet()
                     units = [tokens[1],tokens[2],date,text,dateref_phrase[0],dateref_phrase[1]]
                     dtweet.set_meta(units)
-                    print dtweet.text,dtweet.dateref,dtweet.chunks
                     self.tweets.append(dtweet)
         print len(self.tweets),len(new_tweets)
-#        print [(x.text,x.dateref) for x in self.tweets]
 
-#    def select_entity_tweets(self,new_tweets)
+    def select_entity_tweets(self,wiki_commonness):
+        #load in commonness files per ngram
+        self.ngramdicts = []
+        for ngramfile in wiki_commonness:
+            ngramdict = defaultdict(float)
+            ngramopen = codecs.open(ngramfile,"r","utf-8")
+            for line in ngramopen.readlines():
+                tokens = line.strip().split("\t")
+                ngramdict[tokens[0]] = float(tokens[3])
+            ngramopen.close()
+            self.ngramdicts.append(ngramdict)
+        #extract entities from tweets
+        for tweet in self.tweets:
+            entities = []
+            for chunk in tweet.chunks:
+                entities.extend(self.extract(entity))
+            print tweet.text,sorted(entities,key = lambda x: x[1],reverse=True)
 
     def extract_date(self,tweet,date):
 
@@ -180,9 +199,27 @@ class Event_pairs:
             else:
                 return False
 
-#    def extract_entity(self,tweet):
+    def extract_entity(self,chunk):
+        ngram_score = []
         #get all n-grams up to 5
-
+        for i in range(len(self.ngramdicts)):
+            ngdict = self.ngramdicts[i]
+            dng = set(ngdict)
+            c = chunk.split()
+            if i == 0:
+                ngrams = zip(c)
+            elif i == 1:
+                ngrams = zip(c, c[1:])
+            elif i == 2:
+                ngrams = zip(c, c[1:], c[2:])
+            elif i == 3:
+                ngrams = zip(c, c[1:], c[2:], c[3:])
+            elif i == 4:
+                ngrams = zip(c, c[1:], c[2:], c[3:], c[4:])
+            for ngram in [" ".join(x) for x in ngrams]:
+                if ngram in dng:
+                    ngram_score.append((ngram,ngdict[ngram]))
+        return ngram_score
 
     class Tweet:
         """Class containing the characteristics of a tweet that mentions an entity and time"""
