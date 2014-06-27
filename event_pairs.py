@@ -26,6 +26,7 @@ class Event_pairs:
                     units = [tokens[1],tokens[2],date,text,dateref]
                     dtweet.set_meta(units)
                     self.tweets.append(dtweet)
+        print len(self.tweets),len(new_tweets)
 #        print [(x.text,x.dateref) for x in self.tweets]
 
     def extract_date(self,tweet,date):
@@ -64,20 +65,18 @@ class Event_pairs:
             "nachtjes|nacht|nachtje|weken|weekjes|week|weekje|maanden|"
             "maandjes|maand|maandje)")
 
-        # list_patterns = ([r"(over|nog) (minimaal |maximaal |tenminste |"
-        #     "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
-        #     "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
-        #     (nums) + " " + (timeunits), (nums) + " " + (timeunits) + 
-        #     r"( slapen)? tot", r"met( nog)? (minimaal |maximaal |"
-        #     "tenminste |bijna |ongeveer |maar |slechts |pakweg |ruim |"
-        #     "krap |(maar )?een kleine |"
-        #     "(maar )?iets (meer|minder) dan )?" + (nums) + " " + 
-        #     (timeunits) + r"( nog)? te gaan",r"(\b|^)" + (nums) + " " +
-        #     (months) + r"( (\d{2,4}))?(\b|$)",r"(\b|^)(\d{1,2}-\d{1,2})"
-        #     r"(-\d{2,4})?(\b|$)",r"(\b|^)(\d{2,4}/)?(\d{1,2}/\d{1,2})"
-        #     "(\b|$)",r"(\b|$)(maandag|dinsdag|woensdag|donderdag|vrijdag|"
-        #     "zaterdag|zondag|morgen|overmorgen)"])
-        list_patterns = ([r"(\b|$)(maandag|dinsdag|woensdag|donderdag|vrijdag|"
+        list_patterns = ([r"(over|nog) (minimaal |maximaal |tenminste |"
+            "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
+            "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
+            (nums) + " " + (timeunits), (nums) + " " + (timeunits) + 
+            r"( slapen)? tot", r"met( nog)? (minimaal |maximaal |"
+            "tenminste |bijna |ongeveer |maar |slechts |pakweg |ruim |"
+            "krap |(maar )?een kleine |"
+            "(maar )?iets (meer|minder) dan )?" + (nums) + " " + 
+            (timeunits) + r"( nog)? te gaan",r"(\b|^)" + (nums) + " " +
+            (months) + r"( (\d{2,4}))?(\b|$)",r"(\b|^)(\d{1,2}-\d{1,2})"
+            r"(-\d{2,4})?(\b|$)",r"(\b|^)(\d{2,4}/)?(\d{1,2}/\d{1,2})"
+            "(\b|$)",r"(\b|$)(maandag|dinsdag|woensdag|donderdag|vrijdag|"
             "zaterdag|zondag|morgen|overmorgen)"])
 
         date_eu = re.compile(r"(\d{1,2})-(\d{1,2})-?(\d{2,4})?")
@@ -90,75 +89,75 @@ class Event_pairs:
             nud = {}
             print tweet,units
             for unit in units:
-                # if unit in ns:
-                #     nud["num"] = convert_nums[unit]
-                # elif unit in timeus:
-                #     nud["timeunit"] = convert_timeunit[unit]
-                # elif unit in ms:
-                #     nud["month"] = convert_month[unit]
-                # elif re.search(r"\d{1,2}-\d{1,2}",unit) or re.search(r"\d{1,2}/\d{1,2}",unit):
-                #     nud["date"] = unit
-                # elif re.search(r"-\d{2,4}",unit) or re.search(r"\d{2,4}/",unit):
-                #     nud["year"] = unit
-                # elif re.match(r"\d+",unit):
-                #     if int(unit) in range(2010,2020):
-                #         nud["year"] = int(unit)
-                #     elif "num" in nud: 
-                #         if int(unit) in range(1,13):
-                #             nud["month"] = int(unit)
-                #     else:
-                #         nud["num"] = int(unit)
-                # elif unit in weekdays:
-                #     nud["weekday"] = unit
-                # elif unit in spec_days:
-                #     nud["sday"] = unit
-                if unit in weekdays:
+                if unit in ns:
+                    nud["num"] = convert_nums[unit]
+                elif unit in timeus:
+                    nud["timeunit"] = convert_timeunit[unit]
+                elif unit in ms:
+                    nud["month"] = convert_month[unit]
+                elif re.search(r"\d{1,2}-\d{1,2}",unit) or re.search(r"\d{1,2}/\d{1,2}",unit):
+                    nud["date"] = unit
+                elif re.search(r"-\d{2,4}",unit) or re.search(r"\d{2,4}/",unit):
+                    nud["year"] = unit
+                elif re.match(r"\d+",unit):
+                    if int(unit) in range(2010,2020):
+                        nud["year"] = int(unit)
+                    elif "num" in nud: 
+                        if int(unit) in range(1,13):
+                            nud["month"] = int(unit)
+                    else:
+                        nud["num"] = int(unit)
+                elif unit in weekdays:
+                    nud["weekday"] = unit
+                elif unit in spec_days:
+                    nud["sday"] = unit
+                elif unit in weekdays:
                     nud["weekday"] = unit
                 elif unit in spec_days:
                     nud["sday"] = unit
 
-            # if "timeunit" in nud: 
-            #     days = nud["timeunit"] * nud["num"]
-            #     return date + datetime.timedelta(days=days)
-            # elif "month" in nud:
-            #     m = nud["month"]
-            #     d = nud["num"]
-            #     if "year" in nud:
-            #         y = nud["year"]
-            #     else:
-            #         y = date.year
-            #     return datetime.date(y,m,d)
-            # elif "date" in nud:
-            #     da = nud["date"]
-            #     if re.search("-",da):
-            #         if "year" in nud:
-            #             ds = date_eu.search(da + nud["year"]).groups()
-            #         else:
-            #             ds = date_eu.search(da).groups()
-            #         dsi = [int(x) for x in ds if x != None]
-            #         if  dsi[1] in range(1,13) and \
-            #             dsi[0] in range(1,32):
-            #             if ds[2] == None:
-            #                 return datetime.date(date.year,dsi[1],
-            #                     dsi[0])
-            #             else:
-            #                 if dsi[2] in range(2010,2020):
-            #                     return datetime.date(dsi[2],dsi[1],
-            #                         dsi[0]) 
-            #     elif re.search("/",da):
-            #         if "year" in nud:
-            #             ds = date_vs.search(nud["year"] + da).groups()
-            #         else:
-            #             ds = date_vs.search(da).groups()
-            #         dsi = [int(x) for x in ds if x != None]
-            #         if dsi[0] in range(1,13) and \
-            #             dsi[1] in range(1,32):
-            #             return datetime.date(date.year,dsi[0],dsi[1])
-            #         elif dsi[0] in range(2010,2020):
-            #             if dsi[1] in range(1,13) and \
-            #                 dsi[2] in range(1,32):
-            #                 return datetime.date(dsi[0],dsi[1],dsi[2])
-            if "weekday" in nud:
+            if "timeunit" in nud: 
+                days = nud["timeunit"] * nud["num"]
+                return date + datetime.timedelta(days=days)
+            elif "month" in nud:
+                m = nud["month"]
+                d = nud["num"]
+                if "year" in nud:
+                    y = nud["year"]
+                else:
+                    y = date.year
+                return datetime.date(y,m,d)
+            elif "date" in nud:
+                da = nud["date"]
+                if re.search("-",da):
+                    if "year" in nud:
+                        ds = date_eu.search(da + nud["year"]).groups()
+                    else:
+                        ds = date_eu.search(da).groups()
+                    dsi = [int(x) for x in ds if x != None]
+                    if  dsi[1] in range(1,13) and \
+                        dsi[0] in range(1,32):
+                        if ds[2] == None:
+                            return datetime.date(date.year,dsi[1],
+                                dsi[0])
+                        else:
+                            if dsi[2] in range(2010,2020):
+                                return datetime.date(dsi[2],dsi[1],
+                                    dsi[0]) 
+                elif re.search("/",da):
+                    if "year" in nud:
+                        ds = date_vs.search(nud["year"] + da).groups()
+                    else:
+                        ds = date_vs.search(da).groups()
+                    dsi = [int(x) for x in ds if x != None]
+                    if dsi[0] in range(1,13) and \
+                        dsi[1] in range(1,32):
+                        return datetime.date(date.year,dsi[0],dsi[1])
+                    elif dsi[0] in range(2010,2020):
+                        if dsi[1] in range(1,13) and \
+                            dsi[2] in range(1,32):
+                            return datetime.date(dsi[0],dsi[1],dsi[2])
+            elif "weekday" in nud:
                 tweet_weekday=date.weekday()
                 ref_weekday=weekdays.index(nud["weekday"])
                 if ref_weekday == tweet_weekday:
