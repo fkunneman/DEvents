@@ -53,7 +53,7 @@ for i, infile in enumerate(infiles):
             text = text.replace(':',' :')
 
             anchors = js["annotations"]
-            surface = [''.join(ch for ch in x["surface_form"].strip().lower() if ch not in exclude for x in anchors ]
+            surface = [''.join(ch for ch in x["surface_form"].strip().lower() if ch not in exclude) for x in anchors]
             for ngram in surface:
                 if ngram:
                     pattern = classencoder.buildpattern(ngram)
