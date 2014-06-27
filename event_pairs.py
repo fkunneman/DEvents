@@ -173,7 +173,7 @@ class Event_pairs:
                     days_ahead = ref_weekday - tweet_weekday
                 else:
                     days_ahead = ref_weekday + (7-tweet_weekday)
-                return (date + datetime.timedelta(days=days_ahead),timephrase
+                return (date + datetime.timedelta(days=days_ahead),timephrase)
             elif "sday" in nud:
                 timephrase = " ".join([x for x in units if len(x) > 0])
                 u = nud["sday"]
