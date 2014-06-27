@@ -4,6 +4,7 @@ import datetime
 from collections import defaultdict
 import codecs
 
+# import colibricore
 import time_functions
 
 
@@ -33,7 +34,7 @@ class Event_pairs:
                     self.tweets.append(dtweet)
         print len(self.tweets),len(new_tweets)
 
-    def select_entity_tweets(self,wiki_commonness):
+    def select_entity_tweets(self,wiki_commonness,approach = "single"):
         #load in commonness files per ngram
         self.ngramdicts = []
         for ngramfile in wiki_commonness:
@@ -49,7 +50,9 @@ class Event_pairs:
             entities = []
             for chunk in tweet.chunks:
                 entities.extend(self.extract_entity(chunk))
-            print tweet.text,sorted(entities,key = lambda x: x[1],reverse=True)
+            #print tweet.text,sorted(entities,key = lambda x: x[1],reverse=True)
+            if approach == "single":
+                tweet.entities = [sorted(entities,key = lambda x: x[1],reverse=True)[0][0]]
 
     def extract_date(self,tweet,date):
 
@@ -205,7 +208,7 @@ class Event_pairs:
         for i in range(len(self.ngramdicts)):
             ngdict = self.ngramdicts[i]
             dng = set(ngdict)
-            c = chunk.split()
+            c = chunk.split().replace("#","")
             if i == 0:
                 ngrams = zip(c)
             elif i == 1:
