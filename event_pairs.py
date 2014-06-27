@@ -52,8 +52,10 @@ class Event_pairs:
                 entities.extend(self.extract_entity(chunk))
             #print tweet.text,sorted(entities,key = lambda x: x[1],reverse=True)
             if approach == "single":
-                tweet.entities = [sorted(entities,key = lambda x: x[1],reverse=True)[0][0]]
-                print tweet.text,tweet.entities
+                entities = sorted(entities,key = lambda x: x[1],reverse=True)
+                if len(entities) > 0:
+                    tweet.entities = [entities[0][0]]
+                    print tweet.text,tweet.dateref,tweet.entities
 
     def extract_date(self,tweet,date):
 
