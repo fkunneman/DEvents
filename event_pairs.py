@@ -29,7 +29,7 @@ class Event_pairs:
         print len(self.tweets),len(new_tweets)
 #        print [(x.text,x.dateref) for x in self.tweets]
 
-    def select_entity_tweets(self,new_tweets)
+#    def select_entity_tweets(self,new_tweets)
 
     def extract_date(self,tweet,date):
 
@@ -88,7 +88,11 @@ class Event_pairs:
         ms = convert_month.keys()
         if re.findall('|'.join(list_patterns), tweet):
             units = re.findall('|'.join(list_patterns), tweet)[0]
+            print tweet
             print units
+            y = " ".join([x for x in units if len(x) > 0])
+            
+            print y,tweet.split(y)
             nud = {}
             for unit in units:
                 if unit in ns:
@@ -164,11 +168,9 @@ class Event_pairs:
                     days_ahead = ref_weekday - tweet_weekday
                 else:
                     days_ahead = ref_weekday + (7-tweet_weekday)
-                print date,date + datetime.timedelta(days=days_ahead),days_ahead,nud["weekday"]
                 return date + datetime.timedelta(days=days_ahead)
             elif "sday" in nud:
                 u = nud["sday"]
-                print "sday",nud["sday"]
                 if u == "morgen":
                     return date + datetime.timedelta(days=1)
                 elif u == "overmorgen":
@@ -176,7 +178,7 @@ class Event_pairs:
             else:
                 return False
 
-    def extract_entity(self,tweet):
+#    def extract_entity(self,tweet):
         #get all n-grams up to 5
 
 
