@@ -29,6 +29,8 @@ class Event_pairs:
         print len(self.tweets),len(new_tweets)
 #        print [(x.text,x.dateref) for x in self.tweets]
 
+    def select_entity_tweets(self,new_tweets)
+
     def extract_date(self,tweet,date):
 
         convert_nums = {"een":1, "twee":2, "drie":3, "vier":4,
@@ -86,6 +88,7 @@ class Event_pairs:
         ms = convert_month.keys()
         if re.findall('|'.join(list_patterns), tweet):
             units = re.findall('|'.join(list_patterns), tweet)[0]
+            print units
             nud = {}
             for unit in units:
                 if unit in ns:
@@ -106,10 +109,6 @@ class Event_pairs:
                             nud["month"] = int(unit)
                     else:
                         nud["num"] = int(unit)
-                elif unit in weekdays:
-                    nud["weekday"] = unit
-                elif unit in spec_days:
-                    nud["sday"] = unit
                 elif unit in weekdays:
                     nud["weekday"] = unit
                 elif unit in spec_days:
@@ -177,50 +176,9 @@ class Event_pairs:
             else:
                 return False
 
+    def extract_entity(self,tweet):
+        #get all n-grams up to 5
 
-    def extract_weekday(self):
-        future=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag|morgenmorgenavond|morgenmiddag|morgenochtend|overmorgen|weekend|maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag|maandagavond|dinsdagavond|woensdagavond|donderdagavond|vrijdagavond|zaterdagavond|zondagavond)")       
-        today=re.compile(r"(straks|zometeen|vanmiddag|vanavond|vannacht|vandaag)",re.IGNORECASE)
-        tomorrow=re.compile(r"(morgen|morgenavond|morgenmiddag|morgenochtend)",re.IGNORECASE)
-        day_after_t=re.compile(r"overmorgen",re.IGNORECASE)
-        weekend=re.compile(r"\b(weekend)\b",re.IGNORECASE)
-        weekday=re.compile(r"(maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)(avond|middag|ochtend)?",re.IGNORECASE)
-        weekdays=["maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag","zondag"]
-
-        for instance in self.instances:
-            ws = " ".join(instance.wordsequence)
-            da = False
-            if weekend.search(ws,re.IGNORECASE) or weekday.search(ws):
-                da = True
-                tweet_date=time_functions.return_datetime(instance.date,setting="vs")
-                tweet_weekday=tweet_date.weekday()
-                if weekend.search(ws):
-                    ref_weekday=weekdays.index("zaterdag")
-                else:
-                    ref_weekday=weekdays.index(weekday.search(ws).groups()[0])
-                if ref_weekday == tweet_weekday:
-                    days_ahead = 0
-                elif tweet_weekday < ref_weekday:
-                    days_ahead = ref_weekday - tweet_weekday
-                else:
-                    days_ahead = ref_weekday + (7-tweet_weekday)
-            elif today.search(ws):
-                da = True
-                days_ahead = 0
-            elif tomorrow.search(ws):
-                da = True
-                days_ahead = 1
-            elif day_after_t.search(ws):
-                da = True
-                days_ahead = 2
-
-            if da:
-                days_ahead = int(days_ahead)
-                tweet_datetime = time_functions.return_datetime(instance.date,time=instance.time,setting="vs")
-                event_datetime = tweet_datetime + datetime.timedelta(days = days_ahead)
-                feature = "date_" + event_datetime.strftime("%d-%m-%Y")
-                #print ws,feature                
-                instance.features.append(feature)
 
     class Tweet:
         """Class containing the characteristics of a tweet that mentions an entity and time"""
