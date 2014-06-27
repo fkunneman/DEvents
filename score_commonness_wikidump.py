@@ -56,7 +56,9 @@ for i, infile in enumerate(infiles):
             text = text.replace(':',' :')
 
             anchors = js["annotations"]
+            surface1 = [x["surface_form"].strip().lower() for x in anchors]
             surface = [''.join(ch for ch in x["surface_form"].strip().lower() if ch not in exclude) for x in anchors]
+            print '11111111111111111111111',surface1,'2222222222222222222',surface
             for ngram in surface:
                 if ngram:
                     pattern = classencoder.buildpattern(ngram)
