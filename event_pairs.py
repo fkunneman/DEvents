@@ -48,7 +48,7 @@ class Event_pairs:
         for tweet in self.tweets:
             entities = []
             for chunk in tweet.chunks:
-                entities.extend(self.extract(entity))
+                entities.extend(self.extract_entity(chunk))
             print tweet.text,sorted(entities,key = lambda x: x[1],reverse=True)
 
     def extract_date(self,tweet,date):
@@ -99,7 +99,7 @@ class Event_pairs:
             (months) + r"( (\d{2,4}))?(\b|$)",r"(\b|^)(\d{1,2}-\d{1,2})"
             r"(-\d{2,4})?(\b|$)",r"(\b|^)(\d{2,4}/)?(\d{1,2}/\d{1,2})"
             "(\b|$)",r"(\b|$)(maandag|dinsdag|woensdag|donderdag|vrijdag|"
-            "zaterdag|zondag|morgen|overmorgen)"])
+            "zaterdag|zondag|overmorgen)"])
 
         date_eu = re.compile(r"(\d{1,2})-(\d{1,2})-?(\d{2,4})?")
         date_vs = re.compile(r"(\d{2,4})?/?(\d{1,2})/(\d{1,2})")
@@ -192,9 +192,9 @@ class Event_pairs:
             elif "sday" in nud:
                 timephrase = " ".join([x for x in units if len(x) > 0])
                 u = nud["sday"]
-                if u == "morgen":
-                    return (date + datetime.timedelta(days=1),tweet.split(timephrase))
-                elif u == "overmorgen":
+                #if u == "morgen":
+                #    return (date + datetime.timedelta(days=1),tweet.split(timephrase))
+                if u == "overmorgen":
                     return (date + datetime.timedelta(days=2),tweet.split(timephrase))
             else:
                 return False

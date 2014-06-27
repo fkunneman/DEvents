@@ -14,8 +14,10 @@ parser.add_argument('-w', action = 'store', nargs='+', required = False,
     help = "The files with wikicores per n-gram")
 args = parser.parse_args() 
 
-ep = Event_pairs(args.m)
+ep = Event_pairs()
+print "extracting tweets with a time reference"
 tweetfile = codecs.open(args.i,"r","utf-8")
 ep.select_date_tweets(tweetfile.readlines())
 tweetfile.close()
+print "extracting entities"
 ep.select_entity_tweets(args.w)
