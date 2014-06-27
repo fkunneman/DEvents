@@ -141,11 +141,11 @@ class Event_pairs:
 
                         if ds[2] == None:
                             return (datetime.date(date.year,dsi[1],
-                                dsi[0]),timephrase)
+                                dsi[0]),tweet.split(timephrase))
                         else:
                             if dsi[2] in range(2010,2020):
                                 return (datetime.date(dsi[2],dsi[1],
-                                    dsi[0]),timephrase) 
+                                    dsi[0]),tweet.split(timephrase)) 
                 elif re.search("/",da):
                     if "year" in nud:
                         ds = date_vs.search(nud["year"] + da).groups()
@@ -154,11 +154,11 @@ class Event_pairs:
                     dsi = [int(x) for x in ds if x != None]
                     if dsi[0] in range(1,13) and \
                         dsi[1] in range(1,32):
-                        return (datetime.date(date.year,dsi[0],dsi[1]),timephrase)
+                        return (datetime.date(date.year,dsi[0],dsi[1]),tweet.split(timephrase))
                     elif dsi[0] in range(2010,2020):
                         if dsi[1] in range(1,13) and \
                             dsi[2] in range(1,32):
-                            return (datetime.date(dsi[0],dsi[1],dsi[2]),timephrase)
+                            return (datetime.date(dsi[0],dsi[1],dsi[2]),tweet.split(timephrase))
             elif "weekday" in nud:
                 timephrase = " ".join([x for x in units if len(x) > 0])
                 tweet_weekday=date.weekday()
@@ -169,14 +169,14 @@ class Event_pairs:
                     days_ahead = ref_weekday - tweet_weekday
                 else:
                     days_ahead = ref_weekday + (7-tweet_weekday)
-                return (date + datetime.timedelta(days=days_ahead),timephrase)
+                return (date + datetime.timedelta(days=days_ahead),tweet.split(timephrase))
             elif "sday" in nud:
                 timephrase = " ".join([x for x in units if len(x) > 0])
                 u = nud["sday"]
                 if u == "morgen":
-                    return (date + datetime.timedelta(days=1),timephrase)
+                    return (date + datetime.timedelta(days=1),tweet.split(timephrase))
                 elif u == "overmorgen":
-                    return (date + datetime.timedelta(days=2),timephrase)
+                    return (date + datetime.timedelta(days=2),tweet.split(timephrase))
             else:
                 return False
 
