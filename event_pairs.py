@@ -53,6 +53,7 @@ class Event_pairs:
             #print tweet.text,sorted(entities,key = lambda x: x[1],reverse=True)
             if approach == "single":
                 tweet.entities = [sorted(entities,key = lambda x: x[1],reverse=True)[0][0]]
+                print tweet.text,tweet.entities
 
     def extract_date(self,tweet,date):
 
@@ -208,7 +209,7 @@ class Event_pairs:
         for i in range(len(self.ngramdicts)):
             ngdict = self.ngramdicts[i]
             dng = set(ngdict)
-            c = chunk.split().replace("#","")
+            c = chunk.split()
             if i == 0:
                 ngrams = zip(c)
             elif i == 1:
@@ -219,7 +220,7 @@ class Event_pairs:
                 ngrams = zip(c, c[1:], c[2:], c[3:])
             elif i == 4:
                 ngrams = zip(c, c[1:], c[2:], c[3:], c[4:])
-            for ngram in [" ".join(x) for x in ngrams]:
+            for ngram in [" ".join(x).replace("#","") for x in ngrams]:
                 if ngram in dng:
                     ngram_score.append((ngram,ngdict[ngram]))
         return ngram_score
