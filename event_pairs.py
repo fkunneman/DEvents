@@ -25,6 +25,7 @@ class Event_pairs:
                     dtweet = self.Tweet()
                     units = [tokens[1],tokens[2],date,text,dateref_phrase[0],dateref_phrase[1]]
                     dtweet.set_meta(units)
+                    print dtweet.text,dtweet.dateref,dtweet.chunks
                     self.tweets.append(dtweet)
         print len(self.tweets),len(new_tweets)
 #        print [(x.text,x.dateref) for x in self.tweets]
@@ -129,7 +130,6 @@ class Event_pairs:
             elif "date" in nud:
                 da = nud["date"]
                 timephrase = "".join([x for x in units if len(x) > 0])
-                print "date",timephrase
                 if re.search("-",da):
                     if "year" in nud: 
                         ds = date_eu.search(da + nud["year"]).groups()

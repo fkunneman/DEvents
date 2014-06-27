@@ -7,7 +7,7 @@ import json
 import colibricore
 
 # exclude = set(string.punctuation)
-exclude = set([".",",",":"])
+exclude = set([".",",",":",")","("])
 
 tmp = sys.argv[1]
 outdir = sys.argv[2]
@@ -29,8 +29,8 @@ with open(textfile,'w',encoding='utf-8') as g:
                 text = text.replace(',',' ,')
                 text = text.replace('.',' .')
                 text = text.replace(':',' :')
-                text = text.replace('(',' (')
-                text = text.replace(')',' )')
+                text = text.replace('(','')
+                text = text.replace(')','')
                 text = text.replace('"',' "')
                 g.write(text.strip() + "\n")
 
@@ -57,8 +57,8 @@ for i, infile in enumerate(infiles):
             text = text.replace(',',' ,')
             text = text.replace('.',' .')
             text = text.replace(':',' :')
-            text = text.replace('(',' (')
-            text = text.replace(')',' )')
+            text = text.replace('(','')
+            text = text.replace(')','')
             text = text.replace('"',' "')
             #print('0000000000000000000000000',text)
             anchors = js["annotations"]
