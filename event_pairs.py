@@ -87,7 +87,6 @@ class Event_pairs:
         if re.findall('|'.join(list_patterns), tweet):
             units = re.findall('|'.join(list_patterns), tweet)[0]
             nud = {}
-            print tweet,units
             for unit in units:
                 if unit in ns:
                     nud["num"] = convert_nums[unit]
