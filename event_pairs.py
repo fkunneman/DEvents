@@ -58,7 +58,6 @@ class Event_pairs:
                     print tweet.text,tweet.dateref,tweet.entities
 
     def extract_date(self,tweet,date):
-
         convert_nums = {"een":1, "twee":2, "drie":3, "vier":4,
             "vijf":5, "zes":6, "zeven":7, "acht":8, "negen":9, 
             "tien":10, "elf":11, "twaalf":12, "dertien":13,
@@ -141,7 +140,8 @@ class Event_pairs:
 
             if "timeunit" in nud: 
                 days = nud["timeunit"] * nud["num"]
-                timephrase = " ".join([x for x in units if len(x) > 0]) 
+                timephrase = " ".join([x for x in units if len(x) > 0])
+                print units,timephrase 
                 return (date + datetime.timedelta(days=days),tweet.split(timephrase))
             elif "month" in nud:
                 m = nud["month"]
@@ -151,10 +151,12 @@ class Event_pairs:
                 else:
                     y = date.year
                 timephrase = " ".join([x for x in units if len(x) > 0])
+                print tweet,units,timephrase
                 return (datetime.date(y,m,d),tweet.split(timephrase))
             elif "date" in nud:
                 da = nud["date"]
                 timephrase = "".join([x for x in units if len(x) > 0])
+                print tweet,units,timephrase
                 if re.search("-",da):
                     if "year" in nud: 
                         ds = date_eu.search(da + nud["year"]).groups()
@@ -186,6 +188,7 @@ class Event_pairs:
                             return (datetime.date(dsi[0],dsi[1],dsi[2]),tweet.split(timephrase))
             elif "weekday" in nud:
                 timephrase = " ".join([x for x in units if len(x) > 0])
+                print tweet,units,timephrase
                 tweet_weekday=date.weekday()
                 ref_weekday=weekdays.index(nud["weekday"])
                 if ref_weekday == tweet_weekday:
