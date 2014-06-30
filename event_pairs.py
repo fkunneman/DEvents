@@ -42,7 +42,7 @@ class Event_pairs:
         classfile = tmp + "_page.colibri.cls"
         textfile = tmp + "_page.txt"
         corpusfile = tmp + "_page.colibri.dat"
-        with open(textfile,'w',encoding='utf-8') as g:
+        with codecs.open(textfile,'w','utf-8') as g:
             for ngramfile in wiki_commonness:
                 ngramopen = codecs.open(ngramfile,"r","utf-8")
                 for line in ngramopen.readlines():
