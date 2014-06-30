@@ -195,14 +195,9 @@ class Event_pairs:
                         if "year" in nud:
                             if num_match in [x[1] for x in \
                                 nud["year"]]:
-                                print nud["year"],[x[0] for x in \
+                                ds = date_vs.search(da[0] + [x[0] for x in \
                                     nud["year"] if x[1] == \
-                                    num_match][0],da[0],date_vs.search([x[0] for x in \
-                                    nud["year"] if x[1] == \
-                                    num_match][0] + da[0]).groups()
-                                ds = date_vs.search([x[0] for x in \
-                                    nud["year"] if x[1] == \
-                                    num_match][0] + da[0]).groups()
+                                    num_match][0]).groups()
                         else:
                             ds = date_eu.search(da[0]).groups()
                         dsi = [int(x) for x in ds if x != None]
@@ -221,9 +216,9 @@ class Event_pairs:
                         if "year" in nud:
                             if num_match in [x[1] for x in \
                                 nud["year"]]:
-                                ds = date_vs.search([x[0] for x in \
+                                ds = date_vs.search(da[0] + [x[0] for x in \
                                     nud["year"] if x[1] == \
-                                    num_match][0] + da[0]).groups()
+                                    num_match][0]).groups()
                         else:
                             ds = date_vs.search(da[0]).groups()
                         dsi = [int(x) for x in ds if x != None]
