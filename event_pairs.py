@@ -314,7 +314,7 @@ class Event_pairs:
             self.text = units[3]
             self.daterefs = units[4]
             self.chunks = units[5]
-            if len(units) > 4:
+            if len(units) > 5:
                 self.entities = units[6]
 
 
