@@ -44,7 +44,7 @@ class Event_pairs:
         corpusfile = tmp + "_page.colibri.dat"
         with open(textfile,'w',encoding = 'utf-8') as g:
             for ngramfile in wiki_commonness:
-                ngramopen = codecs.open(ngramfile,"r","utf-8")
+                ngramopen = open(ngramfile,encoding = "utf-8")
                 for line in ngramopen.readlines():
                     tokens = line.strip().split("\t")
                     g.write(tokens[0] + "\n")
@@ -61,7 +61,7 @@ class Event_pairs:
         #assign values to ngrams
         print("making dict")
         for ngramfile in wiki_commonness:
-            ngramopen = open(ngramfile,"r",encoding = "utf-8")
+            ngramopen = open(ngramfile,encoding = "utf-8")
             for line in ngramopen.readlines():
                 tokens = line.strip().split("\t")
                 pattern = self.classencoder.buildpattern(tokens[0])
