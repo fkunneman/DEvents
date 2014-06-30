@@ -245,7 +245,7 @@ class Event_pairs:
                         timephrase = " ".join([x for x in \
                             matches[num_match] if len(x) > 0])
                         # print tweet,units,timephrase
-                        ref_weekday=weekdays.index(nud["weekday"])
+                        ref_weekday=weekdays.index(w[0])
                         if num_match in [x[1] for x in nud["nweek"]]:
                             add = 7
                         else:
