@@ -197,9 +197,9 @@ class Event_pairs:
                                 nud["year"]]:
                                 ds = date_vs.search([x[0] for x in \
                                     nud["year"] if x[1] == \
-                                    [num_match]][0] + da).groups()
+                                    [num_match]][0] + da[0]).groups()
                         else:
-                            ds = date_eu.search(da).groups()
+                            ds = date_eu.search(da[0]).groups()
                         dsi = [int(x) for x in ds if x != None]
                         if dsi[1] in range(1,13) and \
                             dsi[0] in range(1,32):
@@ -213,15 +213,15 @@ class Event_pairs:
                                     pairs.append((datetime.date(dsi[2],
                                         dsi[1],dsi[0]),
                                         tweet.split(timephrase))) 
-                    elif re.search("/",da):
+                    elif re.search("/",da[0]):
                         if "year" in nud:
                             if num_match in [x[1] for x in \
                                 nud["year"]]:
                                 ds = date_vs.search([x[0] for x in \
                                     nud["year"] if x[1] == \
-                                    [num_match]][0] + da).groups()
+                                    [num_match]][0] + da[0]).groups()
                         else:
-                            ds = date_vs.search(da).groups()
+                            ds = date_vs.search(da[0]).groups()
                         dsi = [int(x) for x in ds if x != None]
                         if dsi[0] in range(1,13) and \
                             dsi[1] in range(1,32):
