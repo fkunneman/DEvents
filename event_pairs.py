@@ -119,9 +119,12 @@ class Event_pairs:
         ms = convert_month.keys()
         if re.findall('|'.join(list_patterns), tweet):
             #print tweet,re.findall('|'.join(list_patterns), tweet)
+            timephrases = []
             matches = re.findall('|'.join(list_patterns), tweet)
             nud = defaultdict(list)
             for i,units in enumerate(matches):
+                timephrases.append(" ".join([x for x in \
+                        units if len(x) > 0 and not x == " "]))
                 for unit in units:
                     if unit in ns:
                         nud["num"].append((convert_nums[unit],i))
@@ -151,9 +154,9 @@ class Event_pairs:
                     elif unit in spec_days:
                         nud["sday"].append((unit,i))
                     elif unit == "volgende week":
-                        print tweet
                         nud["nweek"].append((unit,i))
-            
+
+            print timephrases
             if "timeunit" in nud:
                 pairs = []
                 for t in nud["timeunit"]: 
