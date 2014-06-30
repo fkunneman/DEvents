@@ -21,7 +21,8 @@ class Event_pairs:
     def select_date_tweets(self,new_tweets):
         for tweet in new_tweets:
             tokens = tweet.strip().split("\t")
-            if tokens[0] == "dutch":
+            if tokens[0] == "dutch" and not re.search("^RT ",
+                tokens[-1]):
                 text = tokens[-1].lower()
                 date = time_functions.return_datetime(tokens[3],
                     setting="vs")
@@ -36,7 +37,8 @@ class Event_pairs:
                         dtweet.set_meta(units)
                         self.tweets.append(dtweet)
 
-    def select_entity_tweets(self,tmp,wiki_commonness,approach = "single"):
+    def select_entity_tweets(self,tmp,wiki_commonness,
+        approach = "single"):
         #load in commonness files per ngram
         print("reading in text")
         classfile = tmp + "_page.colibri.cls"
@@ -73,14 +75,50 @@ class Event_pairs:
             entities = []
             for chunk in tweet.chunks:
                 entities.extend(self.extract_entity(chunk))
-        #print tweet.text,sorted(entities,key = lambda x: x[1],reverse=True)
-            if approach == "single":
-                entities = sorted(entities,key = lambda x: x[1],
-                    reverse=True)
-                print(tweet.text,tweet.daterefs,entities)
-                # if len(entities) > 0:
-                #     tweet.entities = [entities[0][0]]
-                #     print tweet.text,tweet.dateref,tweet.entities
+            entities = sorted(entities,key = lambda x: x[1],
+                reverse=True)
+            if len(entities) > 0:
+                if approach == "single":
+                    tweet.entities = [entities[0][0]]
+                elif approach == "all":
+                    tweet.entities = [x[0] for x in entities]
+
+    def rank_events(self):
+        date_entity_score = []
+        #count dates and entities and pairs
+        date_entity = defaultdict(lambda : defaultdict(int))
+        entity_count = defaultdict(int)
+        date_count = defaultdict(int)
+        print("counting dates and entities")
+        for tweet in self.tweets:
+            for date in tweet.daterefs:
+                date_count[date] += 1
+                for entity in tweet.entities:
+                    entity_count[entity] += 1
+                    date_entity[date][entity] += 1
+        print("calculating score")
+        #for each pair
+        total = len(tweets)
+        for date in date_entity.keys():
+            for entity in date_entity[date].keys():
+                g2 = 0
+                dc = date_count[date]
+                ec = entity_count[entity]
+                ode = date_entity[date][entity]
+                ede = (dc + ec) / total
+                g2 += ode * (log(ode/ede)/log(2))
+                odne = dc - ode
+                edne = (dc + (total-ec)) / total
+                g2 += odne * (log(odne/edne)/log(2))
+                onde = ec - ode
+                ende = (ec + (total-dc)) / total
+                g2 += onde * (log(onde/ende)/log(2))
+                ondne = total - (ode+odne+onde) 
+                endne = ((total-dc) + (total-ec)) / total
+                g2 += ondne * (log(ondne/endne)/log(2))
+            date_entity_score.append([date,entity,g2])
+        return sorted(date_entity_score,key = lambda x: x[2],
+                reverse=True))
 
     def extract_date(self,tweet,date):
         convert_nums = {"een":1, "twee":2, "drie":3, "vier":4,
@@ -174,7 +212,8 @@ class Event_pairs:
                             nud["num"].append((int(unit),i))
                     elif unit in weekdays:
                         nud["weekday"].append((unit,i))
-                        if re.search(unit + r"(avond|middag|ochtend|nacht)",tweet):
+                        if re.search(unit + \
+                            r"(avond|middag|ochtend|nacht)",tweet):
                             timephrases[i] = "".join([x for x in \
                                 units if len(x) > 0 and not x == " "])
                     elif unit in spec_days:
@@ -299,7 +338,8 @@ class Event_pairs:
             for ngram in [" ".join(x).replace("#","") for x in ngrams]:
                 pattern = self.classencoder.buildpattern(ngram)
                 if not pattern.unknown():
-                    ngram_score.append((ngram,self.dmodel[pattern]))
+                    if self.dmodel[pattern] > 0.05:
+                        ngram_score.append((ngram,self.dmodel[pattern]))
         return ngram_score
 
     class Tweet:

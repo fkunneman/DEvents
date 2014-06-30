@@ -24,4 +24,7 @@ ep.select_date_tweets(tweetfile.readlines())
 tweetfile.close()
 print("extracting entities")
 ep.select_entity_tweets(args.d,args.w)
+print("ranking events")
+ranked_events = ep.rank_events()
+print ranked_events
 
