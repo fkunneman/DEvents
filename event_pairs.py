@@ -43,15 +43,16 @@ class Event_pairs:
         classfile = tmp + "_page.colibri.cls"
         textfile = tmp + "_page.txt"
         corpusfile = tmp + "_page.colibri.dat"
-        with codecs.open(textfile,'w','utf-8') as g:
-            for ngramfile in wiki_commonness:
-                ngramopen = codecs.open(ngramfile,"r","utf-8")
-                for line in ngramopen.readlines():
-                    tokens = line.strip().split("\t")
-                    g.write(tokens[0] + "\n")
-                    # ngramdict[tokens[0]] = float(tokens[3])
-                ngramopen.close()
-                # self.ngramdicts.append(ngramdict)
+        g = codecs.open(textfile,'w','utf-8'):
+        for ngramfile in wiki_commonness:
+            ngramopen = codecs.open(ngramfile,"r","utf-8")
+            for line in ngramopen.readlines():
+                tokens = line.strip().split("\t")
+                g.write(tokens[0] + "\n")
+                # ngramdict[tokens[0]] = float(tokens[3])
+            ngramopen.close()
+        g.close()
+            # self.ngramdicts.append(ngramdict)
         self.classencoder = colibricore.ClassEncoder()
         self.classencoder.build(textfile)
         self.classencoder.save(classfile)
@@ -64,6 +65,7 @@ class Event_pairs:
             ngramopen = codecs.open(ngramfile,"r","utf-8")
             for line in ngramopen.readlines():
                 tokens = line.strip().split("\t")
+                print tokens
                 pattern = self.classencoder.buildpattern(tokens[0])
                 self.dmodel[pattern] = float(tokens[3])
             ngramopen.close()
