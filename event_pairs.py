@@ -252,7 +252,7 @@ class Event_pairs:
                             days_ahead = ref_weekday + \
                                 (7-tweet_weekday) + add
                         output.append(date + \
-                            datetime.timedelta(days=days_ahead)))
+                            datetime.timedelta(days=days_ahead))
             if "sday" in nud:
                 for s in nud["sday"]:
                     num_match = s[1] 
