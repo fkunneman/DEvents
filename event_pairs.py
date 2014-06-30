@@ -138,6 +138,8 @@ class Event_pairs:
                     elif re.search(r"\d{1,2}-\d{1,2}",unit) or \
                         re.search(r"\d{1,2}/\d{1,2}",unit):
                         nud["date"].append((unit,i))
+                        timephrases[i] = " ".join([x for x in \
+                        units if len(x) > 0 and not x == " "])
                     elif re.search(r"-\d{2,4}",unit) or \
                         re.search(r"\d{2,4}/",unit):
                         nud["year"].append((unit,i))
