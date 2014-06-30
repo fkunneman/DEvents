@@ -15,9 +15,10 @@ class Event_pairs:
 
     def append_eventtweets(self,eventtweets):
         for et in eventtweets:
+            info = et.strip().split("\t")
             tweet = self.Tweet()
-            tweet.set_meta(et)
-            self.tweets.append(tweet)   
+            tweet.set_meta([x.split(" ") for x in info])
+            self.tweets.append(tweet)
 
     def select_date_tweets(self,new_tweets):
         for tweet in new_tweets:
@@ -84,8 +85,19 @@ class Event_pairs:
                 elif approach == "all":
                     tweet.entities = [x[0] for x in entities]
 
+    def select_hashtags_tweets(self):
+        for tweet in self.tweets:
+            hashtags = [x for x in tweet.text.split(" ") if re.search(r"^#",x)]
+            print hashtags
+            if len(hashtags) > 0:
+                try:
+                    tweet.entities.extend(hashtags)
+                except:
+                    tweet.set_entities(hashtags)
+
     def rank_events(self):
         date_entity_score = []
+        date_entity_tweets = defaultdict(lambda : defaultdict(list))
         #count dates and entities and pairs
         date_entity = defaultdict(lambda : defaultdict(int))
         entity_count = defaultdict(int)
@@ -98,6 +110,7 @@ class Event_pairs:
                     for entity in tweet.entities:
                         entity_count[entity] += 1
                         date_entity[date][entity] += 1
+                        date_entity_tweets[date][entity].append(tweet.text)
                 except AttributeError:
                     continue
         print("calculating score")
@@ -128,7 +141,7 @@ class Event_pairs:
                 #print(ondne,endne)
                 if ondne != 0 and endne != 0:
                     g2 += ondne * (math.log(ondne/endne)/math.log(2))
-            date_entity_score.append([date,entity,g2])
+            date_entity_score.append([date,entity,g2,date_entity_tweets[date][entity]])
         return sorted(date_entity_score,key = lambda x: x[2],
                 reverse=True)
 
@@ -372,7 +385,6 @@ class Event_pairs:
             self.chunks = units[5]
             if len(units) > 6:
                 self.entities = units[6]
-
 
         def set_entities(self,entities):
             self.entities = entities
