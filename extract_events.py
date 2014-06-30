@@ -51,7 +51,7 @@ for tweet in ep.tweets:
     try:
         info.append(" ".join(tweet.entities))
     except:
-        print "no entity"
+        print("no entity")
     tweetinfo.write("\t".join(info) + "\n")
 tweetinfo.close()
 eventinfo = open(args.o,"w","utf-8")
