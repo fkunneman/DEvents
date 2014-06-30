@@ -171,6 +171,7 @@ class Event_pairs:
                 for t in nud["month"]:
                     num_match = t[1]
                     m = t[0]
+                    print nud["num"]
                     d = [x[0] for x in nud["num"] if x[1] == \
                         num_match][0]
                     if "year" in nud:
