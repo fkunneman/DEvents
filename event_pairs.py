@@ -100,7 +100,7 @@ class Event_pairs:
         list_patterns = ([r"(over|nog) (minimaal |maximaal |tenminste |"
             "bijna |ongeveer |maar |slechts |pakweg |ruim |krap |"
             "(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + 
-            (nums) + " " + (timeunits), (nums) + " " + (timeunits) + 
+            (nums) + " " + (timeunits) + r"($|\b)", (nums) + " " + (timeunits) + 
             r"( slapen)? tot", r"met( nog)? (minimaal |maximaal |"
             "tenminste |bijna |ongeveer |maar |slechts |pakweg |ruim |"
             "krap |(maar )?een kleine |"
