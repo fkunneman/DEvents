@@ -48,8 +48,10 @@ print("writing output")
 tweetinfo = open(args.p,"w",encoding = "utf-8")
 for tweet in ep.tweets:
     info = [tweet.id,tweet.user,str(tweet.date),tweet.text," ".join([str(x) for x in tweet.daterefs]),"|".join([" ".join(x) for x in tweet.chunks])]
-    if tweet.entities:
+    try:
         info.append(" ".join(tweet.entities))
+    except:
+        print "no entity"
     tweetinfo.write("\t".join(info) + "\n")
 tweetinfo.close()
 eventinfo = open(args.o,"w","utf-8")
