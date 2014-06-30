@@ -28,6 +28,7 @@ class Event_pairs:
                     setting="vs")
                 dateref_phrase = self.extract_date(text,date)
                 if dateref_phrase:
+                    print tweet,dateref_phrase
                     dtweet = self.Tweet()
                     units = [tokens[1],tokens[2],date,text,dateref_phrase[0],dateref_phrase[1]]
                     dtweet.set_meta(units)
@@ -103,7 +104,7 @@ class Event_pairs:
             (timeunits) + r"( nog)? te gaan",r"(\b|^)" + (nums) + " " +
             (months) + r"( (\d{2,4}))?(\b|$)",r"(\b|^)(\d{1,2}-\d{1,2})"
             r"(-\d{2,4})?(\b|$)",r"(\b|^)(\d{2,4}/)?(\d{1,2}/\d{1,2})"
-            "(\b|$)",r"(\b|$)(maandag|dinsdag|woensdag|donderdag|vrijdag|"
+            "(\b|$)",r"(\b|$)((volgende week) )?(maandag|dinsdag|woensdag|donderdag|vrijdag|"
             "zaterdag|zondag|overmorgen)(avond|nacht|ochtend|middag)?"])
 
         date_eu = re.compile(r"(\d{1,2})-(\d{1,2})-?(\d{2,4})?")
@@ -113,101 +114,132 @@ class Event_pairs:
         ms = convert_month.keys()
         if re.findall('|'.join(list_patterns), tweet):
             #print tweet,re.findall('|'.join(list_patterns), tweet)
-            units = re.findall('|'.join(list_patterns), tweet)[0]
-            nud = {}
-            for unit in units:
-                if unit in ns:
-                    nud["num"] = convert_nums[unit]
-                elif unit in timeus:
-                    if not "weekday" in nud:
-                        nud["timeunit"] = convert_timeunit[unit]
-                elif unit in ms:
-                    nud["month"] = convert_month[unit]
-                elif re.search(r"\d{1,2}-\d{1,2}",unit) or re.search(r"\d{1,2}/\d{1,2}",unit):
-                    nud["date"] = unit
-                elif re.search(r"-\d{2,4}",unit) or re.search(r"\d{2,4}/",unit):
-                    nud["year"] = unit
-                elif re.match(r"\d+",unit):
-                    if int(unit) in range(2010,2020):
-                        nud["year"] = int(unit)
-                    elif "num" in nud: 
-                        if int(unit) in range(1,13):
-                            nud["month"] = int(unit)
-                    else:
-                        nud["num"] = int(unit)
-                elif unit in weekdays:
-                    nud["weekday"] = unit
-                elif unit in spec_days:
-                    nud["sday"] = unit
-             
-            if "timeunit" in nud: 
-                days = nud["timeunit"] * nud["num"]
-                timephrase = " ".join([x for x in units if len(x) > 0])
-                print units,timephrase 
-                return (date + datetime.timedelta(days=days),tweet.split(timephrase))
-            elif "month" in nud:
-                m = nud["month"]
-                d = nud["num"]
-                if "year" in nud:
-                    y = nud["year"]
-                else:
-                    y = date.year
-                timephrase = " ".join([x for x in units if len(x) > 0])
-                print tweet,units,timephrase
-                return (datetime.date(y,m,d),tweet.split(timephrase))
-            elif "date" in nud:
-                da = nud["date"]
-                timephrase = "".join([x for x in units if len(x) > 0])
-                print tweet,units,timephrase
-                if re.search("-",da):
-                    if "year" in nud: 
-                        ds = date_eu.search(da + nud["year"]).groups()
-                    else:
-                        ds = date_eu.search(da).groups()
-                    dsi = [int(x) for x in ds if x != None]
-                    if dsi[1] in range(1,13) and \
-                        dsi[0] in range(1,32):
-
-                        if ds[2] == None:
-                            return (datetime.date(date.year,dsi[1],
-                                dsi[0]),tweet.split(timephrase))
+            matches = re.findall('|'.join(list_patterns), tweet)
+            nud = defaultdict(list)
+            for i,units in enumerate(matches):
+                for unit in units:
+                    if unit in ns:
+                        nud["num"].append((convert_nums[unit],i))
+                    elif unit in timeus:
+                        if not "weekday" in nud:
+                            nud["timeunit"].append((convert_timeunit[unit],i))
+                    elif unit in ms:
+                        nud["month"].append((convert_month[unit],i))
+                    elif re.search(r"\d{1,2}-\d{1,2}",unit) or re.search(r"\d{1,2}/\d{1,2}",unit):
+                        nud["date"].append((unit,i))
+                    elif re.search(r"-\d{2,4}",unit) or re.search(r"\d{2,4}/",unit):
+                        nud["year"].append((unit,i))
+                    elif re.match(r"\d+",unit):
+                        if int(unit) in range(2010,2020):
+                            nud["year"].append((int(unit),i))
+                        elif "num" in nud: 
+                            if int(unit) in range(1,13):
+                                nud["month"].append((int(unit),i))
                         else:
-                            if dsi[2] in range(2010,2020):
-                                return (datetime.date(dsi[2],dsi[1],
-                                    dsi[0]),tweet.split(timephrase)) 
-                elif re.search("/",da):
+                            nud["num"].append((int(unit),i))
+                    elif unit in weekdays:
+                        nud["weekday"].append((unit,i))
+                    elif unit in spec_days:
+                        nud["sday"].append((unit,i))
+                    elif unit == "volgende week":
+                        print tweet
+                        nud["nweek"].append((unit,i))
+            
+            if "timeunit" in nud:
+                pairs = []
+                for t in nud["timeunit"]: 
+                    num_match = t[1]
+                    days = t[0] * nud["num"][num_match]
+                    timephrase = " ".join([x for x in matches[num_match] if len(x) > 0])
+                    # print units,timephrase 
+                    pairs.append((date + datetime.timedelta(days=days),tweet.split(timephrase)))
+                return pairs
+            if "month" in nud:
+                pairs = []
+                for t in nud["month"]:
+                    num_match = t[1]
+                    m = t
+                    d = nud["num"][num_match]
                     if "year" in nud:
-                        ds = date_vs.search(nud["year"] + da).groups()
+                        if num_match in [x[1] for x in nud["year"]]:
+                            ds = date_vs.search([x[0] for x in nud["year"] if x[1] == [num_match]][0] + da).groups()
                     else:
-                        ds = date_vs.search(da).groups()
-                    dsi = [int(x) for x in ds if x != None]
-                    if dsi[0] in range(1,13) and \
-                        dsi[1] in range(1,32):
-                        return (datetime.date(date.year,dsi[0],dsi[1]),tweet.split(timephrase))
-                    elif dsi[0] in range(2010,2020):
+                        y = date.year
+                    timephrase = " ".join([x for x in matches[num_match] if len(x) > 0])
+                    # print tweet,units,timephrase
+                    pairs.append((datetime.date(y,m,d),tweet.split(timephrase)))
+                return pairs
+            if "date" in nud:
+                pairs = []
+                for da in nud["date"]:
+                    num_match = da[1]
+                    timephrase = "".join([x for x in matches[num_match] if len(x) > 0])
+                    # print tweet,units,timephrase
+                    if re.search("-",da):
+                        if "year" in nud:
+                            if num_match in [x[1] for x in nud["year"]]:
+                                ds = date_vs.search([x[0] for x in nud["year"] if x[1] == [num_match]][0] + da).groups()
+                        else:
+                            ds = date_eu.search(da).groups()
+                        dsi = [int(x) for x in ds if x != None]
                         if dsi[1] in range(1,13) and \
-                            dsi[2] in range(1,32):
-                            return (datetime.date(dsi[0],dsi[1],dsi[2]),tweet.split(timephrase))
-            elif "weekday" in nud:
-                timephrase = " ".join([x for x in units if len(x) > 0])
-                print tweet,units,timephrase
-                tweet_weekday=date.weekday()
-                ref_weekday=weekdays.index(nud["weekday"])
-                if ref_weekday == tweet_weekday:
-                    days_ahead = 7
-                elif tweet_weekday < ref_weekday:
-                    days_ahead = ref_weekday - tweet_weekday
-                else:
-                    days_ahead = ref_weekday + (7-tweet_weekday)
-                return (date + datetime.timedelta(days=days_ahead),tweet.split(timephrase))
-            elif "sday" in nud:
-                timephrase = " ".join([x for x in units if len(x) > 0])
-                u = nud["sday"]
-                #if u == "morgen":
-                #    return (date + datetime.timedelta(days=1),tweet.split(timephrase))
-                if u == "overmorgen":
-                    return (date + datetime.timedelta(days=2),tweet.split(timephrase))
-            else:
+                            dsi[0] in range(1,32):
+
+                            if ds[2] == None:
+                                pairs.append((datetime.date(date.year,dsi[1],
+                                    dsi[0]),tweet.split(timephrase)))
+                            else:
+                                if dsi[2] in range(2010,2020):
+                                    pairs.append((datetime.date(dsi[2],dsi[1],
+                                        dsi[0]),tweet.split(timephrase))) 
+                    elif re.search("/",da):
+                        if "year" in nud:
+                            if num_match in [x[1] for x in nud["year"]]:
+                                ds = date_vs.search([x[0] for x in nud["year"] if x[1] == [num_match]][0] + da).groups()
+                        else:
+                            ds = date_vs.search(da).groups()
+                        dsi = [int(x) for x in ds if x != None]
+                        if dsi[0] in range(1,13) and \
+                            dsi[1] in range(1,32):
+                            pairs.append((datetime.date(date.year,dsi[0],dsi[1]),tweet.split(timephrase)))
+                        elif dsi[0] in range(2010,2020):
+                            if dsi[1] in range(1,13) and \
+                                dsi[2] in range(1,32):
+                                pairs.append((datetime.date(dsi[0],dsi[1],dsi[2]),tweet.split(timephrase)))
+                return pairs
+            if "weekday" in nud:
+                if not "date" in nud and not "month" in nud not "timeunit" in nud:
+                    pairs = []
+                    tweet_weekday=date.weekday()
+                    for w in nud["weekday"]:
+                        num_match = w[1]
+                        timephrase = " ".join([x for x in matches[num_match] if len(x) > 0])
+                        # print tweet,units,timephrase
+                        ref_weekday=weekdays.index(nud["weekday"])
+                        if num_match in [x[1] for x in nud["nweek"]]:
+                            add = 7
+                        else:
+                            add = 0
+                        if ref_weekday == tweet_weekday:
+                            days_ahead = 7
+                        elif tweet_weekday < ref_weekday:
+                            days_ahead = ref_weekday - tweet_weekday + add
+                        else:
+                            days_ahead = ref_weekday + (7-tweet_weekday) + add
+                        pairs.append((date + datetime.timedelta(days=days_ahead),tweet.split(timephrase)))
+                    return pairs
+            if "sday" in nud:
+                pairs = []
+                for s in nud["sday"]:
+                    num_match = s[1] 
+                    timephrase = " ".join([x for x in matches[num_match] if len(x) > 0])
+                    u = s[0]
+                    #if u == "morgen":
+                    #    return (date + datetime.timedelta(days=1),tweet.split(timephrase))
+                    if u == "overmorgen":
+                        pairs.append((date + datetime.timedelta(days=2),tweet.split(timephrase)))
+                return pairs
+            if len(nud.keys()) == 0:
                 return False
 
     def extract_entity(self,chunk):
