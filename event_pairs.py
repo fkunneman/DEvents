@@ -28,7 +28,7 @@ class Event_pairs:
                     setting="vs")
                 dateref_phrase = self.extract_date(text,date)
                 if dateref_phrase:
-                    print text,dateref_phrase
+                    #print text,dateref_phrase
                     for entry in dateref_phrase:
                         dtweet = self.Tweet()
                         units = [tokens[1],tokens[2],date,text,
@@ -110,7 +110,7 @@ class Event_pairs:
             r"(-\d{2,4})?(\b|$)",r"(\b|^)(\d{2,4}/)?(\d{1,2}/\d{1,2})"
             "(\b|$)",r"(\b|$)((volgende week) )?(maandag|dinsdag|"
             "woensdag|donderdag|vrijdag|zaterdag|zondag|overmorgen)"
-            "(avond|nacht|ochtend|middag)?"])
+            r"(avond|nacht|ochtend|middag)?"])
 
         date_eu = re.compile(r"(\d{1,2})-(\d{1,2})-?(\d{2,4})?")
         date_vs = re.compile(r"(\d{2,4})?/?(\d{1,2})/(\d{1,2})")
@@ -121,6 +121,7 @@ class Event_pairs:
             #print tweet,re.findall('|'.join(list_patterns), tweet)
             timephrases = []
             matches = re.findall('|'.join(list_patterns), tweet)
+            print tweet,matches
             nud = defaultdict(list)
             for i,units in enumerate(matches):
                 timephrases.append(" ".join([x for x in \
