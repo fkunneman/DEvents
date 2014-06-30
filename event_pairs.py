@@ -186,6 +186,7 @@ class Event_pairs:
                             y = date.year
                     else:
                         y = date.year
+                    output.append(datetime.date(y,m,d))
             if "date" in nud:
                 for da in nud["date"]:
                     num_match = da[1]
@@ -202,14 +203,13 @@ class Event_pairs:
                         if dsi[1] in range(1,13) and \
                             dsi[0] in range(1,32):
                             if ds[2] == None:
-                                output.append((datetime.date(\
+                                output.append(datetime.date(\
                                     date.year,dsi[1],
-                                    dsi[0]),tweet.split(timephrase)))
+                                    dsi[0]))
                             else:
                                 if dsi[2] in range(2010,2020):
-                                    output.append((datetime.date(dsi[2],
-                                        dsi[1],dsi[0]),
-                                        tweet.split(timephrase))) 
+                                    output.append(datetime.date(dsi[2],
+                                        dsi[1],dsi[0])) 
                     elif re.search("/",da[0]):
                         if "year" in nud:
                             if num_match in [x[1] for x in \
@@ -222,9 +222,8 @@ class Event_pairs:
                         dsi = [int(x) for x in ds if x != None]
                         if dsi[0] in range(1,13) and \
                             dsi[1] in range(1,32):
-                            output.append((datetime.date(date.year,
-                                dsi[0],dsi[1]),
-                                tweet.split(timephrase)))
+                            output.append(datetime.date(date.year,
+                                dsi[0],dsi[1]))
                         elif dsi[0] in range(2010,2020):
                             if dsi[1] in range(1,13) and \
                                 dsi[2] in range(1,32):
