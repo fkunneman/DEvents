@@ -65,9 +65,9 @@ class Event_pairs:
             ngramopen = codecs.open(ngramfile,"r","utf-8")
             for line in ngramopen.readlines():
                 tokens = line.strip().split("\t")
-                print tokens
-                pattern = self.classencoder.buildpattern(tokens[0])
+                pattern = self.classencoder.buildpattern(str(tokens[0])
                 self.dmodel[pattern] = float(tokens[3])
+                print tokens[0],self.dmodel[pattern]
             ngramopen.close()
         #extract entities from tweets
         print "extracting entities"
