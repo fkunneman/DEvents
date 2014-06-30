@@ -65,7 +65,7 @@ class Event_pairs:
             ngramopen = codecs.open(ngramfile,"r","utf-8")
             for line in ngramopen.readlines():
                 tokens = line.strip().split("\t")
-                pattern = self.classencoder.buildpattern(str(tokens[0]))
+                pattern = self.classencoder.buildpattern(tokens[0].encode('utf-8'))
                 self.dmodel[pattern] = float(tokens[3])
                 print tokens[0],self.dmodel[pattern]
             ngramopen.close()
