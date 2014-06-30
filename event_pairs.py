@@ -252,12 +252,12 @@ class Event_pairs:
                         if ref_weekday == tweet_weekday:
                             days_ahead = 7
                         elif tweet_weekday < ref_weekday:
-                            days_ahead = ref_weekday - tweet_weekday + 
+                            days_ahead = ref_weekday - tweet_weekday + \
                                 add
                         else:
-                            days_ahead = ref_weekday + 
+                            days_ahead = ref_weekday + \
                                 (7-tweet_weekday) + add
-                        pairs.append((date + 
+                        pairs.append((date + \
                             datetime.timedelta(days=days_ahead),
                             tweet.split(timephrase)))
                     return pairs
@@ -269,7 +269,7 @@ class Event_pairs:
                         matches[num_match] if len(x) > 0])
                     u = s[0]
                     if u == "overmorgen":
-                        pairs.append((date + 
+                        pairs.append((date + \
                             datetime.timedelta(days=2),
                             tweet.split(timephrase)))
                 return pairs
