@@ -138,8 +138,8 @@ class Event_pairs:
                     elif re.search(r"\d{1,2}-\d{1,2}",unit) or \
                         re.search(r"\d{1,2}/\d{1,2}",unit):
                         nud["date"].append((unit,i))
-                        timephrases[i] = " ".join([x for x in \
-                        units if len(x) > 0 and not x == " "])
+                        timephrases[i] = "".join([x for x in \
+                            units if len(x) > 0 and not x == " "])
                     elif re.search(r"-\d{2,4}",unit) or \
                         re.search(r"\d{2,4}/",unit):
                         nud["year"].append((unit,i))
@@ -154,11 +154,13 @@ class Event_pairs:
                             nud["num"].append((int(unit),i))
                     elif unit in weekdays:
                         nud["weekday"].append((unit,i))
+                        timephrases[i] = "".join([x for x in \
+                            units if len(x) > 0 and not x == " "])
                     elif unit in spec_days:
                         nud["sday"].append((unit,i))
                     elif unit == "volgende week":
                         nud["nweek"].append((unit,i))
-
+                timephrases[i] = timephrases[i].replace("  "," ")
             print timephrases
             if "timeunit" in nud:
                 pairs = []
