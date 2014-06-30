@@ -28,16 +28,13 @@ class Event_pairs:
                     setting="vs")
                 dateref_phrase = self.extract_date(text,date)
                 if dateref_phrase:
-                    print text,dateref_phrase
-                    continue
-                    #print text,dateref_phrase
-                    for entry in dateref_phrase:
+                    chunks = dateref_phrase[0]
+                    for entry in dateref_phrase[1:]:
                         dtweet = self.Tweet()
                         units = [tokens[1],tokens[2],date,text,
-                            entry[0],[x[1] for x in dateref_phrase]]
+                            entry,chunks]
                         dtweet.set_meta(units)
                         self.tweets.append(dtweet)
-        print len(self.tweets),len(new_tweets)
 
     def select_entity_tweets(self,wiki_commonness,approach = "single"):
         #load in commonness files per ngram
@@ -155,7 +152,7 @@ class Event_pairs:
                             nud["num"].append((int(unit),i))
                     elif unit in weekdays:
                         nud["weekday"].append((unit,i))
-                        if re.search(r"(avond|middag|ochtend|nacht)",tweet):
+                        if re.search(unit + r"(avond|middag|ochtend|nacht)",tweet):
                             timephrases[i] = "".join([x for x in \
                                 units if len(x) > 0 and not x == " "])
                     elif unit in spec_days:
