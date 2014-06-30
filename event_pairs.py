@@ -159,7 +159,7 @@ class Event_pairs:
                 for t in nud["timeunit"]: 
                     num_match = t[1]
                     days = t[0] * [x[0] for x in nud["num"] if \
-                        x[1] == [num_match]][0]
+                        x[1] == num_match][0]
                     timephrase = " ".join([x for x in \
                         matches[num_match] if len(x) > 0])
                     # print units,timephrase 
@@ -175,7 +175,7 @@ class Event_pairs:
                     if "year" in nud:
                         if num_match in [x[1] for x in nud["year"]]:
                             y = [x[0] for x in nud["year"] if \
-                                x[1] == [num_match]][0]
+                                x[1] == num_match][0]
                     else:
                         y = date.year
                     timephrase = " ".join([x for x in \
