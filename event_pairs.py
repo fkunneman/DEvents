@@ -186,8 +186,6 @@ class Event_pairs:
                             y = date.year
                     else:
                         y = date.year
-                    output.append(datetime.date(y,m,d))
-                return pairs
             if "date" in nud:
                 for da in nud["date"]:
                     num_match = da[1]
