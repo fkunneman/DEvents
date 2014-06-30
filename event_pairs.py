@@ -108,9 +108,9 @@ class Event_pairs:
             (timeunits) + r"( nog)? te gaan",r"(\b|^)" + (nums) + " " +
             (months) + r"( (\d{2,4}))?(\b|$)",r"(\b|^)(\d{1,2}-\d{1,2})"
             r"(-\d{2,4})?(\b|$)",r"(\b|^)(\d{2,4}/)?(\d{1,2}/\d{1,2})"
-            "(\b|$)",r"(\b|$)((volgende week) )?(maandag|dinsdag|
-                woensdag|donderdag|vrijdag|"
-            "zaterdag|zondag|overmorgen)(avond|nacht|ochtend|middag)?"])
+            "(\b|$)",r"(\b|$)((volgende week) )?(maandag|dinsdag|"
+            "woensdag|donderdag|vrijdag|zaterdag|zondag|overmorgen)"
+            "(avond|nacht|ochtend|middag)?"])
 
         date_eu = re.compile(r"(\d{1,2})-(\d{1,2})-?(\d{2,4})?")
         date_vs = re.compile(r"(\d{2,4})?/?(\d{1,2})/(\d{1,2})")
