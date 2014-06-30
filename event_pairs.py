@@ -30,7 +30,7 @@ class Event_pairs:
                 if dateref_phrase:
                     if len(dateref_phrase) > 1:
                         chunks = dateref_phrase[0]
-                        refdates = dateref_phrase[1]
+                        refdates = dateref_phrase[1:]
                         dtweet = self.Tweet()
                         units = [tokens[1],tokens[2],date,text,
                             refdates,chunks]
