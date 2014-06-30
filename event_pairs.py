@@ -145,6 +145,7 @@ class Event_pairs:
                         print tweet
                         nud["nweek"].append((unit,i))
             
+            print tweet
             if "timeunit" in nud:
                 pairs = []
                 for t in nud["timeunit"]: 
@@ -158,11 +159,11 @@ class Event_pairs:
                 pairs = []
                 for t in nud["month"]:
                     num_match = t[1]
-                    m = t
-                    d = nud["num"][num_match]
+                    m = t[0]
+                    d = nud["num"][num_match][0]
                     if "year" in nud:
                         if num_match in [x[1] for x in nud["year"]]:
-                            ds = date_vs.search([x[0] for x in nud["year"] if x[1] == [num_match]][0] + da).groups()
+                            y = [x[0] for x in nud["year"] if x[1] == [num_match]][0]
                     else:
                         y = date.year
                     timephrase = " ".join([x for x in matches[num_match] if len(x) > 0])
@@ -175,7 +176,7 @@ class Event_pairs:
                     num_match = da[1]
                     timephrase = "".join([x for x in matches[num_match] if len(x) > 0])
                     # print tweet,units,timephrase
-                    if re.search("-",da):
+                    if re.search("-",da[0]):
                         if "year" in nud:
                             if num_match in [x[1] for x in nud["year"]]:
                                 ds = date_vs.search([x[0] for x in nud["year"] if x[1] == [num_match]][0] + da).groups()
@@ -208,7 +209,7 @@ class Event_pairs:
                                 pairs.append((datetime.date(dsi[0],dsi[1],dsi[2]),tweet.split(timephrase)))
                 return pairs
             if "weekday" in nud:
-                if not "date" in nud and not "month" in nud not "timeunit" in nud:
+                if not "date" in nud and not "month" in nud and not "timeunit" in nud:
                     pairs = []
                     tweet_weekday=date.weekday()
                     for w in nud["weekday"]:
