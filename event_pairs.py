@@ -143,8 +143,7 @@ class Event_pairs:
                         elif "num" in nud:
                             if int(unit) in range(1,13):
                                 nud["month"].append((int(unit),i))
-                            else:
-                                nud["num"].append((int(unit),i))
+                            nud["num"].append((int(unit),i))
                         else:
                             nud["num"].append((int(unit),i))
                     elif unit in weekdays:
