@@ -118,7 +118,7 @@ class Event_pairs:
                 g2 += ondne * (log(ondne/endne)/log(2))
             date_entity_score.append([date,entity,g2])
         return sorted(date_entity_score,key = lambda x: x[2],
-                reverse=True))
+                reverse=True)
 
     def extract_date(self,tweet,date):
         convert_nums = {"een":1, "twee":2, "drie":3, "vier":4,
