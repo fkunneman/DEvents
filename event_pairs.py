@@ -77,7 +77,7 @@ class Event_pairs:
             if approach == "single":
                 entities = sorted(entities,key = lambda x: x[1],
                     reverse=True)
-                print(tweet.text,tweet.dateref,entities)
+                print(tweet.text,tweet.daterefs,entities)
                 # if len(entities) > 0:
                 #     tweet.entities = [entities[0][0]]
                 #     print tweet.text,tweet.dateref,tweet.entities
