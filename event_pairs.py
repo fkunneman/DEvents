@@ -141,10 +141,10 @@ class Event_pairs:
                         if int(unit) in range(2010,2020):
                             nud["year"].append((int(unit),i))
                         elif "num" in nud:
-                            if len([x for x in nud["num"] if x[1] \
-                                == i]) > 0: 
-                                if int(unit) in range(1,13):
-                                    nud["month"].append((int(unit),i))
+                            if int(unit) in range(1,13):
+                                nud["month"].append((int(unit),i))
+                            else:
+                                nud["num"].append((int(unit),i))
                         else:
                             nud["num"].append((int(unit),i))
                     elif unit in weekdays:
