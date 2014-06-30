@@ -284,7 +284,7 @@ class Event_pairs:
 
     def extract_entity(self,text):
         ngram_score = []
-        c = chunk.split()
+        c = text.split()
         for i in range(5):
             if i == 0:
                 ngrams = zip(c)
