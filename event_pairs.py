@@ -4,7 +4,7 @@ import datetime
 from collections import defaultdict
 import codecs
 
-# import colibricore
+import colibricore
 import time_functions
 
 
@@ -29,24 +29,41 @@ class Event_pairs:
                 dateref_phrase = self.extract_date(text,date)
                 if dateref_phrase:
                     chunks = dateref_phrase[0]
-                    for entry in dateref_phrase[1:]:
-                        dtweet = self.Tweet()
-                        units = [tokens[1],tokens[2],date,text,
-                            entry,chunks]
-                        dtweet.set_meta(units)
-                        self.tweets.append(dtweet)
+                    refdates = dateref_phrase[1]
+                    dtweet = self.Tweet()
+                    units = [tokens[1],tokens[2],date,text,
+                        refdates,chunks]
+                    dtweet.set_meta(units)
+                    self.tweets.append(dtweet)
 
-    def select_entity_tweets(self,wiki_commonness,approach = "single"):
+    def select_entity_tweets(self,tmp,wiki_commonness,approach = "single"):
         #load in commonness files per ngram
-        self.ngramdicts = []
+        classfile = tmp + "_page.colibri.cls"
+        textfile = tmp + "_page.txt"
+        corpusfile = tmp + "_page.colibri.dat"
+        with open(textfile,'w',encoding='utf-8') as g:
+            for ngramfile in wiki_commonness:
+                ngramopen = codecs.open(ngramfile,"r","utf-8")
+                for line in ngramopen.readlines():
+                    tokens = line.strip().split("\t")
+                    g.write(tokens[0] + "\n")
+                    # ngramdict[tokens[0]] = float(tokens[3])
+                ngramopen.close()
+                # self.ngramdicts.append(ngramdict)
+        self.classencoder = colibricore.ClassEncoder()
+        classencoder.build(textfile)
+        classencoder.save(classfile)
+        classencoder.encodefile(textfile, corpusfile)
+        self.classdecoder = colibricore.ClassDecoder(classfile)
+        self.dmodel = colibricore.PatternDict_float()
+        #assign values to ngrams
         for ngramfile in wiki_commonness:
-            ngramdict = defaultdict(float)
             ngramopen = codecs.open(ngramfile,"r","utf-8")
             for line in ngramopen.readlines():
                 tokens = line.strip().split("\t")
-                ngramdict[tokens[0]] = float(tokens[3])
+                pattern = self.classencoder.buildpattern(tokens[0])
+                self.dmodel[pattern] = float(tokens[3])
             ngramopen.close()
-            self.ngramdicts.append(ngramdict)
         #extract entities from tweets
         for tweet in self.tweets:
             entities = []
@@ -56,9 +73,10 @@ class Event_pairs:
             if approach == "single":
                 entities = sorted(entities,key = lambda x: x[1],
                     reverse=True)
-                if len(entities) > 0:
-                    tweet.entities = [entities[0][0]]
-                    print tweet.text,tweet.dateref,tweet.entities
+                print tweet.text,tweet.dateref,entities
+                # if len(entities) > 0:
+                #     tweet.entities = [entities[0][0]]
+                #     print tweet.text,tweet.dateref,tweet.entities
 
     def extract_date(self,tweet,date):
         convert_nums = {"een":1, "twee":2, "drie":3, "vier":4,
@@ -260,13 +278,10 @@ class Event_pairs:
             else:
                 return output
 
-    def extract_entity(self,chunk):
+    def extract_entity(self,text):
         ngram_score = []
-        #get all n-grams up to 5
-        for i in range(len(self.ngramdicts)):
-            ngdict = self.ngramdicts[i]
-            dng = set(ngdict)
-            c = chunk.split()
+        c = chunk.split()
+        for i in range(5):
             if i == 0:
                 ngrams = zip(c)
             elif i == 1:
@@ -278,8 +293,9 @@ class Event_pairs:
             elif i == 4:
                 ngrams = zip(c, c[1:], c[2:], c[3:], c[4:])
             for ngram in [" ".join(x).replace("#","") for x in ngrams]:
-                if ngram in dng:
-                    ngram_score.append((ngram,ngdict[ngram]))
+                pattern = self.classencoder.buildpattern(ngram)
+                if not pattern.unknown():
+                    ngram_score.append((ngram,self.dmodel[pattern]))
         return ngram_score
 
     class Tweet:
@@ -296,10 +312,11 @@ class Event_pairs:
             self.user = units[1]
             self.date = units[2]
             self.text = units[3]
-            self.dateref = units[4]
+            self.daterefs = units[4]
             self.chunks = units[5]
-            if len(units) > 5:
-                self.entities = units[6:]
+            if len(units > 4):
+                self.entities = units[6]
+
 
         def set_entities(self,entities):
             self.entities = entities
