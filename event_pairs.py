@@ -101,7 +101,7 @@ class Event_pairs:
                     continue
         print("calculating score")
         #for each pair
-        total = len(tweets)
+        total = len(self.tweets)
         for date in date_entity.keys():
             for entity in date_entity[date].keys():
                 g2 = 0
