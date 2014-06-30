@@ -28,7 +28,7 @@ class Event_pairs:
                     setting="vs")
                 dateref_phrase = self.extract_date(text,date)
                 if dateref_phrase:
-                    print tweet,dateref_phrase
+                    print text,dateref_phrase
                     for entry in dateref_phrase:
                         dtweet = self.Tweet()
                         units = [tokens[1],tokens[2],date,text,
@@ -154,12 +154,10 @@ class Event_pairs:
                         print tweet
                         nud["nweek"].append((unit,i))
             
-            print tweet
             if "timeunit" in nud:
                 pairs = []
                 for t in nud["timeunit"]: 
                     num_match = t[1]
-                    print matches, nud["num"]
                     days = t[0] * [x[0] for x in nud["num"] if \
                         x[1] == num_match][0]
                     timephrase = " ".join([x for x in \
@@ -173,7 +171,6 @@ class Event_pairs:
                 for t in nud["month"]:
                     num_match = t[1]
                     m = t[0]
-                    print matches, nud["num"]
                     d = [x[0] for x in nud["num"] if x[1] == \
                         num_match][0]
                     if "year" in nud:
