@@ -161,7 +161,8 @@ class Event_pairs:
                     elif unit == "volgende week":
                         nud["nweek"].append((unit,i))
                 timephrases[i] = timephrases[i].replace("  "," ")
-            print timephrases
+            regexPattern = '|'.join(map(re.escape, timephrases))
+            print timephrases,re.split(regexPattern, tweet)
             if "timeunit" in nud:
                 pairs = []
                 for t in nud["timeunit"]: 
