@@ -123,7 +123,6 @@ class Event_pairs:
             #print tweet,re.findall('|'.join(list_patterns), tweet)
             timephrases = []
             matches = re.findall('|'.join(list_patterns), tweet)
-            print tweet,matches
             nud = defaultdict(list)
             for i,units in enumerate(matches):
                 timephrases.append(" ".join([x for x in \
