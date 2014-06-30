@@ -93,9 +93,12 @@ class Event_pairs:
         for tweet in self.tweets:
             for date in tweet.daterefs:
                 date_count[date] += 1
-                for entity in tweet.entities:
-                    entity_count[entity] += 1
-                    date_entity[date][entity] += 1
+                try:
+                    for entity in tweet.entities:
+                        entity_count[entity] += 1
+                        date_entity[date][entity] += 1
+                except AttributeError:
+                    continue
         print("calculating score")
         #for each pair
         total = len(tweets)
