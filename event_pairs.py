@@ -197,7 +197,9 @@ class Event_pairs:
                                 nud["year"]]:
                                 print nud["year"],[x[0] for x in \
                                     nud["year"] if x[1] == \
-                                    num_match][0],da[0]
+                                    num_match][0],da[0],date_vs.search([x[0] for x in \
+                                    nud["year"] if x[1] == \
+                                    num_match][0] + da[0]).groups()
                                 ds = date_vs.search([x[0] for x in \
                                     nud["year"] if x[1] == \
                                     num_match][0] + da[0]).groups()
