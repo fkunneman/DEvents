@@ -39,8 +39,8 @@ for infile in args.i:
 print("extracting entities")
 if args.w:
     ep.select_entity_tweets(args.d,args.w,args.a)
-if args.a:
-    ep.select_hashtags.tweets()
+if args.t:
+    ep.select_hashtags_tweets()
 print("ranking events")
 ranked_events = ep.rank_events()
 #print(ranked_events)
