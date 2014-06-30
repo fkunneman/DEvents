@@ -108,7 +108,7 @@ class Event_pairs:
             (timeunits) + r"( nog)? te gaan",r"(\b|^)" + (nums) + " " +
             (months) + r"( |$)" + r"(\d{2,4})?",r"(\b|^)(\d{1,2}-\d{1,2})"
             r"(-\d{2,4})?(\b|$)",r"(\b|^)(\d{2,4}/)?(\d{1,2}/\d{1,2})"
-            "(\b|$)",r"(\b|$)((volgende week) )?(maandag|dinsdag|"
+            "(\b|$)",r"(\b|$)(volgende week)? ?(maandag|dinsdag|"
             "woensdag|donderdag|vrijdag|zaterdag|zondag|overmorgen) ?"
             r"(avond|nacht|ochtend|middag)?( |$)"])
 
@@ -154,8 +154,9 @@ class Event_pairs:
                             nud["num"].append((int(unit),i))
                     elif unit in weekdays:
                         nud["weekday"].append((unit,i))
-                        timephrases[i] = "".join([x for x in \
-                            units if len(x) > 0 and not x == " "])
+                        if re.search(r"(avond|middag|ochtend|nacht)",tweet):
+                            timephrases[i] = "".join([x for x in \
+                                units if len(x) > 0 and not x == " "])
                     elif unit in spec_days:
                         nud["sday"].append((unit,i))
                     elif unit == "volgende week":
