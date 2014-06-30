@@ -39,6 +39,7 @@ class Event_pairs:
 
     def select_entity_tweets(self,tmp,wiki_commonness,approach = "single"):
         #load in commonness files per ngram
+        print "reading in text"
         classfile = tmp + "_page.colibri.cls"
         textfile = tmp + "_page.txt"
         corpusfile = tmp + "_page.colibri.dat"
@@ -52,12 +53,13 @@ class Event_pairs:
                 ngramopen.close()
                 # self.ngramdicts.append(ngramdict)
         self.classencoder = colibricore.ClassEncoder()
-        classencoder.build(textfile)
-        classencoder.save(classfile)
-        classencoder.encodefile(textfile, corpusfile)
+        self.classencoder.build(textfile)
+        self.classencoder.save(classfile)
+        self.classencoder.encodefile(textfile, corpusfile)
         self.classdecoder = colibricore.ClassDecoder(classfile)
         self.dmodel = colibricore.PatternDict_float()
         #assign values to ngrams
+        print "making dict"
         for ngramfile in wiki_commonness:
             ngramopen = codecs.open(ngramfile,"r","utf-8")
             for line in ngramopen.readlines():
@@ -66,6 +68,7 @@ class Event_pairs:
                 self.dmodel[pattern] = float(tokens[3])
             ngramopen.close()
         #extract entities from tweets
+        print "extracting entities"
         for tweet in self.tweets:
             entities = []
             for chunk in tweet.chunks:
