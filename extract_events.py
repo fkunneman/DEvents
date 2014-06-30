@@ -17,7 +17,7 @@ parser.add_argument('-d', action = 'store', required = False,
 parser.add_argument('-a', action = 'store', default = "single",
     help = "Choose to extract only the top entity, or all common "
     "entities")
-parser.add_argument('-h', action = 'store_true',
+parser.add_argument('-t', action = 'store_true',
     help = "Choose to include hashtags as entities")
 parser.add_argument('-p', action = 'store', required = True, 
     help = "File to write tweet info to")
