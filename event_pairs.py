@@ -17,6 +17,7 @@ class Event_pairs:
         for et in eventtweets:
             info = et.strip().split("\t")
             tweet = self.Tweet()
+            tweet.set_meta([x.split("|") for x in info])
             tweet.set_meta([x.split(" ") for x in info])
             self.tweets.append(tweet)
 
