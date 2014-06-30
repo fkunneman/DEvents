@@ -28,6 +28,8 @@ class Event_pairs:
                     setting="vs")
                 dateref_phrase = self.extract_date(text,date)
                 if dateref_phrase:
+                    print text,dateref_phrase
+                    continue
                     #print text,dateref_phrase
                     for entry in dateref_phrase:
                         dtweet = self.Tweet()
@@ -163,21 +165,14 @@ class Event_pairs:
                         nud["nweek"].append((unit,i))
                 timephrases[i] = timephrases[i].replace("  "," ")
             regexPattern = '|'.join(map(re.escape, timephrases))
-            print timephrases,re.split(regexPattern, tweet)
+            output = [re.split(regexPattern, tweet)]
             if "timeunit" in nud:
-                pairs = []
                 for t in nud["timeunit"]: 
                     num_match = t[1]
                     days = t[0] * [x[0] for x in nud["num"] if \
                         x[1] == num_match][0]
-                    timephrase = " ".join([x for x in \
-                        matches[num_match] if len(x) > 0])
-                    # print units,timephrase 
-                    pairs.append((date + datetime.timedelta(days=days),
-                        tweet.split(timephrase)))
-                return pairs
+                    output.append(date + datetime.timedelta(days=days))
             if "month" in nud:
-                pairs = []
                 for t in nud["month"]:
                     num_match = t[1]
                     m = t[0]
@@ -191,19 +186,11 @@ class Event_pairs:
                             y = date.year
                     else:
                         y = date.year
-                    timephrase = " ".join([x for x in \
-                        matches[num_match] if len(x) > 0])
-                    # print tweet,units,timephrase
-                    pairs.append((datetime.date(y,m,d),
-                        tweet.split(timephrase)))
+                    output.append(datetime.date(y,m,d))
                 return pairs
             if "date" in nud:
-                pairs = []
                 for da in nud["date"]:
                     num_match = da[1]
-                    timephrase = "".join([x for x in \
-                        matches[num_match] if len(x) > 0])
-                    # print tweet,units,timephrase
                     if re.search("-",da[0]):
                         if "year" in nud:
                             if num_match in [x[1] for x in \
@@ -217,12 +204,12 @@ class Event_pairs:
                         if dsi[1] in range(1,13) and \
                             dsi[0] in range(1,32):
                             if ds[2] == None:
-                                pairs.append((datetime.date(\
+                                output.append((datetime.date(\
                                     date.year,dsi[1],
                                     dsi[0]),tweet.split(timephrase)))
                             else:
                                 if dsi[2] in range(2010,2020):
-                                    pairs.append((datetime.date(dsi[2],
+                                    output.append((datetime.date(dsi[2],
                                         dsi[1],dsi[0]),
                                         tweet.split(timephrase))) 
                     elif re.search("/",da[0]):
@@ -237,26 +224,20 @@ class Event_pairs:
                         dsi = [int(x) for x in ds if x != None]
                         if dsi[0] in range(1,13) and \
                             dsi[1] in range(1,32):
-                            pairs.append((datetime.date(date.year,
+                            output.append((datetime.date(date.year,
                                 dsi[0],dsi[1]),
                                 tweet.split(timephrase)))
                         elif dsi[0] in range(2010,2020):
                             if dsi[1] in range(1,13) and \
                                 dsi[2] in range(1,32):
-                                pairs.append((datetime.date(dsi[0],
-                                    dsi[1],dsi[2]),
-                                    tweet.split(timephrase)))
-                return pairs
+                                output.append(datetime.date(dsi[0],
+                                    dsi[1],dsi[2]))
             if "weekday" in nud:
                 if not "date" in nud and not "month" in nud and \
                     not "timeunit" in nud:
-                    pairs = []
                     tweet_weekday=date.weekday()
                     for w in nud["weekday"]:
                         num_match = w[1]
-                        timephrase = " ".join([x for x in \
-                            matches[num_match] if len(x) > 0])
-                        # print tweet,units,timephrase
                         ref_weekday=weekdays.index(w[0])
                         if num_match in [x[1] for x in nud["nweek"]]:
                             add = 7
@@ -270,24 +251,21 @@ class Event_pairs:
                         else:
                             days_ahead = ref_weekday + \
                                 (7-tweet_weekday) + add
-                        pairs.append((date + \
-                            datetime.timedelta(days=days_ahead),
-                            tweet.split(timephrase)))
-                    return pairs
+                        output.append(date + \
+                            datetime.timedelta(days=days_ahead)))
             if "sday" in nud:
-                pairs = []
                 for s in nud["sday"]:
                     num_match = s[1] 
                     timephrase = " ".join([x for x in \
                         matches[num_match] if len(x) > 0])
                     u = s[0]
                     if u == "overmorgen":
-                        pairs.append((date + \
-                            datetime.timedelta(days=2),
-                            tweet.split(timephrase)))
-                return pairs
+                        output.append(date + \
+                            datetime.timedelta(days=2))
             if len(nud.keys()) == 0:
                 return False
+            else:
+                return output
 
     def extract_entity(self,chunk):
         ngram_score = []
