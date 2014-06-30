@@ -1,6 +1,5 @@
 
 import argparse
-import codecs
 from event_pairs import Event_pairs
 
 """
@@ -19,10 +18,10 @@ parser.add_argument('-o', action = 'store', required = True,
 args = parser.parse_args() 
 
 ep = Event_pairs()
-print "extracting tweets with a time reference"
-tweetfile = codecs.open(args.i,"r","utf-8")
+print("extracting tweets with a time reference")
+tweetfile = open(args.i,"r",encoding = "utf-8")
 ep.select_date_tweets(tweetfile.readlines())
 tweetfile.close()
-print "extracting entities"
+print("extracting entities")
 ep.select_entity_tweets(args.d,args.w)
 
