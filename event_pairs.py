@@ -2,7 +2,6 @@
 import re
 import datetime
 from collections import defaultdict
-import codecs
 
 import colibricore
 import time_functions
@@ -39,19 +38,19 @@ class Event_pairs:
 
     def select_entity_tweets(self,tmp,wiki_commonness,approach = "single"):
         #load in commonness files per ngram
-        print "reading in text"
+        print("reading in text")
         classfile = tmp + "_page.colibri.cls"
         textfile = tmp + "_page.txt"
         corpusfile = tmp + "_page.colibri.dat"
         with open(textfile,'w',encoding = 'utf-8') as g:
-        for ngramfile in wiki_commonness:
-            ngramopen = codecs.open(ngramfile,"r","utf-8")
-            for line in ngramopen.readlines():
-                tokens = line.strip().split("\t")
-                g.write(tokens[0] + "\n")
-                # ngramdict[tokens[0]] = float(tokens[3])
-            ngramopen.close()
-        g.close()
+            for ngramfile in wiki_commonness:
+                ngramopen = codecs.open(ngramfile,"r","utf-8")
+                for line in ngramopen.readlines():
+                    tokens = line.strip().split("\t")
+                    g.write(tokens[0] + "\n")
+                    # ngramdict[tokens[0]] = float(tokens[3])
+                ngramopen.close()
+        # g.close()
             # self.ngramdicts.append(ngramdict)
         self.classencoder = colibricore.ClassEncoder()
         self.classencoder.build(textfile)
@@ -60,17 +59,16 @@ class Event_pairs:
         self.classdecoder = colibricore.ClassDecoder(classfile)
         self.dmodel = colibricore.PatternDict_float()
         #assign values to ngrams
-        print "making dict"
+        print("making dict")
         for ngramfile in wiki_commonness:
-            ngramopen = codecs.open(ngramfile,"r","utf-8")
+            ngramopen = open(ngramfile,"r",encoding = "utf-8")
             for line in ngramopen.readlines():
                 tokens = line.strip().split("\t")
-                pattern = self.classencoder.buildpattern(tokens[0].encode('utf-8'))
+                pattern = self.classencoder.buildpattern(tokens[0])
                 self.dmodel[pattern] = float(tokens[3])
-                print tokens[0],self.dmodel[pattern]
             ngramopen.close()
         #extract entities from tweets
-        print "extracting entities"
+        print("extracting entities")
         for tweet in self.tweets:
             entities = []
             for chunk in tweet.chunks:
@@ -79,7 +77,7 @@ class Event_pairs:
             if approach == "single":
                 entities = sorted(entities,key = lambda x: x[1],
                     reverse=True)
-                print tweet.text,tweet.dateref,entities
+                print(tweet.text,tweet.dateref,entities)
                 # if len(entities) > 0:
                 #     tweet.entities = [entities[0][0]]
                 #     print tweet.text,tweet.dateref,tweet.entities
