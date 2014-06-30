@@ -112,14 +112,15 @@ class Event_pairs:
         timeus = convert_timeunit.keys()
         ms = convert_month.keys()
         if re.findall('|'.join(list_patterns), tweet):
-            print re.findall('|'.join(list_patterns), tweet)
+            #print tweet,re.findall('|'.join(list_patterns), tweet)
             units = re.findall('|'.join(list_patterns), tweet)[0]
             nud = {}
             for unit in units:
                 if unit in ns:
                     nud["num"] = convert_nums[unit]
                 elif unit in timeus:
-                    nud["timeunit"] = convert_timeunit[unit]
+                    if not "weekday" in nud:
+                        nud["timeunit"] = convert_timeunit[unit]
                 elif unit in ms:
                     nud["month"] = convert_month[unit]
                 elif re.search(r"\d{1,2}-\d{1,2}",unit) or re.search(r"\d{1,2}/\d{1,2}",unit):
@@ -138,7 +139,7 @@ class Event_pairs:
                     nud["weekday"] = unit
                 elif unit in spec_days:
                     nud["sday"] = unit
-
+             
             if "timeunit" in nud: 
                 days = nud["timeunit"] * nud["num"]
                 timephrase = " ".join([x for x in units if len(x) > 0])
