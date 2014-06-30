@@ -180,6 +180,8 @@ class Event_pairs:
                         if num_match in [x[1] for x in nud["year"]]:
                             y = [x[0] for x in nud["year"] if \
                                 x[1] == num_match][0]
+                        else:
+                            y = date.year
                     else:
                         y = date.year
                     timephrase = " ".join([x for x in \
