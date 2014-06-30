@@ -104,7 +104,7 @@ class Event_pairs:
             (months) + r"( (\d{2,4}))?(\b|$)",r"(\b|^)(\d{1,2}-\d{1,2})"
             r"(-\d{2,4})?(\b|$)",r"(\b|^)(\d{2,4}/)?(\d{1,2}/\d{1,2})"
             "(\b|$)",r"(\b|$)(maandag|dinsdag|woensdag|donderdag|vrijdag|"
-            "zaterdag|zondag|overmorgen)"])
+            "zaterdag|zondag|overmorgen)(avond|nacht|ochtend|middag)?"])
 
         date_eu = re.compile(r"(\d{1,2})-(\d{1,2})-?(\d{2,4})?")
         date_vs = re.compile(r"(\d{2,4})?/?(\d{1,2})/(\d{1,2})")
@@ -112,6 +112,7 @@ class Event_pairs:
         timeus = convert_timeunit.keys()
         ms = convert_month.keys()
         if re.findall('|'.join(list_patterns), tweet):
+            print re.findall('|'.join(list_patterns), tweet)
             units = re.findall('|'.join(list_patterns), tweet)[0]
             nud = {}
             for unit in units:
