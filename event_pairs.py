@@ -17,8 +17,11 @@ class Event_pairs:
         for et in eventtweets:
             info = et.strip().split("\t")
             tweet = self.Tweet()
-            tweet.set_meta([x.split("|") for x in info])
-            tweet.set_meta([x.split(" ") for x in info])
+            units = info[:5]
+            units.append([x.strip() for x in info[5].split("|")])
+            if len(info) > 6:
+                units.append([x.strip() for x in info[6].split(" ")])
+            tweet.set_meta(units)
             self.tweets.append(tweet)
 
     def select_date_tweets(self,new_tweets):
