@@ -18,8 +18,8 @@ class Event_pairs:
             info = et.strip().split("\t")
             info[2] = time_functions.return_datetime(info[2],
                     setting="vs").date()
-            info[4] = time_functions.return_datetime(info[4],
-                    setting="vs").date()
+            info[4] = [time_functions.return_datetime(x,
+                    setting="vs").date() for x in info[4].split(" ")]
             tweet = self.Tweet()
             units = info[:5]
             #print("chunks",[x.strip() for x in info[5].split("|")])
