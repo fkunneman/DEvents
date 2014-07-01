@@ -51,7 +51,10 @@ for day in sorted(day_files.keys()):
     #print(ranked_events)
     print("writing output")
     basedir = args.o + day + "/"
-    os.mkdir(basedir)
+    try:
+        os.mkdir(basedir)
+    except:
+        print "dir exists"
     print(basedir)
     tweetinfo = open(basedir + "modeltweets.txt","w",encoding = "utf-8")
     for tweet in ep.tweets:
