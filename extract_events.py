@@ -50,9 +50,9 @@ for tweet in ep.tweets:
     info = [tweet.id,tweet.user,str(tweet.date),tweet.text," ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks])]
     try:
         info.append(" ".join(tweet.entities))
+        tweetinfo.write("\t".join(info) + "\n")
     except:
-        print("no entity")
-    tweetinfo.write("\t".join(info) + "\n")
+        tweetinfo.write("\t".join(info) + "\n")
 tweetinfo.close()
 eventinfo = open(args.o,"w",encoding = "utf-8")
 for event in ranked_events:

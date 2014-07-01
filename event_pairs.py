@@ -114,6 +114,7 @@ class Event_pairs:
                         date_entity_tweets[date][entity].append(tweet.text)
                 except AttributeError:
                     continue
+        print("len dates",len(date_count.keys()),"len entities",len(entity_count.keys()),"len combis",sum([len(date_entity[x].keys()) for x in date_entity.keys()]))
         print("calculating score")
         #for each pair
         total = len(self.tweets)
@@ -142,7 +143,7 @@ class Event_pairs:
                 #print(ondne,endne)
                 if ondne != 0 and endne != 0:
                     g2 += ondne * (math.log(ondne/endne)/math.log(2))
-            date_entity_score.append([date,entity,g2,date_entity_tweets[date][entity]])
+                date_entity_score.append([date,entity,g2,date_entity_tweets[date][entity]])
         return sorted(date_entity_score,key = lambda x: x[2],
                 reverse=True)
 
@@ -254,7 +255,10 @@ class Event_pairs:
                     num_match = t[1]
                     days = t[0] * [x[0] for x in nud["num"] if \
                         x[1] == num_match][0]
-                    output.append(date + datetime.timedelta(days=days))
+                    try:
+                        output.append(date + datetime.timedelta(days=days))
+                    except OverflowError:
+                        continue
             if "month" in nud:
                 for t in nud["month"]:
                     num_match = t[1]
@@ -271,7 +275,7 @@ class Event_pairs:
                         else:
                             y = date.year
                         output.append(datetime.date(y,m,d))
-                    except ValueError:
+                    except:
                         continue
             if "date" in nud:
                 for da in nud["date"]:
