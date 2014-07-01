@@ -30,7 +30,8 @@ for infile in args.i:
     day_files[day].append(infile)
 
 ep = Event_pairs()
-ep.load_commonness(args.d,args.w)
+if args.w:
+    ep.load_commonness(args.d,args.w)
 for day in sorted(day_files.keys()):
     print("extracting tweets with a time reference")
     for infile in day_files[day]:
