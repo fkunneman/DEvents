@@ -259,8 +259,11 @@ class Event_pairs:
                 for t in nud["month"]:
                     num_match = t[1]
                     m = t[0]
-                    d = [x[0] for x in nud["num"] if x[1] == \
-                        num_match][0]
+                    try:
+                        d = [x[0] for x in nud["num"] if x[1] == \
+                            num_match][0]
+                    except:
+                        continue
                     if "year" in nud:
                         if num_match in [x[1] for x in nud["year"]]:
                             y = [x[0] for x in nud["year"] if \
