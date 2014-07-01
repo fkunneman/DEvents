@@ -50,8 +50,7 @@ class Event_pairs:
                         dtweet.set_meta(units)
                         self.tweets.append(dtweet)
 
-    def select_entity_tweets(self,tmp,wiki_commonness,
-        approach = "single"):
+    def load_commonness(self,tmp,wiki_commonness):
         #load in commonness files per ngram
         print("reading in text")
         classfile = tmp + "_page.colibri.cls"
@@ -82,6 +81,8 @@ class Event_pairs:
                 pattern = self.classencoder.buildpattern(tokens[0])
                 self.dmodel[pattern] = float(tokens[3])
             ngramopen.close()
+
+    def select_entity_tweets(self,approach = "single"):
         #extract entities from tweets
         print("extracting entities")
         for tweet in self.tweets:

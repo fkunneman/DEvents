@@ -15,7 +15,7 @@ parser.add_argument('-w', action = 'store', nargs='+', required = False,
 parser.add_argument('-d', action = 'store', required = False, 
     help = "The tmp dict for pattern indexing")
 parser.add_argument('-a', action = 'store', default = "single",
-    help = "Choose to extract only the top entity, or all common "
+    help = "Choose to extract entities. \'single\' for only the top entity, or \'all\' for all common "
     "entities")
 parser.add_argument('-t', action = 'store_true',
     help = "Choose to include hashtags as entities")
@@ -26,19 +26,22 @@ parser.add_argument('-o', action = 'store', required = True,
 args = parser.parse_args() 
 
 ep = Event_pairs()
-print("extracting tweets with a time reference")
 if args.m:
+    print("loading event tweets")
     eventfile = open(args.m,"r",encoding = "utf-8")
     ep.append_eventtweets(eventfile.readlines())
     eventfile.close()
 if args.i:
+    print("extracting tweets with a time reference")
     for infile in args.i:
         tweetfile = open(infile,"r",encoding = "utf-8")
         ep.select_date_tweets(tweetfile.readlines())
         tweetfile.close()
-print("extracting entities")
 if args.w:
-    ep.select_entity_tweets(args.d,args.w,args.a)
+    ep.load_commonness(args.d,args.w)
+if args.a:
+    print("extracting entities")
+    ep.select_entity_tweets(args.a)
 if args.t:
     ep.select_hashtags_tweets()
 print("ranking events")
