@@ -137,22 +137,22 @@ class Event_pairs:
                         ode = date_entity[date][entity]
                         ede = (dc + ec) / total
                         #print(ode,ede)
-                        if ode != 0 and ede !=0:
+                        if ode > 0 and ede > 0:
                             g2 += ode * (math.log(ode/ede)/math.log(2))
                         odne = dc - ode
                         edne = (dc + (total-ec)) / total
-                        print(edne,odne)
-                        if edne != 0 and odne != 0:
+                        #print(edne,odne)
+                        if edne > 0 and odne > 0:
                             g2 += odne * (math.log(odne/edne)/math.log(2))
                         onde = ec - ode
                         ende = (ec + (total-dc)) / total
                         #print(date,entity,total,dc,ec,ode,onde,ende)
-                        if onde != 0 and ende != 0:
+                        if onde > 0 and ende > 0:
                             g2 += onde * (math.log(onde/ende)/math.log(2))
                         ondne = total - (ode+odne+onde) 
                         endne = ((total-dc) + (total-ec)) / total
                         #print(ondne,endne)
-                        if ondne != 0 and endne != 0:
+                        if ondne > 0 and endne > 0:
                             g2 += ondne * (math.log(ondne/endne)/math.log(2))
                         date_entity_score.append([date,entity,g2,date_entity_tweets[date][entity]])
         elif ranking == "freq":
