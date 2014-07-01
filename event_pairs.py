@@ -100,7 +100,6 @@ class Event_pairs:
     def select_hashtags_tweets(self):
         for tweet in self.tweets:
             hashtags = [x for x in tweet.text.split(" ") if re.search(r"^#",x)]
-            print(hashtags)
             if len(hashtags) > 0:
                 try:
                     tweet.entities.extend(hashtags)

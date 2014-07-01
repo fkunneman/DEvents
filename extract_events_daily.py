@@ -1,7 +1,8 @@
- 
+
 import argparse
 from collections import defaultdict
 from event_pairs import Event_pairs
+import os
 
 """
 
@@ -49,6 +50,7 @@ for day in sorted(day_files.keys()):
     #print(ranked_events)
     print("writing output")
     basedir = args.o + day + "/"
+    os.mkdir(basedir)
     print(basedir)
     tweetinfo = open(basedir + "modeltweets.txt","w",encoding = "utf-8")
     for tweet in ep.tweets:
