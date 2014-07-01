@@ -262,19 +262,18 @@ class Event_pairs:
                     try:
                         d = [x[0] for x in nud["num"] if x[1] == \
                             num_match][0]
-                    except:
-                        continue
-                    if "year" in nud:
-                        if num_match in [x[1] for x in nud["year"]]:
-                            y = [x[0] for x in nud["year"] if \
-                                x[1] == num_match][0]
+                        if "year" in nud:
+                            if num_match in [x[1] for x in nud["year"]]:
+                                y = [x[0] for x in nud["year"] if \
+                                    x[1] == num_match][0]
+                            else:
+                                y = date.year
                         else:
                             y = date.year
-                    else:
-                        y = date.year
-                    #print(tweet,nud["num"],d)
-                    if d in range(1,32):
+                        #print(tweet,nud["num"],d)
                         output.append(datetime.date(y,m,d))
+                    except ValueError:
+                        continue
             if "date" in nud:
                 for da in nud["date"]:
                     num_match = da[1]
