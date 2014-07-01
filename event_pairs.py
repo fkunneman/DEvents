@@ -141,7 +141,7 @@ class Event_pairs:
                         g2 += odne * (math.log(odne/edne)/math.log(2))
                     onde = ec - ode
                     ende = (ec + (total-dc)) / total
-                    print(date,entity,ec,ode,onde,ende)
+                    print(date,entity,total,dc,ec,ode,onde,ende)
                     if onde != 0 and ende != 0:
                         g2 += onde * (math.log(onde/ende)/math.log(2))
                     ondne = total - (ode+odne+onde) 
