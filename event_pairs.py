@@ -25,7 +25,7 @@ class Event_pairs:
                 units.append([x.strip() for x in info[6].split(" ")])
             tweet.set_meta(units)
             self.tweets.append(tweet)
-        print("all",[t.entities for t in self.tweets if t.entities != None])
+        print("all",[t.entities for t in self.tweets])
 
     def select_date_tweets(self,new_tweets):
         for tweet in new_tweets:
@@ -397,8 +397,7 @@ class Event_pairs:
             an entity and time
         """
         def __init__(self):
-            self.id = ""
-            self.user = ""
+            self.entities = [""]
 
         def set_meta(self,units):
             self.id = units[0]
