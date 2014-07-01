@@ -28,7 +28,7 @@ class Event_pairs:
                 tokens[-1]):
                 text = tokens[-1].lower()
                 date = time_functions.return_datetime(tokens[3],
-                    setting="vs").date
+                    setting="vs").date()
                 dateref_phrase = self.extract_date(text,date)
                 if dateref_phrase:
                     if len(dateref_phrase) > 1:
