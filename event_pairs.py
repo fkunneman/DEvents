@@ -27,8 +27,8 @@ class Event_pairs:
             if tokens[0] == "dutch" and not re.search("^RT ",
                 tokens[-1]):
                 text = tokens[-1].lower()
-                date = time_functions.return_datetime(tokens[3],
-                    setting="vs")
+                date = datetime.date(time_functions.return_datetime(tokens[3],
+                    setting="vs"))
                 dateref_phrase = self.extract_date(text,date)
                 if dateref_phrase:
                     if len(dateref_phrase) > 1:
