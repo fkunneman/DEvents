@@ -6,7 +6,7 @@ from event_pairs import Event_pairs
 
 """
 parser = argparse.ArgumentParser(description = "")
-parser.add_argument('-i', action = 'store', nargs='+',required = True, 
+parser.add_argument('-i', action = 'store', nargs='+',required = False, 
     help = "the input file")  
 parser.add_argument('-m', action = 'store', required = False, 
     help = "The file with information on existing pairs")
