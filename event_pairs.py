@@ -18,12 +18,12 @@ class Event_pairs:
             info = et.strip().split("\t")
             tweet = self.Tweet()
             units = info[:5]
-            print("chunks",[x.strip() for x in info[5].split("|")])
+            #print("chunks",[x.strip() for x in info[5].split("|")])
             units.append([x.strip() for x in info[5].split("|")])
-            if len(info) > 6:
-                print("entities",[x.strip() for x in info[6].split(" ")])
-                units.append([x.strip() for x in info[6].split(" ")])
             tweet.set_meta(units)
+            if len(info) > 6:
+                #print("entities",[x.strip() for x in info[6].split(" ")])
+                tweet.set_entities([x.strip() for x in info[6].split(" ")])            
             self.tweets.append(tweet)
         print("all",[t.entities for t in self.tweets if t.e])
 
