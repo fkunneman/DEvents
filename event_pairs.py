@@ -269,8 +269,9 @@ class Event_pairs:
                             y = date.year
                     else:
                         y = date.year
-                    print text,nud["num"],d
-                    output.append(datetime.date(y,m,d))
+                    #print(tweet,nud["num"],d)
+                    if d in range(1,32):
+                        output.append(datetime.date(y,m,d))
             if "date" in nud:
                 for da in nud["date"]:
                     num_match = da[1]
