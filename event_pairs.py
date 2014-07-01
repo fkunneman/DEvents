@@ -25,7 +25,7 @@ class Event_pairs:
                 units.append([x.strip() for x in info[6].split(" ")])
             tweet.set_meta(units)
             self.tweets.append(tweet)
-        print("all",[t.entities for t in self.tweets])
+        print("all",[t.entities for t in self.tweets if t.entities != None])
 
     def select_date_tweets(self,new_tweets):
         for tweet in new_tweets:
