@@ -28,10 +28,9 @@ args = parser.parse_args()
 ep = Event_pairs()
 print("extracting tweets with a time reference")
 if args.m:
-    for infile in args.m:
-        eventfile = open(infile,"r",encoding = "utf-8")
-        ep.append_eventtweets(eventfile.readlines())
-        eventfile.close()
+    eventfile = open(args.m,"r",encoding = "utf-8")
+    ep.append_eventtweets(eventfile.readlines())
+    eventfile.close()
 for infile in args.i:
     tweetfile = open(infile,"r",encoding = "utf-8")
     ep.select_date_tweets(tweetfile.readlines())
