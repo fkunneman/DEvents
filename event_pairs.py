@@ -114,36 +114,36 @@ class Event_pairs:
                         date_entity_tweets[date][entity].append(tweet.text)
                 except AttributeError:
                     continue
-        print("len dates",len(date_count.keys()),"len entities",len(entity_count.keys()),"len combis",sum([len(date_entity[x].keys()) for x in date_entity.keys()]))
         print("calculating score")
         #for each pair
         total = len(self.tweets)
         for date in date_entity.keys():
             for entity in date_entity[date].keys():
-                g2 = 0
-                dc = date_count[date]
-                ec = entity_count[entity]
-                ode = date_entity[date][entity]
-                ede = (dc + ec) / total
-                #print(ode,ede)
-                if ode != 0 and ede !=0:
-                    g2 += ode * (math.log(ode/ede)/math.log(2))
-                odne = dc - ode
-                edne = (dc + (total-ec)) / total
-                #print(edne,odne)
-                if edne != 0 and odne != 0:
-                    g2 += odne * (math.log(odne/edne)/math.log(2))
-                onde = ec - ode
-                ende = (ec + (total-dc)) / total
-                #print(onde,ende)
-                if onde != 0 and ende != 0:
-                    g2 += onde * (math.log(onde/ende)/math.log(2))
-                ondne = total - (ode+odne+onde) 
-                endne = ((total-dc) + (total-ec)) / total
-                #print(ondne,endne)
-                if ondne != 0 and endne != 0:
-                    g2 += ondne * (math.log(ondne/endne)/math.log(2))
-                date_entity_score.append([date,entity,g2,date_entity_tweets[date][entity]])
+                if len(date_entity_tweets[date][entity]) >= 5:
+                    g2 = 0
+                    dc = date_count[date]
+                    ec = entity_count[entity]
+                    ode = date_entity[date][entity]
+                    ede = (dc + ec) / total
+                    #print(ode,ede)
+                    if ode != 0 and ede !=0:
+                        g2 += ode * (math.log(ode/ede)/math.log(2))
+                    odne = dc - ode
+                    edne = (dc + (total-ec)) / total
+                    #print(edne,odne)
+                    if edne != 0 and odne != 0:
+                        g2 += odne * (math.log(odne/edne)/math.log(2))
+                    onde = ec - ode
+                    ende = (ec + (total-dc)) / total
+                    #print(onde,ende)
+                    if onde != 0 and ende != 0:
+                        g2 += onde * (math.log(onde/ende)/math.log(2))
+                    ondne = total - (ode+odne+onde) 
+                    endne = ((total-dc) + (total-ec)) / total
+                    #print(ondne,endne)
+                    if ondne != 0 and endne != 0:
+                        g2 += ondne * (math.log(ondne/endne)/math.log(2))
+                    date_entity_score.append([date,entity,g2,date_entity_tweets[date][entity]])
         return sorted(date_entity_score,key = lambda x: x[2],
                 reverse=True)
 
@@ -274,7 +274,8 @@ class Event_pairs:
                                 y = date.year
                         else:
                             y = date.year
-                        output.append(datetime.date(y,m,d))
+                        if date < datetime.date(y,m,d):
+                            output.append(datetime.date(y,m,d))
                     except:
                         continue
             if "date" in nud:
@@ -293,13 +294,18 @@ class Event_pairs:
                         if dsi[1] in range(1,13) and \
                             dsi[0] in range(1,32):
                             if ds[2] == None:
-                                output.append(datetime.date(\
+                                if date < datetime.date(\
                                     date.year,dsi[1],
-                                    dsi[0]))
+                                    dsi[0]):
+                                    output.append(datetime.date(\
+                                        date.year,dsi[1],
+                                        dsi[0]))
                             else:
                                 if dsi[2] in range(2010,2020):
-                                    output.append(datetime.date(dsi[2],
-                                        dsi[1],dsi[0])) 
+                                    if date < datetime.date(dsi[2],
+                                        dsi[1],dsi[0]):
+                                        output.append(datetime.date(dsi[2],
+                                            dsi[1],dsi[0])) 
                     elif re.search("/",da[0]):
                         if "year" in nud:
                             if num_match in [x[1] for x in \
@@ -312,13 +318,17 @@ class Event_pairs:
                         dsi = [int(x) for x in ds if x != None]
                         if dsi[0] in range(1,13) and \
                             dsi[1] in range(1,32):
-                            output.append(datetime.date(date.year,
-                                dsi[0],dsi[1]))
+                            if date < datetime.date(date.year,
+                                dsi[0],dsi[1]):
+                                output.append(datetime.date(date.year,
+                                    dsi[0],dsi[1]))
                         elif dsi[0] in range(2010,2020):
                             if dsi[1] in range(1,13) and \
                                 dsi[2] in range(1,32):
-                                output.append(datetime.date(dsi[0],
-                                    dsi[1],dsi[2]))
+                                if date < datetime.date(dsi[0],
+                                    dsi[1],dsi[2]):
+                                    output.append(datetime.date(dsi[0],
+                                        dsi[1],dsi[2]))
             if "weekday" in nud:
                 if not "date" in nud and not "month" in nud and \
                     not "timeunit" in nud:
