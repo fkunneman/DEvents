@@ -16,10 +16,12 @@ class Event_pairs:
     def append_eventtweets(self,eventtweets):
         for et in eventtweets:
             info = et.strip().split("\t")
+            info[2] = time_functions.return_datetime(info[2],
+                    setting="vs").date()
+            info[4] = time_functions.return_datetime(info[4],
+                    setting="vs").date()
             tweet = self.Tweet()
-            units = info[:4]
-            units.append(time_functions.return_datetime(info[4],
-                    setting="vs").date())
+            units = info[:5]
             #print("chunks",[x.strip() for x in info[5].split("|")])
             units.append([x.strip() for x in info[5].split("|")])
             tweet.set_meta(units)
