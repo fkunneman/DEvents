@@ -31,10 +31,11 @@ if args.m:
     eventfile = open(args.m,"r",encoding = "utf-8")
     ep.append_eventtweets(eventfile.readlines())
     eventfile.close()
-for infile in args.i:
-    tweetfile = open(infile,"r",encoding = "utf-8")
-    ep.select_date_tweets(tweetfile.readlines())
-    tweetfile.close()
+if args.i:
+    for infile in args.i:
+        tweetfile = open(infile,"r",encoding = "utf-8")
+        ep.select_date_tweets(tweetfile.readlines())
+        tweetfile.close()
 print("extracting entities")
 if args.w:
     ep.select_entity_tweets(args.d,args.w,args.a)
