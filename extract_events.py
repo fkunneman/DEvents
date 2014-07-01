@@ -56,6 +56,6 @@ for tweet in ep.tweets:
 tweetinfo.close()
 eventinfo = open(args.o,"w",encoding = "utf-8")
 for event in ranked_events:
-    outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1] + "\n")
+    outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
     eventinfo.write(outstr)
 eventinfo.close()
