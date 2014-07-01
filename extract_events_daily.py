@@ -49,7 +49,7 @@ for day in sorted(day_files.keys()):
     #print(ranked_events)
     print("writing output")
     basedir = args.o + day + "/"
-    print basedir
+    print(basedir)
     tweetinfo = open(basedir + "modeltweets.txt","w",encoding = "utf-8")
     for tweet in ep.tweets:
         info = [tweet.id,tweet.user,str(tweet.date),tweet.text," ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks])]
