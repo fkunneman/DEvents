@@ -348,8 +348,8 @@ class Event_pairs:
                                 ds = date_vs.search(da[0] + [x[0] for x in \
                                     nud["year"] if x[1] == \
                                     num_match][0]).groups()
-                                else:
-                                    ds = date_vs.search(da[0]).groups()
+                            else:
+                                ds = date_vs.search(da[0]).groups()
                         else:
                             ds = date_vs.search(da[0]).groups()
                         dsi = [int(x) for x in ds if x != None]
