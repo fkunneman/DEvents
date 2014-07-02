@@ -268,12 +268,13 @@ class Event_pairs:
             if "timeunit" in nud:
                 for t in nud["timeunit"]: 
                     num_match = t[1]
-                    days = t[0] * [x[0] for x in nud["num"] if \
-                        x[1] == num_match][0]
-                    try:
-                        output.append(date + datetime.timedelta(days=days))
-                    except OverflowError:
-                        continue
+                    if "num" in nud:
+                        days = t[0] * [x[0] for x in nud["num"] if \
+                            x[1] == num_match][0]
+                        try:
+                            output.append(date + datetime.timedelta(days=days))
+                        except OverflowError:
+                            continue
             if "month" in nud:
                 for t in nud["month"]:
                     num_match = t[1]
