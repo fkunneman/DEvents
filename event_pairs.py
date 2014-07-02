@@ -3,6 +3,7 @@ import re
 import datetime
 from collections import defaultdict
 import math
+import itertools
 
 import colibricore
 import time_functions
@@ -106,7 +107,7 @@ class Event_pairs:
                 except:
                     tweet.set_entities(hashtags)
 
-    def rank_events(self,ranking):
+    def rank_events(self,ranking,clust = False):
         date_entity_score = []
         date_entity_tweets = defaultdict(lambda : defaultdict(list))
         #count dates and entities and pairs
@@ -122,6 +123,19 @@ class Event_pairs:
                         entity_count[entity] += 1
                         date_entity[date][entity] += 1
                         date_entity_tweets[date][entity].append(tweet.text)
+                    if clust:
+                        for u in range(2,len(tweet.entities)+1):
+                            for subset in itertools.combinations(tweet.entities, u):
+                                s1 = []
+                                s2 = []
+                                half = int(len(subset) / 2)
+                                for y in subset[:half]:
+                                    s1.extend(y.split(" "))
+                                for y in subset[half:]:
+                                    s2.extend(y.split(" "))
+                                if not bool(set(s1) & set(s2)):
+                                    entity_count[subset] += 1
+                                    date_entity[date][subset] += 1
                 except AttributeError:
                     continue
         print("calculating score")
@@ -303,6 +317,8 @@ class Event_pairs:
                                 ds = date_eu.search(da[0] + [x[0] for x in \
                                     nud["year"] if x[1] == \
                                     num_match][0]).groups()
+                            else:
+                                ds = date_eu.search(da[0]).groups()
                         else:
                             ds = date_eu.search(da[0]).groups()
                         dsi = [int(x) for x in ds if x != None]
@@ -331,6 +347,8 @@ class Event_pairs:
                                 ds = date_vs.search(da[0] + [x[0] for x in \
                                     nud["year"] if x[1] == \
                                     num_match][0]).groups()
+                                else:
+                                    ds = date_vs.search(da[0]).groups()
                         else:
                             ds = date_vs.search(da[0]).groups()
                         dsi = [int(x) for x in ds if x != None]

@@ -48,6 +48,7 @@ for day in sorted(day_files.keys()):
     print("ranking events")
     ranked_events_fit = ep.rank_events("fit")
     ranked_events_freq = ep.rank_events("freq")
+    ranked_events_fit_multi = ep.rank_events("fit",clust = True)
     #print(ranked_events)
     print("writing output")
     basedir = args.o + day + "/"
@@ -72,7 +73,12 @@ for day in sorted(day_files.keys()):
     eventinfo_fit.close()
     eventinfo_freq = open(basedir + "events_freq.txt","w",encoding = "utf-8")
     for event in ranked_events_freq:
-        outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
+        outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n\n"
         eventinfo_freq.write(outstr)
     eventinfo_freq.close()
+    eventinfo_fit_multi = open(basedir + "events_fit_multi.txt","w",encoding = "utf-8")
+    for event in ranked_events_fit_multi:
+        outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
+        eventinfo_fit_multi.write(outstr)
+    eventinfo_fit_multi.close()
     print(day,"done")
