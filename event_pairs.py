@@ -308,19 +308,22 @@ class Event_pairs:
                         dsi = [int(x) for x in ds if x != None]
                         if dsi[1] in range(1,13) and \
                             dsi[0] in range(1,32):
-                            if ds[2] == None:
-                                if date < datetime.date(\
-                                    date.year,dsi[1],
-                                    dsi[0]):
-                                    output.append(datetime.date(\
+                            try:
+                                if ds[2] == None:
+                                    if date < datetime.date(\
                                         date.year,dsi[1],
-                                        dsi[0]))
-                            else:
-                                if dsi[2] in range(2010,2020):
-                                    if date < datetime.date(dsi[2],
-                                        dsi[1],dsi[0]):
-                                        output.append(datetime.date(dsi[2],
-                                            dsi[1],dsi[0])) 
+                                        dsi[0]):
+                                        output.append(datetime.date(\
+                                            date.year,dsi[1],
+                                            dsi[0]))
+                                else:
+                                    if dsi[2] in range(2010,2020):
+                                        if date < datetime.date(dsi[2],
+                                            dsi[1],dsi[0]):
+                                            output.append(datetime.date(dsi[2],
+                                                dsi[1],dsi[0])) 
+                            except:
+                                continue
                     elif re.search("/",da[0]):
                         if "year" in nud:
                             if num_match in [x[1] for x in \
@@ -331,19 +334,22 @@ class Event_pairs:
                         else:
                             ds = date_vs.search(da[0]).groups()
                         dsi = [int(x) for x in ds if x != None]
-                        if dsi[0] in range(1,13) and \
-                            dsi[1] in range(1,32):
-                            if date < datetime.date(date.year,
-                                dsi[0],dsi[1]):
-                                output.append(datetime.date(date.year,
-                                    dsi[0],dsi[1]))
-                        elif dsi[0] in range(2010,2020):
-                            if dsi[1] in range(1,13) and \
-                                dsi[2] in range(1,32):
-                                if date < datetime.date(dsi[0],
-                                    dsi[1],dsi[2]):
-                                    output.append(datetime.date(dsi[0],
-                                        dsi[1],dsi[2]))
+                        try:
+                            if dsi[0] in range(1,13) and \
+                                dsi[1] in range(1,32):
+                                if date < datetime.date(date.year,
+                                    dsi[0],dsi[1]):
+                                    output.append(datetime.date(date.year,
+                                        dsi[0],dsi[1]))
+                            elif dsi[0] in range(2010,2020):
+                                if dsi[1] in range(1,13) and \
+                                    dsi[2] in range(1,32):
+                                    if date < datetime.date(dsi[0],
+                                        dsi[1],dsi[2]):
+                                        output.append(datetime.date(dsi[0],
+                                            dsi[1],dsi[2]))
+                        except:
+                            continue
             if "weekday" in nud:
                 if not "date" in nud and not "month" in nud and \
                     not "timeunit" in nud:
