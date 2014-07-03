@@ -77,5 +77,5 @@ for i,day in enumerate(sorted(day_files.keys())):
             eventinfo = open(basedir + ev[2],"w",encoding = "utf-8")
             for event in ranked_events:
                 outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
-                eventinfo_fit.write(outstr)
-            eventinfo_fit.close()
+                eventinfo.write(outstr)
+            eventinfo.close()

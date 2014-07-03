@@ -40,9 +40,15 @@ class Event_pairs:
                     if len(dateref_phrase) > 1:
                         chunks = dateref_phrase[0]
                         refdates = dateref_phrase[1:]
+                        textparts = text.split(" ")
+                        for i,word in enumerate(textparts):
+                            if re.search(r"^@",word):
+                                textparts[i] = "USER"
+                            elif re.search(r"^http://",word):
+                                textparts[i] = "URL"
+                        text = " ".join(textparts)
                         dtweet = self.Tweet()
-                        units = [tokens[1],tokens[2],date,text,
-                            refdates,chunks]
+                        units = [tokens[1],tokens[2],date,text,refdates,chunks]
                         dtweet.set_meta(units)
                         if ent:
                             entities = []
@@ -146,7 +152,9 @@ class Event_pairs:
         if ranking == "fit":
             total = len(self.tweets)
             for date in date_entity.keys():
+                #cluster entities
                 for entity in date_entity[date].keys():
+                    date_entity_tweets[date][entity] = list(set(date_entity_tweets[date][entity]))
                     if len(date_entity_tweets[date][entity]) >= 5:
                         dc = date_count[date]
                         ec = entity_count[entity]
