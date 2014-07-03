@@ -27,6 +27,8 @@ parser.add_argument('-o', action = 'store',
     help = "The directory to write files to")
 parser.add_argument('--window', type = int, action = 'store', default = 7,
     help = "The window in days of tweets on which event extraction is based (default = 7 days)")
+parser.add_argument('--start', action = 'store_true',
+    help = "Choose to rank events from the existing pairs (only applies when \'-m\' is included")
 args = parser.parse_args() 
 
 event_vars = [["fit",False,"events_fit.txt"],["freq",False,"events_freq.txt"]]
@@ -44,24 +46,25 @@ if args.m:
     eventfile = open(args.m,"r",encoding = "utf-8")
     ep.append_eventtweets(eventfile.readlines())
     eventfile.close()
-    print("ranking events")
-    day = args.m.split("/")[-3][:2] + "_" + args.m.split("/")[-2] + "/"
-    basedir = args.o + day    
-    try:
-        os.mkdir(basedir)
-    except:
-        print("dir exists")
-    print(basedir)
-    for j,ev in enumerate(event_vars):
-        ranked_events = ep.rank_events(ev[0],clust=ev[1])
-        eventinfo = open(basedir + ev[2],"w",encoding = "utf-8")
-        for event in ranked_events:
-            try:
-                outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
-            except TypeError:
-                outstr = "\n" + "\t".join([str(x) for x in event]) + "\n"
-            eventinfo.write(outstr)
-        eventinfo.close()
+    if args.start:
+        print("ranking events")
+        day = args.m.split("/")[-3][:2] + "_" + args.m.split("/")[-2] + "/"
+        basedir = args.o + day    
+        try:
+            os.mkdir(basedir)
+        except:
+            print("dir exists")
+        print(basedir)
+        for j,ev in enumerate(event_vars):
+            ranked_events = ep.rank_events(ev[0],clust=ev[1])
+            eventinfo = open(basedir + ev[2],"w",encoding = "utf-8")
+            for event in ranked_events:
+                try:
+                    outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
+                except TypeError:
+                    outstr = "\n" + "\t".join([str(x) for x in event]) + "\n"
+                eventinfo.write(outstr)
+            eventinfo.close()
 
 if args.w:
     print("preparing ngram commonness scores")
