@@ -40,7 +40,7 @@ if args.w:
 
 for i,day in enumerate(sorted(day_files.keys())):
     print("extracting tweets with a time reference for day",day)
-    for infile in day_files_firstweek[day]:
+    for infile in day_files[day]:
         tweetfile = open(infile,"r",encoding = "utf-8")
         ep.select_date_entity_tweets(tweetfile.readlines(),args.a,args.t)
         tweetfile.close()
