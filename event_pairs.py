@@ -2,12 +2,10 @@
 import re
 import datetime
 from collections import defaultdict
-import math
-import itertools
 
 import colibricore
 import time_functions
-#import calculations
+import calculations
 
 class Event_pairs:
 
@@ -23,14 +21,11 @@ class Event_pairs:
                     setting="vs").date() for x in info[4].split(" ")]
             tweet = self.Tweet()
             units = info[:5]
-            #print("chunks",[x.strip() for x in info[5].split("|")])
             units.append([x.strip() for x in info[5].split("|")])
             tweet.set_meta(units)
             if len(info) > 6:
-                #print("entities",[x.strip() for x in info[6].split(" ")])
                 tweet.set_entities([x.strip() for x in info[6].split(" ")])            
             self.tweets.append(tweet)
-        print("all",[t.entities for t in self.tweets if t.e])
 
     def select_date_entity_tweets(self,new_tweets,ent,ht):
         for tweet in new_tweets:
@@ -137,20 +132,10 @@ class Event_pairs:
                 date_count[date] += 1
                 if tweet.e:
                     if clust:
-                        for u in range(2,len(tweet.entities)+1):
-                            for subset in itertools.combinations(tweet.entities, u):
-                                s1 = []
-                                s2 = []
-                                half = int(len(subset) / 2)
-                                for y in subset[:half]:
-                                    s1.extend(y.split(" "))
-                                for y in subset[half:]:
-                                    s2.extend(y.split(" "))
-                                if not bool(set(s1) & set(s2)):
-                                    s = tuple(sorted(subset))
-                                    print(s)
-                                    entity_count[s] += 1
-                                    date_entity[date][s] += 1
+                        tups = calculations.extract_unique(tweet.entities)
+                        for s in tups
+                            entity_count[s] += 1
+                            date_entity[date][s] += 1
                     else:
                         for entity in tweet.entities:
                             entity_count[entity] += 1
@@ -163,30 +148,15 @@ class Event_pairs:
             for date in date_entity.keys():
                 for entity in date_entity[date].keys():
                     if len(date_entity_tweets[date][entity]) >= 5:
-                        g2 = 0
                         dc = date_count[date]
                         ec = entity_count[entity]
                         ode = date_entity[date][entity]
-                        ede = (dc + ec) / total
-                        if ode > 0 and ede > 0:
-                            g2 += ode * (math.log(ode/ede)/math.log(2))
-                        odne = dc - ode
-                        edne = (dc + (total-ec)) / total
-                        if edne > 0 and odne > 0:
-                            g2 += odne * (math.log(odne/edne)/math.log(2))
-                        onde = ec - ode
-                        ende = (ec + (total-dc)) / total
-                        if onde > 0 and ende > 0:
-                            g2 += onde * (math.log(onde/ende)/math.log(2))
-                        ondne = total - (ode+odne+onde) 
-                        endne = ((total-dc) + (total-ec)) / total
-                        if ondne > 0 and endne > 0:
-                            g2 += ondne * (math.log(ondne/endne)/math.log(2))
+                        g2 = calculations.goodness_of_fit(total,dc,ec,ode)
                         date_entity_score.append([date,entity,g2,date_entity_tweets[date][entity]])
         elif ranking == "freq":
             for date in date_entity.keys():
                 for entity in date_entity[date].keys():
-                    date_entity_score.append([date,entity,len(date_entity_tweets[date][entity]),date_entity_tweets[date][entity]])
+                    date_entity_score.append([date,entity,len(date_entity_tweets[date][entity])])
         return sorted(date_entity_score,key = lambda x: x[2],
                 reverse=True)
 
