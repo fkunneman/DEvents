@@ -12,12 +12,14 @@ from event_pairs import Event_pairs
 parser = argparse.ArgumentParser(description = "")
 parser.add_argument('-i', action = 'store', nargs='+',required = False, 
     help = "the input files")  
+parser.add_argument('-m', action = 'store', required = False, 
+    help = "The file with information on existing pairs")
 parser.add_argument('-w', action = 'store', nargs='+', required = False, 
     help = "The files with wikicores per n-gram")
 parser.add_argument('-d', action = 'store', required = False, 
     help = "The tmp dict for pattern indexing")
 parser.add_argument('-a', action = 'store', required = False,
-    help = "Choose to extract entities. \'single\' for only the top entity, or \'all\' for all common "
+    help = "Choose to extract entities. \'single\' for only the top entity, \'all\' for all common "
     "entities")
 parser.add_argument('-t', action = 'store_true',
     help = "Choose to include hashtags as entities")
@@ -37,6 +39,11 @@ for infile in args.i:
     day_files[day].append(infile)
 
 ep = Event_pairs()
+if args.m:
+    print("loading event tweets")
+    eventfile = open(args.m,"r",encoding = "utf-8")
+    ep.append_eventtweets(eventfile.readlines())
+    eventfile.close()    
 if args.w:
     print("preparing ngram commonness scores")
     ep.load_commonness(args.d,args.w)
