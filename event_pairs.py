@@ -2,6 +2,7 @@
 import re
 import datetime
 from collections import defaultdict
+import itertools
 
 import colibricore
 import time_functions
@@ -132,6 +133,7 @@ class Event_pairs:
         date_entity = defaultdict(lambda : defaultdict(int))
         entity_count = defaultdict(int)
         date_count = defaultdict(int)
+        entity_tweets = defaultdict(list)
         print("counting dates and entities")
         for tweet in self.tweets:
             for date in tweet.daterefs:
@@ -148,14 +150,44 @@ class Event_pairs:
                             entity_count[entity] += 1
                             date_entity[date][entity] += 1
                             date_entity_tweets[date][entity].append(tweet.text)
-
+                            entity_tweets[entity].append(tweet.text)
+        #resolve overlap
+        print("resolving overlap")
+        for date in date_entity.keys():
+            #cluster entities
+            entities = date_entity[date].keys()
+            print(date,"before",entities)
+            for i in range(len(entities)):
+                for entity1 in entities[i:]
+                    for j,entity2 in enumerate(entities[i+1:]):
+                        a = date_entity_tweets[entity1]
+                        b = date_entity_tweets[entity2]
+                        if len(set(a) & set(b)) > int(len(min(a,b)) / 2):
+                            #check ngram overlap
+                            a_ngram = entity1.split(" ")
+                            b_ngram = entity2.split(" ")
+                            if bool(set(a_ngram) & set(b_ngram)):
+                                if len(entity1) < len(entity2):
+                                    entity = entity2
+                                else:
+                                    entity = entity1
+                            else:
+                                entity = entity1 + " " + entity2
+                            #merge tweets
+                            tweets = set(a+b)
+                            del(date_entity[date][entity1])
+                            del(date_entity[date][entity2])
+                            date_entity[date][entity] = len(tweets)
+                            entity_count[entity] = len(set(entity_tweets[entity1] + entity_tweets[entity2]))
+                            date_entity_tweets[date][entity] = tweets
+                            entities[j+i+1] = entity
+            print("after",entities)
         print("calculating score")
         #for each pair
         if ranking == "fit":
             total = len(self.tweets)
             for date in date_entity.keys():
                 #cluster entities
-                date_scores = []
                 for entity in date_entity[date].keys():
                     date_entity_tweets[date][entity] = list(set(date_entity_tweets[date][entity]))
                     if len(date_entity_tweets[date][entity]) >= 5:
@@ -400,7 +432,7 @@ class Event_pairs:
             else:
                 return output
 
-    def extract_entity(self,text):
+    def extract_entity(self,text,hashtag = True):
         ngram_score = []
         c = text.split()
         for i in range(5):
@@ -414,7 +446,9 @@ class Event_pairs:
                 ngrams = zip(c, c[1:], c[2:], c[3:])
             elif i == 4:
                 ngrams = zip(c, c[1:], c[2:], c[3:], c[4:])
-            for ngram in [" ".join(x).replace("#","") for x in ngrams]:
+            if hashtag:
+                ngrams = [" ".join(x).replace("#","") for x in ngrams]
+            for ngram in ngrams:
                 pattern = self.classencoder.buildpattern(ngram)
                 if not pattern.unknown():
                     if self.dmodel[pattern] > 0.05:
