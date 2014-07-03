@@ -54,7 +54,7 @@ class Event_pairs:
                         if ent:
                             entities = []
                             for chunk in chunks:
-                                entities.extend(self.extract_entity(chunk))
+                                entities.extend(self.extract_entity(chunk,ht))
                             entities = sorted(entities,key = lambda x: x[1],reverse=True)
                             if len(entities) > 0:
                                 if ent == "single":
@@ -184,7 +184,7 @@ class Event_pairs:
                         date_entity[date][entity] = len(tweets)
                         entity_count[entity] = len(set(entity_tweets[entity1] + entity_tweets[entity2]))
                         date_entity_tweets[date][entity] = tweets
-                        entities[j+i+1] = entity
+                        entities[j] = entity
                         break
             print("after",entities)
         print("calculating score")
@@ -437,7 +437,7 @@ class Event_pairs:
             else:
                 return output
 
-    def extract_entity(self,text,hashtag = True):
+    def extract_entity(self,text,no_hashtag = False):
         ngram_score = []
         c = text.split()
         for i in range(5):
@@ -451,7 +451,7 @@ class Event_pairs:
                 ngrams = zip(c, c[1:], c[2:], c[3:])
             elif i == 4:
                 ngrams = zip(c, c[1:], c[2:], c[3:], c[4:])
-            if hashtag:
+            if not no_hashtag:
                 ngrams = [" ".join(x).replace("#","") for x in ngrams]
             for ngram in ngrams:
                 pattern = self.classencoder.buildpattern(ngram)
