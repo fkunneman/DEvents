@@ -32,7 +32,7 @@ class Event_pairs:
             self.tweets.append(tweet)
         print("all",[t.entities for t in self.tweets if t.e])
 
-    def select_date_tweets(self,new_tweets):
+    def select_date_entity_tweets(self,new_tweets,ent,ht):
         for tweet in new_tweets:
             tokens = tweet.strip().split("\t")
             if tokens[0] == "dutch" and not re.search("^RT ",
@@ -49,7 +49,24 @@ class Event_pairs:
                         units = [tokens[1],tokens[2],date,text,
                             refdates,chunks]
                         dtweet.set_meta(units)
-                        self.tweets.append(dtweet)
+                        if ent:
+                            entities = []
+                            for chunk in chunks:
+                                entities.extend(self.extract_entity(chunk))
+                            entities = sorted(entities,key = lambda x: x[1],reverse=True)
+                            if len(entities) > 0:
+                                if ent == "single":
+                                    dtweet.set_entities([entities[0][0]])
+                                elif ent == "all":
+                                    dtweet.set_entities([x[0] for x in entities])
+                            self.tweets.append(dtweet)
+                        if ht:
+                            hashtags = [x for x in text.split(" ") if re.search(r"^#",x)]
+                            if len(hashtags) > 0:
+                                if tweet.e:
+                                    tweet.entities.extend(hashtags)
+                                else:
+                                    tweet.set_entities(hashtags)
 
     def load_commonness(self,tmp,wiki_commonness):
         #load in commonness files per ngram
@@ -83,29 +100,29 @@ class Event_pairs:
                 self.dmodel[pattern] = float(tokens[3])
             ngramopen.close()
 
-    def select_entity_tweets(self,approach = "single"):
-        #extract entities from tweets
-        print("extracting entities")
-        for tweet in self.tweets:
-            entities = []
-            for chunk in tweet.chunks:
-                entities.extend(self.extract_entity(chunk))
-            entities = sorted(entities,key = lambda x: x[1],
-                reverse=True)
-            if len(entities) > 0:
-                if approach == "single":
-                    tweet.entities = [entities[0][0]]
-                elif approach == "all":
-                    tweet.entities = [x[0] for x in entities]
+    # def select_entity_tweets(self,approach = "single"):
+    #     #extract entities from tweets
+    #     print("extracting entities")
+    #     for tweet in self.tweets:
+    #         entities = []
+    #         for chunk in tweet.chunks:
+    #             entities.extend(self.extract_entity(chunk))
+    #         entities = sorted(entities,key = lambda x: x[1],
+    #             reverse=True)
+    #         if len(entities) > 0:
+    #             if approach == "single":
+    #                 tweet.entities = [entities[0][0]]
+    #             elif approach == "all":
+    #                 tweet.entities = [x[0] for x in entities]
 
-    def select_hashtags_tweets(self):
-        for tweet in self.tweets:
-            hashtags = [x for x in tweet.text.split(" ") if re.search(r"^#",x)]
-            if len(hashtags) > 0:
-                try:
-                    tweet.entities.extend(hashtags)
-                except:
-                    tweet.set_entities(hashtags)
+    # def select_hashtags_tweets(self):
+    #     for tweet in self.tweets:
+    #         hashtags = [x for x in tweet.text.split(" ") if re.search(r"^#",x)]
+    #         if len(hashtags) > 0:
+    #             try:
+    #                 tweet.entities.extend(hashtags)
+    #             except:
+    #                 tweet.set_entities(hashtags)
 
     def rank_events(self,ranking,clust = False):
         date_entity_score = []
@@ -134,8 +151,10 @@ class Event_pairs:
                                 for y in subset[half:]:
                                     s2.extend(y.split(" "))
                                 if not bool(set(s1) & set(s2)):
-                                    entity_count[subset] += 1
-                                    date_entity[date][subset] += 1
+                                    s = tuple(sorted(subset))
+                                    print s
+                                    entity_count[s] += 1
+                                    date_entity[date][s] += 1
                 except AttributeError:
                     continue
         print("calculating score")
@@ -144,6 +163,7 @@ class Event_pairs:
             total = len(self.tweets)
             for date in date_entity.keys():
                 for entity in date_entity[date].keys():
+                    print s,len(date_entity_tweets[date][entity])
                     if len(date_entity_tweets[date][entity]) >= 5:
                         g2 = 0
                         dc = date_count[date]
@@ -424,6 +444,19 @@ class Event_pairs:
                     if self.dmodel[pattern] > 0.05:
                         ngram_score.append((ngram,self.dmodel[pattern]))
         return ngram_score
+
+    def discard_last_day(self,window):
+        print("before",len(self.tweets))
+        days = sorted(set([x.date for x in self.tweets]))
+        print(days)
+        size = len(days)
+        if size <= window:
+            print("not enough days, no discard") 
+        while size > window:
+            ld = days[0]
+            print("last day",ld)
+            self.tweets = [t for t in self.tweets if t.date != date]
+        print("after",len(self.tweets))
 
     class Tweet:
         """
