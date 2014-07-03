@@ -164,7 +164,7 @@ class Event_pairs:
                     print(entity1,entity2)
                     a = date_entity_tweets[date][entity1]
                     b = date_entity_tweets[date][entity2]
-                    print(a,b)
+                    #print(a,b)
                     if len(set(a) & set(b)) > int(len(min(a,b)) / 2):
                         print("overlap",entity1,entity2)
                         #check ngram overlap
@@ -178,7 +178,7 @@ class Event_pairs:
                         else:
                             entity = entity1 + " " + entity2
                         #merge tweets
-                        tweets = set(a+b)
+                        tweets = list(set(a+b))
                         del(date_entity[date][entity1])
                         del(date_entity[date][entity2])
                         date_entity[date][entity] = len(tweets)
