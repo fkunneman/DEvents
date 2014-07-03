@@ -138,22 +138,24 @@ class Event_pairs:
                 date_count[date] += 1
                 if tweet.e:
                     if clust:
-                        print(tweet.text,tweet.entities)
                         tups = calculations.extract_unique(tweet.entities)
                         for s in tups:
                             entity_count[s] += 1
                             date_entity[date][s] += 1
+                            date_entity_tweets[date][s].append(tweet.text)
                     else:
                         for entity in tweet.entities:
                             entity_count[entity] += 1
                             date_entity[date][entity] += 1
                             date_entity_tweets[date][entity].append(tweet.text)
+
         print("calculating score")
         #for each pair
         if ranking == "fit":
             total = len(self.tweets)
             for date in date_entity.keys():
                 #cluster entities
+                date_scores = []
                 for entity in date_entity[date].keys():
                     date_entity_tweets[date][entity] = list(set(date_entity_tweets[date][entity]))
                     if len(date_entity_tweets[date][entity]) >= 5:
@@ -161,7 +163,8 @@ class Event_pairs:
                         ec = entity_count[entity]
                         ode = date_entity[date][entity]
                         g2 = calculations.goodness_of_fit(total,dc,ec,ode)
-                        date_entity_score.append([date,entity,g2,date_entity_tweets[date][entity]])
+                        date_scores.append([])
+                date_entity_score.append([date,entity,g2,date_entity_tweets[date][entity]])
         elif ranking == "freq":
             for date in date_entity.keys():
                 for entity in date_entity[date].keys():
