@@ -7,7 +7,7 @@ import itertools
 
 import colibricore
 import time_functions
-
+import calculations
 
 class Event_pairs:
 
@@ -135,11 +135,7 @@ class Event_pairs:
         for tweet in self.tweets:
             for date in tweet.daterefs:
                 date_count[date] += 1
-                try:
-                    for entity in tweet.entities:
-                        entity_count[entity] += 1
-                        date_entity[date][entity] += 1
-                        date_entity_tweets[date][entity].append(tweet.text)
+                if tweet.e:
                     if clust:
                         for u in range(2,len(tweet.entities)+1):
                             for subset in itertools.combinations(tweet.entities, u):
@@ -152,40 +148,38 @@ class Event_pairs:
                                     s2.extend(y.split(" "))
                                 if not bool(set(s1) & set(s2)):
                                     s = tuple(sorted(subset))
-                                    #print s
+                                    print(s)
                                     entity_count[s] += 1
                                     date_entity[date][s] += 1
-                except AttributeError:
-                    continue
+                    else:
+                        for entity in tweet.entities:
+                            entity_count[entity] += 1
+                            date_entity[date][entity] += 1
+                            date_entity_tweets[date][entity].append(tweet.text)
         print("calculating score")
         #for each pair
         if ranking == "fit":
             total = len(self.tweets)
             for date in date_entity.keys():
                 for entity in date_entity[date].keys():
-                    #print s,len(date_entity_tweets[date][entity])
                     if len(date_entity_tweets[date][entity]) >= 5:
                         g2 = 0
                         dc = date_count[date]
                         ec = entity_count[entity]
                         ode = date_entity[date][entity]
                         ede = (dc + ec) / total
-                        #print(ode,ede)
                         if ode > 0 and ede > 0:
                             g2 += ode * (math.log(ode/ede)/math.log(2))
                         odne = dc - ode
                         edne = (dc + (total-ec)) / total
-                        #print(edne,odne)
                         if edne > 0 and odne > 0:
                             g2 += odne * (math.log(odne/edne)/math.log(2))
                         onde = ec - ode
                         ende = (ec + (total-dc)) / total
-                        #print(date,entity,total,dc,ec,ode,onde,ende)
                         if onde > 0 and ende > 0:
                             g2 += onde * (math.log(onde/ende)/math.log(2))
                         ondne = total - (ode+odne+onde) 
                         endne = ((total-dc) + (total-ec)) / total
-                        #print(ondne,endne)
                         if ondne > 0 and endne > 0:
                             g2 += ondne * (math.log(ondne/endne)/math.log(2))
                         date_entity_score.append([date,entity,g2,date_entity_tweets[date][entity]])
@@ -455,6 +449,8 @@ class Event_pairs:
             ld = days[0]
             print("last day",ld)
             self.tweets = [t for t in self.tweets if t.date != ld]
+            days = sorted(set([x.date for x in self.tweets]))
+            size = len(days)
         print("after",len(self.tweets))
 
     class Tweet:
