@@ -161,7 +161,7 @@ class Event_pairs:
                 for j in range(i+1,len(entities)):
                     entity1 = entities[i]
                     entity2 = entities[j]
-                    print entity1,entity2
+                    print(entity1,entity2)
                     a = date_entity_tweets[date][entity1]
                     b = date_entity_tweets[date][entity2]
                     if len(set(a) & set(b)) > int(len(min(a,b)) / 2):
