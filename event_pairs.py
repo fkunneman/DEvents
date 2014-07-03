@@ -155,7 +155,7 @@ class Event_pairs:
         print("resolving overlap")
         for date in date_entity.keys():
             #cluster entities
-            entities = date_entity[date].keys()
+            entities = list(date_entity[date].keys())
             print(date,"before",entities)
             for i in range(len(entities)):
                 for entity1 in entities[i:]:

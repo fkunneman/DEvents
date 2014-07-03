@@ -44,6 +44,17 @@ if args.m:
     eventfile = open(args.m,"r",encoding = "utf-8")
     ep.append_eventtweets(eventfile.readlines())
     eventfile.close()    
+    for j,ev in enumerate(event_vars):
+        ranked_events = ep.rank_events(ev[0],clust=ev[1])
+        eventinfo = open(basedir + ev[2],"w",encoding = "utf-8")
+        for event in ranked_events:
+            try:
+                outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
+            except TypeError:
+                outstr = "\n" + "\t".join([str(x) for x in event]) + "\n"
+            eventinfo.write(outstr)
+        eventinfo.close()
+
 if args.w:
     print("preparing ngram commonness scores")
     ep.load_commonness(args.d,args.w)
