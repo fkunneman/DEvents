@@ -152,7 +152,7 @@ class Event_pairs:
                                     s2.extend(y.split(" "))
                                 if not bool(set(s1) & set(s2)):
                                     s = tuple(sorted(subset))
-                                    print s
+                                    #print s
                                     entity_count[s] += 1
                                     date_entity[date][s] += 1
                 except AttributeError:
