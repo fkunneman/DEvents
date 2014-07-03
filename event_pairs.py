@@ -138,6 +138,7 @@ class Event_pairs:
                 date_count[date] += 1
                 if tweet.e:
                     if clust:
+                        print(tweet.text,tweet.entities)
                         tups = calculations.extract_unique(tweet.entities)
                         for s in tups:
                             entity_count[s] += 1

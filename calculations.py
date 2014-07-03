@@ -23,7 +23,6 @@ def goodness_of_fit(total,dc,ec,ode):
 
 def extract_unique(l):
     ss = []
-    print(l)
     for u in range(2,len(l)+1):
         for subset in itertools.combinations(l, u):
             #print(u,subset)
