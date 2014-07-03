@@ -39,7 +39,7 @@ if args.w:
     ep.load_commonness(args.d,args.w)
 
 for i,day in enumerate(sorted(day_files.keys())):
-    print("extracting tweets with a time reference for day",day)
+    print("extracting tweets with a time reference posted on",day)
     for infile in day_files[day]:
         tweetfile = open(infile,"r",encoding = "utf-8")
         ep.select_date_entity_tweets(tweetfile.readlines(),args.a,args.t)
