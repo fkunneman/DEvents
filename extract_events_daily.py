@@ -29,7 +29,7 @@ parser.add_argument('--window', type = int, action = 'store', default = 7,
     help = "The window in days of tweets on which event extraction is based (default = 7 days)")
 args = parser.parse_args() 
 
-event_vars = [["fit",False,"events_fit.txt"],["fit",True,"events_fit_multi.txt"],["freq",False,"events_freq.txt"]]
+event_vars = [["fit",False,"events_fit.txt"],["freq",False,"events_freq.txt"]]
 
 #sort input-files
 day_files = defaultdict(list)
