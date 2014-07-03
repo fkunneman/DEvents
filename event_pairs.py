@@ -163,7 +163,7 @@ class Event_pairs:
             total = len(self.tweets)
             for date in date_entity.keys():
                 for entity in date_entity[date].keys():
-                    print s,len(date_entity_tweets[date][entity])
+                    #print s,len(date_entity_tweets[date][entity])
                     if len(date_entity_tweets[date][entity]) >= 5:
                         g2 = 0
                         dc = date_count[date]
