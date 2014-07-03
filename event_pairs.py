@@ -447,14 +447,13 @@ class Event_pairs:
     def discard_last_day(self,window):
         print("before",len(self.tweets))
         days = sorted(set([x.date for x in self.tweets]))
-        print(days)
         size = len(days)
         if size <= window:
             print("not enough days, no discard") 
         while size > window:
             ld = days[0]
             print("last day",ld)
-            self.tweets = [t for t in self.tweets if t.date != date]
+            self.tweets = [t for t in self.tweets if t.date != ld]
         print("after",len(self.tweets))
 
     class Tweet:
