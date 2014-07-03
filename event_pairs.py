@@ -158,30 +158,32 @@ class Event_pairs:
             entities = list(date_entity[date].keys())
             print(date,"before",entities)
             for i in range(len(entities)):
-                for entity1 in entities[i:]:
-                    for j,entity2 in enumerate(entities[i+1:]):
-                        a = date_entity_tweets[date][entity1]
-                        b = date_entity_tweets[date][entity2]
-                        if len(set(a) & set(b)) > int(len(min(a,b)) / 2):
-                            #check ngram overlap
-                            a_ngram = entity1.split(" ")
-                            b_ngram = entity2.split(" ")
-                            if bool(set(a_ngram) & set(b_ngram)):
-                                if len(entity1) < len(entity2):
-                                    entity = entity2
-                                else:
-                                    entity = entity1
+                for j in range(i+1,len(entities)):
+                    entity1 = entities[i]
+                    entity2 = entities[j]
+                    print entity1,entity2
+                    a = date_entity_tweets[date][entity1]
+                    b = date_entity_tweets[date][entity2]
+                    if len(set(a) & set(b)) > int(len(min(a,b)) / 2):
+                        #check ngram overlap
+                        a_ngram = entity1.split(" ")
+                        b_ngram = entity2.split(" ")
+                        if bool(set(a_ngram) & set(b_ngram)):
+                            if len(entity1) < len(entity2):
+                                entity = entity2
                             else:
-                                entity = entity1 + " " + entity2
-                            #merge tweets
-                            tweets = set(a+b)
-                            del(date_entity[date][entity1])
-                            del(date_entity[date][entity2])
-                            date_entity[date][entity] = len(tweets)
-                            entity_count[entity] = len(set(entity_tweets[entity1] + entity_tweets[entity2]))
-                            date_entity_tweets[date][entity] = tweets
-                            entities[j+i+1] = entity
-                            break
+                                entity = entity1
+                        else:
+                            entity = entity1 + " " + entity2
+                        #merge tweets
+                        tweets = set(a+b)
+                        del(date_entity[date][entity1])
+                        del(date_entity[date][entity2])
+                        date_entity[date][entity] = len(tweets)
+                        entity_count[entity] = len(set(entity_tweets[entity1] + entity_tweets[entity2]))
+                        date_entity_tweets[date][entity] = tweets
+                        entities[j+i+1] = entity
+                        break
             print("after",entities)
         print("calculating score")
         #for each pair
