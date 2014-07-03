@@ -158,7 +158,7 @@ class Event_pairs:
             entities = date_entity[date].keys()
             print(date,"before",entities)
             for i in range(len(entities)):
-                for entity1 in entities[i:]
+                for entity1 in entities[i:]:
                     for j,entity2 in enumerate(entities[i+1:]):
                         a = date_entity_tweets[entity1]
                         b = date_entity_tweets[entity2]
