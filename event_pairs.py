@@ -175,7 +175,7 @@ class Event_pairs:
                                 entity = entity1 + " " + entity2
                             #merge tweets
                             tweets = set(a+b)
-                            print date_entity[date].keys()
+                            print(date_entity[date].keys())
                             del(date_entity[date][entity1])
                             del(date_entity[date][entity2])
                             date_entity[date][entity] = len(tweets)
