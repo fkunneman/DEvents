@@ -164,7 +164,9 @@ class Event_pairs:
                     print(entity1,entity2)
                     a = date_entity_tweets[date][entity1]
                     b = date_entity_tweets[date][entity2]
+                    print(a,b)
                     if len(set(a) & set(b)) > int(len(min(a,b)) / 2):
+                        print("overlap",entity1,entity2)
                         #check ngram overlap
                         a_ngram = entity1.split(" ")
                         b_ngram = entity2.split(" ")
