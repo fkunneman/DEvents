@@ -59,14 +59,14 @@ class Event_pairs:
                                     dtweet.set_entities([entities[0][0]])
                                 elif ent == "all":
                                     dtweet.set_entities([x[0] for x in entities])
-                            self.tweets.append(dtweet)
                         if ht:
                             hashtags = [x for x in text.split(" ") if re.search(r"^#",x)]
                             if len(hashtags) > 0:
-                                if tweet.e:
-                                    tweet.entities.extend(hashtags)
+                                if dtweet.e:
+                                    dtweet.entities.extend(hashtags)
                                 else:
-                                    tweet.set_entities(hashtags)
+                                    dtweet.set_entities(hashtags)
+                        self.tweets.append(dtweet)
 
     def load_commonness(self,tmp,wiki_commonness):
         #load in commonness files per ngram
