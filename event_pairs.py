@@ -40,7 +40,7 @@ class Event_pairs:
                 if dateref_phrase:
                     if len(dateref_phrase) > 1:
                         chunks = dateref_phrase[0]
-                        print chunks
+                        print(chunks)
                         refdates = dateref_phrase[1:]
                         textparts = text.split(" ")
                         for i,word in enumerate(textparts):
