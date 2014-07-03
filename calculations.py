@@ -23,17 +23,19 @@ def goodness_of_fit(total,dc,ec,ode):
 
 def extract_unique(l):
     ss = []
+    print l
     for u in range(2,len(l)+1):
         for subset in itertools.combinations(l, u):
+            print u,subset
             s1 = []
             s2 = []
             half = int(len(subset) / 2)
             for y in subset[:half]:
+                print y
                 s1.extend(y.split(" "))
             for y in subset[half:]:
                 s2.extend(y.split(" "))
             if not bool(set(s1) & set(s2)):
                 s = tuple(sorted(subset))
                 ss.append(s)
-                print(s)
     return ss
