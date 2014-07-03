@@ -55,7 +55,7 @@ for i,day in enumerate(sorted(day_files.keys())):
         ep.select_date_entity_tweets(tweetfile.readlines(),args.a,args.t)
         tweetfile.close()
     ep.discard_last_day(args.window)
-    if i >= 6:
+    if len(set([x.date for x in ep.tweets])) >= 6:
         print("ranking events")
         basedir = args.o + day + "/"
         try:
