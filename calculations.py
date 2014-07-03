@@ -25,7 +25,7 @@ def extract_unique(l):
     ss = []
     for u in range(2,len(l)+1):
         for subset in itertools.combinations(l, u):
-            #print(u,subset)
+            print(u,l,subset)
             s1 = []
             s2 = []
             half = int(len(subset) / 2)
