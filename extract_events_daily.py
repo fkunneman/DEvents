@@ -43,7 +43,14 @@ if args.m:
     print("loading event tweets")
     eventfile = open(args.m,"r",encoding = "utf-8")
     ep.append_eventtweets(eventfile.readlines())
-    eventfile.close()    
+    eventfile.close()
+    print("ranking events")
+    basedir = args.o + day + "/"
+    try:
+        os.mkdir(basedir)
+    except:
+        print("dir exists")
+    print(basedir)
     for j,ev in enumerate(event_vars):
         ranked_events = ep.rank_events(ev[0],clust=ev[1])
         eventinfo = open(basedir + ev[2],"w",encoding = "utf-8")
