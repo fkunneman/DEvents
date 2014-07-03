@@ -160,8 +160,8 @@ class Event_pairs:
             for i in range(len(entities)):
                 for entity1 in entities[i:]:
                     for j,entity2 in enumerate(entities[i+1:]):
-                        a = date_entity_tweets[entity1]
-                        b = date_entity_tweets[entity2]
+                        a = date_entity_tweets[date][entity1]
+                        b = date_entity_tweets[date][entity2]
                         if len(set(a) & set(b)) > int(len(min(a,b)) / 2):
                             #check ngram overlap
                             a_ngram = entity1.split(" ")
