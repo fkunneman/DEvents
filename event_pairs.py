@@ -156,17 +156,17 @@ class Event_pairs:
         for date in date_entity.keys():
             #cluster entities
             entities = list(date_entity[date].keys())
-            print(date,"before",entities)
+            print(date,"before",len(entities))
             for i in range(len(entities)):
                 for j in range(i+1,len(entities)):
                     entity1 = entities[i]
                     entity2 = entities[j]
-                    print(entity1,entity2)
+            #        print(entity1,entity2)
                     a = date_entity_tweets[date][entity1]
                     b = date_entity_tweets[date][entity2]
                     #print(a,b)
                     if len(set(a) & set(b)) > int(len(min(a,b)) / 2):
-                        print("overlap",entity1,entity2)
+             #           print("overlap",entity1,entity2)
                         #check ngram overlap
                         a_ngram = entity1.split(" ")
                         b_ngram = entity2.split(" ")
@@ -186,7 +186,7 @@ class Event_pairs:
                         date_entity_tweets[date][entity] = tweets
                         entities[j] = entity
                         break
-            print("after",entities)
+            print(date,"after",len(date_entity[date].keys()))
         print("calculating score")
         #for each pair
         if ranking == "fit":
