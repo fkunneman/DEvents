@@ -36,6 +36,7 @@ for infile in args.i:
 
 ep = Event_pairs()
 if args.w:
+    print("preparing ngram commonness scores")
     ep.load_commonness(args.d,args.w)
 
 for i,day in enumerate(sorted(day_files.keys())):
@@ -44,7 +45,7 @@ for i,day in enumerate(sorted(day_files.keys())):
         tweetfile = open(infile,"r",encoding = "utf-8")
         ep.select_date_entity_tweets(tweetfile.readlines(),args.a,args.t)
         tweetfile.close()
-    ep.discard_tweets(args.window)
+    ep.discard_last_day(args.window)
     if i >= 6:
         print("ranking events")
         ranked_events_fit = ep.rank_events("fit")
