@@ -164,7 +164,7 @@ class Event_pairs:
                         ode = date_entity[date][entity]
                         g2 = calculations.goodness_of_fit(total,dc,ec,ode)
                         date_scores.append([])
-                date_entity_score.append([date,entity,g2,date_entity_tweets[date][entity]])
+                        date_entity_score.append([date,entity,g2,date_entity_tweets[date][entity]])
         elif ranking == "freq":
             for date in date_entity.keys():
                 for entity in date_entity[date].keys():
