@@ -76,6 +76,9 @@ for i,day in enumerate(sorted(day_files.keys())):
             ranked_events = ep.rank_events(ev[0],clust=ev[1])
             eventinfo = open(basedir + ev[2],"w",encoding = "utf-8")
             for event in ranked_events:
-                outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
+                try:
+                    outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
+                except TypeError:
+                    outstr = "\n" + "\t".join([str(x) for x in event]) + "\n"
                 eventinfo.write(outstr)
             eventinfo.close()
