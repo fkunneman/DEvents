@@ -188,6 +188,8 @@ class Event_pairs:
                 a = top[i][3]
                 af = a[:5]
                 for j in range(i+1,len(top)):
+                    if merged[j]:
+                        continue
                     print(i,j)
                     if date == top[j][0]:    
                         entity2 = top[j][1] 
