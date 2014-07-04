@@ -188,7 +188,7 @@ class Event_pairs:
                     if date == top[j][0]:             
                         entity2 = top[j][1] 
                         b = top[j][3]
-                        if calculation.return_overlap(a,b) > 0.25:
+                        if calculations.return_overlap(a,b) > 0.25:
                             #check ngram overlap 
                             a_ngram = entity1.split()
                             b_ngram = entity2.split()
