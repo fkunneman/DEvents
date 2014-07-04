@@ -438,6 +438,7 @@ class Event_pairs:
     def extract_entity(self,text,no_hashtag = False):
         ngram_score = []
         c = text.split()
+        print(c)
         for i in range(5):
             if i == 0:
                 ngrams = zip(c)
