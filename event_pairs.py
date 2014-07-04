@@ -184,7 +184,7 @@ class Event_pairs:
             for i in range(len(top)):
                 if i in merged:
                     continue
-                match = False
+                #match = False
                 date = top[i][0]
                 entity1 = top[i][1]
                 a = top[i][3]
@@ -212,9 +212,11 @@ class Event_pairs:
                                 entity = entity1 + " " + entity2
                             #merge tweets
                             tweets = list(set(a+b))
+                            entity1 = entity
+                            a = tweets
                             #print(entity1,entity2,entity,date_entity[date].keys())
-                            new_top.append([date,entity,top[i][2],tweets])
-                            match = True
+                            #new_top.append([date,entity,top[i][2],tweets])
+                            #match = True
                             merged.append(j)
                             # del(date_entity[date][entity1])
                             # del(date_entity[date][entity2])
@@ -222,9 +224,8 @@ class Event_pairs:
                             # entity_count[entity] = len(set(entity_tweets[entity1] + entity_tweets[entity2]))
                             # date_entity_tweets[date][entity] = tweets
                             # entities[j] = entity
-                            break
-                if not match:
-                    new_top.append(top[i])
+                            # break
+                new_top.append([date,entity1,top[i][2],a])
             return new_top
         else:
             return top
