@@ -182,6 +182,8 @@ class Event_pairs:
             new_top = []
             merged = []
             for i in range(len(top)):
+                if i in merged:
+                    continue
                 match = False
                 date = top[i][0]
                 entity1 = top[i][1]
