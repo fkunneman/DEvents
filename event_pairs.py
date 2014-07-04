@@ -174,7 +174,7 @@ class Event_pairs:
         top = sorted(date_entity_score,key = lambda x: x[2],
                 reverse=True)[:2500]
         #resolve overlap
-        if ranking = "fit":
+        if ranking == "fit":
             print("resolving overlap")
             # for event in top:
             #     #cluster entities
@@ -194,6 +194,7 @@ class Event_pairs:
                         if len(set(a) & set(b)) > int(len(min(a,b)) / 2):
                  #           print("overlap",entity1,entity2)
                             #check ngram overlap 
+                            a_ngram = entity1.split()
                             b_ngram = entity2.split()
                             if bool(set(a_ngram) & set(b_ngram)):
                                 if not self.classencoder.buildpattern(entity1).unknown:
