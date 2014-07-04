@@ -183,10 +183,11 @@ class Event_pairs:
             merged = []
             for i in range(len(top)):
                 match = False
+                date = top[i][0]
                 entity1 = top[i][1]
                 a = top[i][3]
                 for j in range(i+1,len(top)):
-                    if top[i][0] == top[j][0]:             
+                    if date == top[j][0]:             
                         entity2 = top[j][1]
                 #        print(entity1,entity2)  
                         b = top[j][3]
