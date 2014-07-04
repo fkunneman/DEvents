@@ -7,6 +7,7 @@ import itertools
 import colibricore
 import time_functions
 import calculations
+import numpy
 
 class Event_pairs:
 
@@ -151,41 +152,7 @@ class Event_pairs:
                             date_entity[date][entity] += 1
                             date_entity_tweets[date][entity].append(tweet.text)
                             entity_tweets[entity].append(tweet.text)
-        #resolve overlap
-        print("resolving overlap")
-        for date in date_entity.keys():
-            #cluster entities
-            entities = [x for x in list(date_entity[date].keys()) if len(date_entity_tweets[date][x]) > 1]
-            for i in range(len(entities)):
-                for j in range(i+1,len(entities)):
-                    entity1 = entities[i]
-                    entity2 = entities[j]
-            #        print(entity1,entity2)
-                    a = date_entity_tweets[date][entity1]
-                    b = date_entity_tweets[date][entity2]
-                    #print(a,b)
-                    if len(set(a) & set(b)) > int(len(min(a,b)) / 2):
-             #           print("overlap",entity1,entity2)
-                        #check ngram overlap
-                        a_ngram = entity1.split(" ")
-                        b_ngram = entity2.split(" ")
-                        if bool(set(a_ngram) & set(b_ngram)):
-                            if len(entity1) < len(entity2):
-                                entity = entity2
-                            else:
-                                entity = entity1
-                        else:
-                            entity = entity1 + " " + entity2
-                        #merge tweets
-                        tweets = list(set(a+b))
-                        print(entity1,entity2,entity,date_entity[date].keys())
-                        del(date_entity[date][entity1])
-                        del(date_entity[date][entity2])
-                        date_entity[date][entity] = len(tweets)
-                        entity_count[entity] = len(set(entity_tweets[entity1] + entity_tweets[entity2]))
-                        date_entity_tweets[date][entity] = tweets
-                        entities[j] = entity
-                        break
+
         print("calculating score")
         #for each pair
         if ranking == "fit":
@@ -204,8 +171,59 @@ class Event_pairs:
             for date in date_entity.keys():
                 for entity in date_entity[date].keys():
                     date_entity_score.append([date,entity,len(date_entity_tweets[date][entity])])
-        return sorted(date_entity_score,key = lambda x: x[2],
-                reverse=True)
+        top = sorted(date_entity_score,key = lambda x: x[2],
+                reverse=True)[:2500]
+        #resolve overlap
+        if ranking = "fit":
+            print("resolving overlap")
+            # for event in top:
+            #     #cluster entities
+            #     entities = [x for x in list(date_entity[date].keys()) if len(date_entity_tweets[date][x]) > 1]
+            new_top = []
+            merged = []
+            for i in range(len(top)):
+                match = False
+                entity1 = top[i][1]
+                a = top[i][3]
+                for j in range(i+1,len(top)):
+                    if top[i][0] == top[j][0]:             
+                        entity2 = top[j][1]
+                #        print(entity1,entity2)  
+                        b = top[j][3]
+                        #print(a,b)
+                        if len(set(a) & set(b)) > int(len(min(a,b)) / 2):
+                 #           print("overlap",entity1,entity2)
+                            #check ngram overlap 
+                            b_ngram = entity2.split()
+                            if bool(set(a_ngram) & set(b_ngram)):
+                                if not self.classencoder.buildpattern(entity1).unknown:
+                                    entity = entity1
+                                elif not self.classencoder.buildpattern(entity2).unknown:
+                                    entity = entity2
+                                elif len(entity1) < len(entity2):
+                                    entity = entity2
+                                else:
+                                    entity = entity1
+                            else:
+                                entity = entity1 + " " + entity2
+                            #merge tweets
+                            tweets = list(set(a+b))
+                            #print(entity1,entity2,entity,date_entity[date].keys())
+                            new_top.append([date,entity,top[i][2],tweets])
+                            match = True
+                            merged.append(j)
+                            # del(date_entity[date][entity1])
+                            # del(date_entity[date][entity2])
+                            # date_entity[date][entity] = len(tweets)
+                            # entity_count[entity] = len(set(entity_tweets[entity1] + entity_tweets[entity2]))
+                            # date_entity_tweets[date][entity] = tweets
+                            # entities[j] = entity
+                            break
+                if not match:
+                    new_top.append(top[i])
+            return new_top
+        else:
+            return top
 
     def extract_date(self,tweet,date):
         convert_nums = {"een":1, "twee":2, "drie":3, "vier":4,
