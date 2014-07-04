@@ -186,19 +186,21 @@ class Event_pairs:
                 date = top[i][0]
                 entity1 = top[i][1]
                 a = top[i][3]
+                af = a[:5]
                 for j in range(i+1,len(top)):
                     print(i,j)
                     if date == top[j][0]:    
                         entity2 = top[j][1] 
                         b = top[j][3]
-                        if calculations.return_overlap(a[:5],b[:5]) > 0.25:
+                        print("overlap")
+                        if calculations.return_overlap(af,b[:5]) > 0.25:
                             #check ngram overlap 
                             print("YES")
                             a_ngram = entity1.split()
                             b_ngram = entity2.split()
                             tweets = list(set(a+b))
                             a = tweets
-                         
+                            print("ngram")
                             if bool(set(a_ngram) & set(b_ngram)):
                                 if not self.classencoder.buildpattern(entity1).unknown:
                                     entity = entity1
@@ -213,6 +215,7 @@ class Event_pairs:
                                     entity = entity1 + " " + entity2
                                 else:
                                     entity = entity2 + " " + entity1
+                            print("done")
                             entity1 = entity
                             merged[j] = True
                 new_top.append([date,entity1,top[i][2],a])

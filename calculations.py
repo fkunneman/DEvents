@@ -44,8 +44,10 @@ def extract_unique(l):
 def return_overlap(l1,l2):
     overlaps = []
     for x in l1:
+        t1 = x.split()
+        st1 = set(t1)
+        lt1 = len(t1)
         for y in l2:
-            t1 = x.split()
             t2 = y.split()
-            overlaps.append(len(set(t1) & set(t2)) / numpy.mean([len(t1),len(t2)]))
+            overlaps.append(len(st1 & set(t2)) / numpy.mean([lt1,len(t2)]))
     return numpy.mean(overlaps)
