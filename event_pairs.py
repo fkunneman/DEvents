@@ -457,7 +457,7 @@ class Event_pairs:
         ngram_score = []
         c = text.split()
         if not no_hashtag:
-            c = [x.replace("#","") for x in ngrams]
+            c = [x.replace("#","") for x in c]
         for i in range(5):
             if i == 0:
                 ngrams = zip(c)
