@@ -172,28 +172,33 @@ class Event_pairs:
                 for entity in date_entity[date].keys():
                     date_entity_score.append([date,entity,len(date_entity_tweets[date][entity])])
         top = sorted(date_entity_score,key = lambda x: x[2],
-                reverse=True)[:5000]
+                reverse=True)[:2500]
         #resolve overlap
         if ranking == "fit":
             print("resolving overlap")
             new_top = []
-            merged = []
+            merged = {}
             for i in range(len(top)):
-                if i in merged:
+                merged[i] = False
+            for i in range(len(top)):
+                if merged[i]:
                     continue
                 date = top[i][0]
                 entity1 = top[i][1]
                 a = top[i][3]
                 for j in range(i+1,len(top)):
-                    if date == top[j][0]:             
+                    print(i,j)
+                    if date == top[j][0]:    
                         entity2 = top[j][1] 
                         b = top[j][3]
-                        if calculations.return_overlap(a[:10],b[:10]) > 0.25:
+                        if calculations.return_overlap(a[:5],b[:5]) > 0.25:
                             #check ngram overlap 
+                            print("YES")
                             a_ngram = entity1.split()
                             b_ngram = entity2.split()
                             tweets = list(set(a+b))
                             a = tweets
+                         
                             if bool(set(a_ngram) & set(b_ngram)):
                                 if not self.classencoder.buildpattern(entity1).unknown:
                                     entity = entity1
@@ -209,7 +214,7 @@ class Event_pairs:
                                 else:
                                     entity = entity2 + " " + entity1
                             entity1 = entity
-                            merged.append(j)
+                            merged[j] = True
                 new_top.append([date,entity1,top[i][2],a])
             return new_top
         else:
