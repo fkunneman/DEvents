@@ -1,6 +1,8 @@
 
+from __future__ import division
 import math
 import itertools
+import numpy
 
 def goodness_of_fit(total,dc,ec,ode):
     g2 = 0
@@ -38,3 +40,12 @@ def extract_unique(l):
                 s = tuple(sorted(subset))
                 ss.append(s)
     return ss
+
+def return_overlap(l1,l2):
+    overlaps = []
+    for x in l1:
+        for y in l2:
+            t1 = x.split()
+            t2 = y.split()
+            overlap.append(len(set(t1) & set(t2)) / numpy.mean([len(t1),len(t2)]))
+    return numpy.mean(overlaps)

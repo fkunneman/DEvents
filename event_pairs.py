@@ -176,32 +176,24 @@ class Event_pairs:
         #resolve overlap
         if ranking == "fit":
             print("resolving overlap")
-            # for event in top:
-            #     #cluster entities
-            #     entities = [x for x in list(date_entity[date].keys()) if len(date_entity_tweets[date][x]) > 1]
             new_top = []
             merged = []
             for i in range(len(top)):
                 if i in merged:
                     continue
-                #match = False
                 date = top[i][0]
                 entity1 = top[i][1]
                 a = top[i][3]
                 for j in range(i+1,len(top)):
                     if date == top[j][0]:             
-                        entity2 = top[j][1]
-                #        print(entity1,entity2)  
+                        entity2 = top[j][1] 
                         b = top[j][3]
-                        #print(a,b)
-#                        if bool(set(["xbox","#xbox","one","microsoft"]) & set([entity1,entity2])):
-#                            print(entity1,entity2,set(a),set(b))
-                        if len(set(a) & set(b)) > int(len(min(a,b)) / 2):
-#                            print("YES")
-                 #           print("overlap",entity1,entity2)
+                        if calculation.return_overlap(a,b) > 0.25:
                             #check ngram overlap 
                             a_ngram = entity1.split()
                             b_ngram = entity2.split()
+                            tweets = list(set(a+b))
+                            a = tweets
                             if bool(set(a_ngram) & set(b_ngram)):
                                 if not self.classencoder.buildpattern(entity1).unknown:
                                     entity = entity1
@@ -212,22 +204,12 @@ class Event_pairs:
                                 else:
                                     entity = entity1
                             else:
-                                entity = entity1 + " " + entity2
-                            #merge tweets
-                            tweets = list(set(a+b))
+                                if not self.classencoder.buildpattern(entity1 + " " + entity2).unknown:
+                                    entity = entity1 + " " + entity2
+                                else:
+                                    entity = entity2 + " " + entity1
                             entity1 = entity
-                            a = tweets
-                            #print(entity1,entity2,entity,date_entity[date].keys())
-                            #new_top.append([date,entity,top[i][2],tweets])
-                            #match = True
                             merged.append(j)
-                            # del(date_entity[date][entity1])
-                            # del(date_entity[date][entity2])
-                            # date_entity[date][entity] = len(tweets)
-                            # entity_count[entity] = len(set(entity_tweets[entity1] + entity_tweets[entity2]))
-                            # date_entity_tweets[date][entity] = tweets
-                            # entities[j] = entity
-                            # break
                 new_top.append([date,entity1,top[i][2],a])
             return new_top
         else:
