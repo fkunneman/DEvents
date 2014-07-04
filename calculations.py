@@ -47,5 +47,5 @@ def return_overlap(l1,l2):
         for y in l2:
             t1 = x.split()
             t2 = y.split()
-            overlap.append(len(set(t1) & set(t2)) / numpy.mean([len(t1),len(t2)]))
+            overlaps.append(len(set(t1) & set(t2)) / numpy.mean([len(t1),len(t2)]))
     return numpy.mean(overlaps)
