@@ -41,6 +41,9 @@ for infile in args.i:
     day_files[day].append(infile)
 
 ep = Event_pairs()
+if args.w:
+    print("preparing ngram commonness scores")
+    ep.load_commonness(args.d,args.w)
 if args.m:
     print("loading event tweets")
     eventfile = open(args.m,"r",encoding = "utf-8")
@@ -65,10 +68,6 @@ if args.m:
                     outstr = "\n" + "\t".join([str(x) for x in event]) + "\n"
                 eventinfo.write(outstr)
             eventinfo.close()
-
-if args.w:
-    print("preparing ngram commonness scores")
-    ep.load_commonness(args.d,args.w)
 
 for i,day in enumerate(sorted(day_files.keys())):
     print("extracting tweets with a time reference posted on",day)
