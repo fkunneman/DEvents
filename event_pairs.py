@@ -195,7 +195,7 @@ class Event_pairs:
                         entity2 = top[j][1] 
                         b = top[j][3]
                         #print("overlap")
-                        if calculations.return_overlap(af,b[:5]) > 0.50:
+                        if calculations.return_overlap(af,b[:5]) > 0.30:
                             #check ngram overlap 
                             #print("YES")
                             a_ngram = entity1.split()
