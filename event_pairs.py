@@ -452,6 +452,7 @@ class Event_pairs:
             elif i == 4:
                 ngrams = zip(c, c[1:], c[2:], c[3:], c[4:])
             for ngram in ngrams:
+                ngram = " ".join(ngram)
                 pattern = self.classencoder.buildpattern(ngram)
                 if not pattern.unknown():
                     if self.dmodel[pattern] > 0.05:
