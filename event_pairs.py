@@ -449,10 +449,10 @@ class Event_pairs:
                 ngrams = zip(c, c[1:], c[2:], c[3:])
             elif i == 4:
                 ngrams = zip(c, c[1:], c[2:], c[3:], c[4:])
-            print ngrams
+            print(ngrams)
             if not no_hashtag:
                 ngrams = " ".join([x.replace("#","") for x in ngrams])
-            print ngrams
+            print(ngrams)
             for ngram in ngrams:
                 pattern = self.classencoder.buildpattern(ngram)
                 if not pattern.unknown():
