@@ -194,7 +194,9 @@ class Event_pairs:
                 #        print(entity1,entity2)  
                         b = top[j][3]
                         #print(a,b)
+                        print(entity1,entity2,set(a),set(b))
                         if len(set(a) & set(b)) > int(len(min(a,b)) / 2):
+                            print("YES")
                  #           print("overlap",entity1,entity2)
                             #check ngram overlap 
                             a_ngram = entity1.split()
