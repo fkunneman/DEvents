@@ -205,6 +205,7 @@ class Event_pairs:
         elif ranking == "cosine":
             print("resolving overlap cosine style")
             documents = [" ".join(x[3]) for x in top]
+            print(documents)
             tfidf_vectorizer = TfidfVectorizer()
             tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
             for i,document in enumerate(documents):
@@ -219,9 +220,38 @@ class Event_pairs:
         else:
             return top
 
-    # def pos_tweets(self):
+    # def pos_tweets(self,tweets):
+    #     for tweet in tweets:
+    #         for output in fc.process(text):
+    #             if output[0] == None or (args.punct and output[3] == "LET()"):
+    #                 continue
+    #             else:    
+    #                 if args.events:
+    #                     for hashtag in events:
+    #                         if re.search(output[0],hashtag):
+    #                             outstring = output[0]
+    #                             break
+    #                 if args.ne and output[4] != "O":
+    #                     cat = re.search(r"B-([^_]+)",output[4])
+    #                     word = "[" + cat.groups()[0] + " " + output[0] + "]"
+    #                 else:
+    #                     word = output[0]
+    #                 words.append(word)    
+        
+    #         outfields[-1] = " ".join(words)
+    #         for field in outfields:
+    #             if outstring == "":
+    #                 outstring = field
+    #             else:
+    #                 try:
+    #                     outstring = outstring + "\t" + field
+    #                 except UnicodeDecodeError:
+    #                     outstring = outstring + "\t" + field.decode("utf-8")
 
-    #     for tweet in self.tweets:
+    #         outstring = outstring + "\n"
+    #         o.put(outstring)
+    #     if args.v:
+    #         print "Chunk " + str(i) + " done."
 
 
 
