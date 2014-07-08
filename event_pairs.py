@@ -213,7 +213,7 @@ class Event_pairs:
                 cos = cosine_similarity(tfidf_matrix[i:i+1],tfidf_matrix)
                 print(cos)
                 for j,d in enumerate(cos):
-                    if d > 0.7:
+                    if cos[i][j] > 0.7:
                         t = top[j]
                         if t[0] == date:
                             print("SIM",top[j][:2],top[i][3],top[j][3]) 
@@ -501,9 +501,4 @@ class Event_pairs:
             self.e = True
 
     # class Event:
-
-
     #     def __init__(self):
-
-
-
