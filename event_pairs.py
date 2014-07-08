@@ -4,6 +4,8 @@ import datetime
 from collections import defaultdict
 import itertools
 
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 import pynlpl.clients.frogclient
 import colibricore
 import time_functions
@@ -105,7 +107,7 @@ class Event_pairs:
                 self.dmodel[pattern] = float(tokens[3])
             ngramopen.close()
 
-    def rank_events(self,ranking,clust = False):
+    def rank_events(self,ranking):
         date_entity_score = []
         date_entity_tweets = defaultdict(lambda : defaultdict(list))
         #count dates and entities and pairs
@@ -202,6 +204,22 @@ class Event_pairs:
                             merged[j] = True
                 new_top.append([date,entity1,top[i][2],a])
             return new_top
+        elif ranking = "cosine":
+            print("resolving overlap")
+            documents = [" ".join(x[3]) for x in top]
+            tfidf_vectorizer = TfidfVectorizer()
+            tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
+            for i,document in enumerate(documents):
+                date = top[i][0]
+                print(top[i][:2]) 
+                cos = cosine_similarity(tfidf_matrix[i],tfidf_matrix)
+                for j,d in enumerate(cos):
+                    if d > 0.7:
+                        t = top[j]
+                        if t[0] == date:
+                            print("SIM",top[j][:2],top[i][3],top[j][3] 
+ 
+
         else:
             return top
 
@@ -458,7 +476,7 @@ class Event_pairs:
                             ngram_score.append((ngram,self.dmodel[pattern]))
             elif method == "ngram":
                 for ngram in ngrams:
-                    ngram_score.append((ngram,1))
+                    ngram_score.append((" ".join(ngram),1))
         return ngram_score
 
     def discard_last_day(self,window):

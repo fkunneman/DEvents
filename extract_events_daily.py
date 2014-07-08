@@ -31,7 +31,7 @@ parser.add_argument('--start', action = 'store_true',
     help = "Choose to rank events from the existing pairs (only applies when \'-m\' is included")
 args = parser.parse_args() 
 
-event_vars = [["fit",False,"events_fit.txt"],["freq",False,"events_freq.txt"]]
+#event_vars = [["fit",False,"events_fit.txt"],["freq",False,"events_freq.txt"]]
 
 #sort input-files
 day_files = defaultdict(list)
@@ -91,13 +91,13 @@ for i,day in enumerate(sorted(day_files.keys())):
     ep.discard_last_day(args.window)
     if len(set([x.date for x in ep.tweets])) >= 6:
         print("ranking events")
-        for j,ev in enumerate(event_vars):
-            ranked_events = ep.rank_events(ev[0],clust=ev[1])
-            eventinfo = open(basedir + ev[2],"w",encoding = "utf-8")
-            for event in ranked_events:
-                try:
-                    outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
-                except TypeError:
-                    outstr = "\n" + "\t".join([str(x) for x in event]) + "\n"
-                eventinfo.write(outstr)
-            eventinfo.close()
+        # for j,ev in enumerate(event_vars):
+        ranked_events = ep.rank_events("cosine")
+        eventinfo = open(basedir + ev[2],"w",encoding = "utf-8")
+        for event in ranked_events:
+#            try:
+            outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
+            # except TypeError:
+            #     outstr = "\n" + "\t".join([str(x) for x in event]) + "\n"
+            eventinfo.write(outstr)
+        eventinfo.close()
