@@ -87,7 +87,6 @@ for i,day in enumerate(sorted(day_files.keys())):
         if tweet.e:
             info.append(" | ".join(tweet.entities))
         tweetinfo.write("\t".join(info) + "\n")
-        tweetinfo.write("\t".join(info) + "\n")
     tweetinfo.close()
     ep.discard_last_day(args.window)
     if len(set([x.date for x in ep.tweets])) >= 6:
