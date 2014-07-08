@@ -205,7 +205,7 @@ class Event_pairs:
         elif ranking == "cosine":
             print("resolving overlap cosine style")
             documents = [" ".join(x[3]) for x in top]
-            print(documents)
+            print(top,documents)
             tfidf_vectorizer = TfidfVectorizer()
             tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
             for i,document in enumerate(documents):
