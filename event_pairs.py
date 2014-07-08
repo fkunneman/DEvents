@@ -229,33 +229,36 @@ class Event_pairs:
         convert_nums = {"een":1, "twee":2, "drie":3, "vier":4,"vijf":5, "zes":6, "zeven":7, "acht":8, 
             "negen":9, "tien":10, "elf":11, "twaalf":12, "dertien":13,"veertien":14, "vijftien":15,
             "zestien":16, "zeventien":17,"achtien":18, "negentien":19, "twintig":20,"eenentwintig":21,
-            "tweeentwintig":22,"drieentwintig":23,"vierentwintig":24,"vijfentwintig":25,"zesentwintig":26,
-            "zevenentwintig":27,"achtentwintig":28,"negenentwintig":29,"dertig":30,"eenendertig":31}
-        convert_month = {"jan":1, "januari":1, "feb":2, "februari":2,"mrt":3, "maart":3, "apr":4, "april":4,
-            "mei":5,"jun":6,"juni":6,"jul":7,"juli":7,"aug":8,"augustus":8,"sep":9, "september":9, "okt":10, 
-            "oktober":10, "nov":11,"november":11,"dec":12, "december":12}
+            "tweeentwintig":22,"drieentwintig":23,"vierentwintig":24,"vijfentwintig":25,
+            "zesentwintig":26,"zevenentwintig":27,"achtentwintig":28,"negenentwintig":29,"dertig":30,
+            "eenendertig":31}
+        convert_month = {"jan":1, "januari":1, "feb":2, "februari":2,"mrt":3, "maart":3, "apr":4, 
+            "april":4,"mei":5,"jun":6,"juni":6,"jul":7,"juli":7,"aug":8,"augustus":8,"sep":9,
+            "september":9, "okt":10,"oktober":10, "nov":11,"november":11,"dec":12, "december":12}
         convert_timeunit = {"dagen":1, "daagjes":1, "dag":1,"dagje":1,"nachten":1,"nachtjes":1,"nacht":1,
             "nachtje":1,"weken":7,"weekjes":7,"week":7,"weekje":7,"maanden":30,"maandjes":30,"maand": 30,
             "maandje":30}
         weekdays=["maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag","zondag"]
         spec_days=["morgen","overmorgen"]
 
-        nums = (r"(\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|"
-            "zestien|zeventien|achtien|negentien|twintig|eenentwintig|tweeentwintig|drieentwintig|vierentwintig|"
-            "vijfentwintig|zesentwintig|zevenentwintig|achtentwintig|negenentwintig|dertig|eenendertig)")
-        months = (r"(jan|januari|feb|februari|mrt|maart|apr|april|mei|jun|juni|jul|juli|aug|augustus|sep|"
-            "september|okt|oktober|nov|november|dec|december)")
-        timeunits = (r"(dagen|daagjes|dag|dagje|nachten|nachtjes|nacht|nachtje|weken|weekjes|week|weekje|maanden|"
-            "maandjes|maand|maandje)")
+        nums = (r"(\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|"
+            "vijftien|zestien|zeventien|achtien|negentien|twintig|eenentwintig|tweeentwintig|"
+            "drieentwintig|vierentwintig|vijfentwintig|zesentwintig|zevenentwintig|achtentwintig|"
+            "negenentwintig|dertig|eenendertig)")
+        months = (r"(jan|januari|feb|februari|mrt|maart|apr|april|mei|jun|juni|jul|juli|aug|augustus|"
+            "sep|september|okt|oktober|nov|november|dec|december)")
+        timeunits = (r"(dagen|daagjes|dag|dagje|nachten|nachtjes|nacht|nachtje|weken|weekjes|week|"
+            "weekje|maanden|maandjes|maand|maandje)")
 
-        list_patterns = ([r"(over|nog) (minimaal |maximaal |tenminste |bijna |ongeveer |maar |slechts |pakweg |"
-            "ruim |krap |(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + (nums) + " " + (timeunits) + 
-            r"($| )", (nums) + " " + (timeunits) + r"( slapen)? tot", r"met( nog)? (minimaal |maximaal |"
-            "tenminste |bijna |ongeveer |maar |slechts |pakweg |ruim |krap |(maar )?een kleine |"
-            "(maar )?iets (meer|minder) dan )?" + (nums) + " " + (timeunits) + r"( nog)? te gaan",r"(\b|^)" + 
-            (nums) + " " + (months) + r"( |$)" + r"(\d{2,4})?",r"(\b|^)(\d{1,2}-\d{1,2})(-\d{2,4})?(\b|$)",
-            r"(\b|^)(\d{2,4}/)?(\d{1,2}/\d{1,2})(\b|$)",r"(\b|$)(volgende week)? ?(maandag|dinsdag|woensdag|"
-            "donderdag|vrijdag|zaterdag|zondag|overmorgen) ?(avond|nacht|ochtend|middag)?( |$)"])
+        list_patterns = ([r"(over|nog) (minimaal |maximaal |tenminste |bijna |ongeveer |maar |slechts |"
+            "pakweg |ruim |krap |(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + (nums) + " " + 
+            (timeunits) + r"($| )", (nums) + " " + (timeunits) + r"( slapen)? tot",
+            r"met( nog)? (minimaal |maximaal |tenminste |bijna |ongeveer |maar |slechts |pakweg |ruim |"
+            "krap |(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + (nums) + " " + (timeunits) + 
+            r"( nog)? te gaan",r"(\b|^)" + (nums) + " " + (months) + r"( |$)" + r"(\d{2,4})?",
+            r"(\b|^)(\d{1,2}-\d{1,2})(-\d{2,4})?(\b|$)",r"(\b|^)(\d{2,4}/)?(\d{1,2}/\d{1,2})(\b|$)",
+            r"(\b|$)(volgende week)? ?(maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag|"
+            "overmorgen) ?(avond|nacht|ochtend|middag)?( |$)"])
 
         date_eu = re.compile(r"(\d{1,2})-(\d{1,2})-?(\d{2,4})?")
         date_vs = re.compile(r"(\d{2,4})?/?(\d{1,2})/(\d{1,2})")
