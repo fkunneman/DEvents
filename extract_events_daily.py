@@ -84,17 +84,13 @@ for i,day in enumerate(sorted(day_files.keys())):
     tweetinfo = open(basedir + "modeltweets.txt","w",encoding = "utf-8")
     for tweet in ep.tweets:
         info = [tweet.id,tweet.user,str(tweet.date),tweet.text," ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks])]
-        try:
-            info.append(" ".join(tweet.entities))
-            tweetinfo.write("\t".join(info) + "\n")
-        except:
-            tweetinfo.write("\t".join(info) + "\n")
+        info.append(" ".join(tweet.entities))
+        tweetinfo.write("\t".join(info) + "\n")
+        tweetinfo.write("\t".join(info) + "\n")
     tweetinfo.close()
     ep.discard_last_day(args.window)
     if len(set([x.date for x in ep.tweets])) >= 6:
         print("ranking events")
-
-
         for j,ev in enumerate(event_vars):
             ranked_events = ep.rank_events(ev[0],clust=ev[1])
             eventinfo = open(basedir + ev[2],"w",encoding = "utf-8")
