@@ -28,7 +28,7 @@ class Event_pairs:
             units = info[:5]
             units.append([x.strip() for x in info[5].split("|")])
             tweet.set_meta(units)
-            if len(units) == 7:
+            if len(info) >= 7:
                 tweet.set_entities([x.strip() for x in info[6].split(" | ")])            
             self.tweets.append(tweet)
 

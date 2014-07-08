@@ -60,7 +60,7 @@ if args.m:
             os.mkdir(basedir)
         # for j,ev in enumerate(event_vars):
         ranked_events = ep.rank_events("cosine")
-        eventinfo = open(basedir + ev[2],"w",encoding = "utf-8")
+        eventinfo = open(basedir + "events_fit.txt","w",encoding = "utf-8")
         for event in ranked_events:
 #            try:
             outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
@@ -90,7 +90,7 @@ for i,day in enumerate(sorted(day_files.keys())):
         print("ranking events")
         # for j,ev in enumerate(event_vars):
         ranked_events = ep.rank_events("cosine")
-        eventinfo = open(basedir + ev[2],"w",encoding = "utf-8")
+        eventinfo = open(basedir + "events_fit.txt","w",encoding = "utf-8")
         for event in ranked_events:
 #            try:
             outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
