@@ -55,7 +55,7 @@ class Event_pairs:
                         if ent:
                             entities = []
                             for chunk in chunks:
-                                entities.extend(self.extract_entity(chunk,ht))
+                                entities.extend(self.extract_entity(chunk,ht,ent))
                             entities = sorted(entities,key = lambda x: x[1],reverse=True)
                             if len(entities) > 0:
                                 if ent == "single":
@@ -63,7 +63,7 @@ class Event_pairs:
                                 elif ent == "all":
                                     dtweet.set_entities([x[0] for x in entities])
                                 elif ent == "ngram":
-                                    dtweet.set_entities([x[0] for x in entities],method="ngram")
+                                    dtweet.set_entities([x[0] for x in entities])
                         if ht:
                             hashtags = [x for x in text.split(" ") if re.search(r"^#",x)]
                             if len(hashtags) > 0:
@@ -433,8 +433,7 @@ class Event_pairs:
             else:
                 return output
 
-    def extract_entity(self,text,no_hashtag = False,method = "wiki"):
-        print(method)
+    def extract_entity(self,text,method):
         ngram_score = []
         c = text.split()
         if not no_hashtag:
@@ -450,7 +449,7 @@ class Event_pairs:
                 ngrams = zip(c, c[1:], c[2:], c[3:])
             elif i == 4:
                 ngrams = zip(c, c[1:], c[2:], c[3:], c[4:])
-            if method == "wiki":
+            if method == "all" or method == "single":
                 for ngram in ngrams:
                     ngram = " ".join(ngram)
                     pattern = self.classencoder.buildpattern(ngram)
