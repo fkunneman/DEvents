@@ -129,7 +129,7 @@ class Event_pairs:
                     for entity in tweet.entities:
                         entity_count[entity] += 1
                         date_entity[date][entity] += 1
-                        date_entity_tweets[date][entity].append(tweet.text)
+                        date_entity_tweets[date][entity].append(tweet)
                         entity_tweets[entity].append(tweet.text)
 
         print("calculating score")
@@ -147,7 +147,7 @@ class Event_pairs:
                         ode = date_entity[date][entity]
                         g2 = calculations.goodness_of_fit(total,dc,ec,ode)
                         g2_user = g2 * (users / len(date_entity_tweets[date][entity]))
-                        date_entity_score.append([date,entity,g2_user,date_entity_tweets[date][entity]])
+                        date_entity_score.append([date,entity,g2_user,[x.text for x in date_entity_tweets[date][entity]]])
         elif ranking == "freq":
             for date in date_entity.keys():
                 for entity in date_entity[date].keys():
