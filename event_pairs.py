@@ -500,10 +500,10 @@ class Event_pairs:
             self.entities = entities
             self.e = True
 
-    class Event:
+    # class Event:
 
 
-        def __init__(self):
+    #     def __init__(self):
 
 
 
