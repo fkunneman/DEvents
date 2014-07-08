@@ -207,12 +207,12 @@ class Event_pairs:
             documents = [" ".join(x[3]) for x in top]
             tfidf_vectorizer = TfidfVectorizer()
             tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
+            cos = cosine_similarity(tfidf_matrix,tfidf_matrix)
             for i,document in enumerate(documents):
                 date = top[i][0]
                 print(top[i][:2]) 
-                cos = cosine_similarity(tfidf_matrix[i:i+1],tfidf_matrix)
-                print(cos)
                 for j,d in enumerate(cos):
+                    print(cos[i][j])
                     if cos[i][j] > 0.7:
                         t = top[j]
                         if t[0] == date:
