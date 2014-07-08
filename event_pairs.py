@@ -221,9 +221,9 @@ class Event_pairs:
         else:
             return top
 
-    def pos_tweets(self):
+    # def pos_tweets(self):
 
-        for tweet in self.tweets:
+    #     for tweet in self.tweets:
 
 
     def extract_date(self,tweet,date):
