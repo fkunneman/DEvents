@@ -210,7 +210,8 @@ class Event_pairs:
             for i,document in enumerate(documents):
                 date = top[i][0]
                 print(top[i][:2]) 
-                cos = cosine_similarity(tfidf_matrix[i],tfidf_matrix)
+                cos = cosine_similarity(tfidf_matrix[i:i+1],tfidf_matrix)
+                print(cos)
                 for j,d in enumerate(cos):
                     if d > 0.7:
                         t = top[j]
@@ -498,3 +499,11 @@ class Event_pairs:
         def set_entities(self,entities):
             self.entities = entities
             self.e = True
+
+    class Event:
+
+
+        def __init__(self):
+
+
+
