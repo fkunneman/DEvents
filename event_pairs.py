@@ -217,8 +217,7 @@ class Event_pairs:
                     if d > 0.7:
                         t = top[j]
                         if t[0] == date:
-                            print("SIM",top[j][:2],top[i][3],top[j][3] 
-            return top
+                            print("SIM",top[j][:2],top[i][3],top[j][3]) 
         else:
             return top
 
