@@ -14,8 +14,10 @@ import numpy
 
 class Event_pairs:
 
-    def __init__(self):
+    def __init__(self,pos):
         self.tweets = []
+        if pos:
+            self.fc = pynlpl.clients.frogclient.FrogClient('localhost',pos,returnall = True)
 
     def append_eventtweets(self,eventtweets):
         for et in eventtweets:
@@ -221,9 +223,10 @@ class Event_pairs:
         else:
             return top
 
-    # def pos_tweets(self):
+    def pos_tweets(self):
 
-    #     for tweet in self.tweets:
+        for tweet in self.tweets:
+
 
 
     def extract_date(self,tweet,date):
