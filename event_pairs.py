@@ -434,6 +434,7 @@ class Event_pairs:
                 return output
 
     def extract_entity(self,text,no_hashtag = False,method = "wiki"):
+        print(method)
         ngram_score = []
         c = text.split()
         if not no_hashtag:
