@@ -18,11 +18,14 @@ parser.add_argument('-w', action = 'store', nargs='+', required = False,
     help = "The files with wikicores per n-gram")
 parser.add_argument('-d', action = 'store', required = False, 
     help = "The tmp dict for pattern indexing")
+parser.add_argument('-p', action = 'store', required = False, 
+    help = "The server id for part-of-speech tagging")
 parser.add_argument('-a', action = 'store', required = False,
     help = "Choose to extract entities. \'single\' for only the top entity, \'all\' for all common "
     "entities, \'ngram\' for all ngrams (baseline)")
 parser.add_argument('-t', action = 'store_true',
     help = "Choose to include hashtags as entities")
+
 parser.add_argument('-o', action = 'store', 
     help = "The directory to write files to")
 parser.add_argument('--window', type = int, action = 'store', default = 7,
@@ -40,7 +43,7 @@ for infile in args.i:
     day = parts[-3][:2] + "_" + parts[-2]
     day_files[day].append(infile)
 
-ep = Event_pairs()
+ep = Event_pairs(args.p)
 if args.w:
     print("preparing ngram commonness scores")
     ep.load_commonness(args.d,args.w)
