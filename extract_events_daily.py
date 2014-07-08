@@ -56,21 +56,18 @@ if args.m:
         print("ranking events")
         day = args.m.split("/")[-3][:2] + "_" + args.m.split("/")[-2] + "/"
         basedir = args.o + day    
-        try:
+        if not os.path.isdir(basedir):
             os.mkdir(basedir)
-        except:
-            print("dir exists")
-        print(basedir)
-        for j,ev in enumerate(event_vars):
-            ranked_events = ep.rank_events(ev[0],clust=ev[1])
-            eventinfo = open(basedir + ev[2],"w",encoding = "utf-8")
-            for event in ranked_events:
-                try:
-                    outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
-                except TypeError:
-                    outstr = "\n" + "\t".join([str(x) for x in event]) + "\n"
-                eventinfo.write(outstr)
-            eventinfo.close()
+        # for j,ev in enumerate(event_vars):
+        ranked_events = ep.rank_events("cosine")
+        eventinfo = open(basedir + ev[2],"w",encoding = "utf-8")
+        for event in ranked_events:
+#            try:
+            outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
+            # except TypeError:
+            #     outstr = "\n" + "\t".join([str(x) for x in event]) + "\n"
+            eventinfo.write(outstr)
+        eventinfo.close()
 
 for i,day in enumerate(sorted(day_files.keys())):
     print("extracting tweets with a time reference posted on",day)
