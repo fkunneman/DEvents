@@ -103,30 +103,6 @@ class Event_pairs:
                 self.dmodel[pattern] = float(tokens[3])
             ngramopen.close()
 
-    # def select_entity_tweets(self,approach = "single"):
-    #     #extract entities from tweets
-    #     print("extracting entities")
-    #     for tweet in self.tweets:
-    #         entities = []
-    #         for chunk in tweet.chunks:
-    #             entities.extend(self.extract_entity(chunk))
-    #         entities = sorted(entities,key = lambda x: x[1],
-    #             reverse=True)
-    #         if len(entities) > 0:
-    #             if approach == "single":
-    #                 tweet.entities = [entities[0][0]]
-    #             elif approach == "all":
-    #                 tweet.entities = [x[0] for x in entities]
-
-    # def select_hashtags_tweets(self):
-    #     for tweet in self.tweets:
-    #         hashtags = [x for x in tweet.text.split(" ") if re.search(r"^#",x)]
-    #         if len(hashtags) > 0:
-    #             try:
-    #                 tweet.entities.extend(hashtags)
-    #             except:
-    #                 tweet.set_entities(hashtags)
-
     def rank_events(self,ranking,clust = False):
         date_entity_score = []
         date_entity_tweets = defaultdict(lambda : defaultdict(list))
@@ -161,12 +137,14 @@ class Event_pairs:
                 #cluster entities
                 for entity in date_entity[date].keys():
                     date_entity_tweets[date][entity] = list(set(date_entity_tweets[date][entity]))
+                    users = len(list(set([x.user for x in date_entity_tweets[date][entity]])))
                     if len(date_entity_tweets[date][entity]) >= 5:
                         dc = date_count[date]
                         ec = entity_count[entity]
                         ode = date_entity[date][entity]
                         g2 = calculations.goodness_of_fit(total,dc,ec,ode)
-                        date_entity_score.append([date,entity,g2,date_entity_tweets[date][entity]])
+                        g2_user = g2 * (users / len(date_entity_tweets[date][entity]))
+                        date_entity_score.append([date,entity,g2_user,date_entity_tweets[date][entity]])
         elif ranking == "freq":
             for date in date_entity.keys():
                 for entity in date_entity[date].keys():
@@ -453,7 +431,7 @@ class Event_pairs:
             else:
                 return output
 
-    def extract_entity(self,text,no_hashtag = False):
+    def extract_entity(self,text,no_hashtag = False,method = "wiki"):
         ngram_score = []
         c = text.split()
         if not no_hashtag:
@@ -469,12 +447,16 @@ class Event_pairs:
                 ngrams = zip(c, c[1:], c[2:], c[3:])
             elif i == 4:
                 ngrams = zip(c, c[1:], c[2:], c[3:], c[4:])
-            for ngram in ngrams:
-                ngram = " ".join(ngram)
-                pattern = self.classencoder.buildpattern(ngram)
-                if not pattern.unknown():
-                    if self.dmodel[pattern] > 0.05:
-                        ngram_score.append((ngram,self.dmodel[pattern]))
+            if method == "wiki":
+                for ngram in ngrams:
+                    ngram = " ".join(ngram)
+                    pattern = self.classencoder.buildpattern(ngram)
+                    if not pattern.unknown():
+                        if self.dmodel[pattern] > 0.05:
+                            ngram_score.append((ngram,self.dmodel[pattern]))
+            elif method = "ngram":
+                for ngram in ngrams:
+                    ngram_score.append((ngram,1))
         return ngram_score
 
     def discard_last_day(self,window):
