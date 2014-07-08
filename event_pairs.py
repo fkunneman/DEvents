@@ -204,8 +204,8 @@ class Event_pairs:
                             merged[j] = True
                 new_top.append([date,entity1,top[i][2],a])
             return new_top
-        elif ranking = "cosine":
-            print("resolving overlap")
+        elif ranking == "cosine":
+            print("resolving overlap cosine style")
             documents = [" ".join(x[3]) for x in top]
             tfidf_vectorizer = TfidfVectorizer()
             tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
