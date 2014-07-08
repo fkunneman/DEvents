@@ -4,6 +4,7 @@ import datetime
 from collections import defaultdict
 import itertools
 
+import pynlpl.clients.frogclient
 import colibricore
 import time_functions
 import calculations
@@ -25,8 +26,7 @@ class Event_pairs:
             units = info[:5]
             units.append([x.strip() for x in info[5].split("|")])
             tweet.set_meta(units)
-            if len(info) > 6:
-                tweet.set_entities([x.strip() for x in info[6].split(" ")])            
+            tweet.set_entities([x.strip() for x in info[6].split(" ")])            
             self.tweets.append(tweet)
 
     def select_date_entity_tweets(self,new_tweets,ent,ht):
