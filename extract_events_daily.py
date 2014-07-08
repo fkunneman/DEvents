@@ -20,7 +20,7 @@ parser.add_argument('-d', action = 'store', required = False,
     help = "The tmp dict for pattern indexing")
 parser.add_argument('-a', action = 'store', required = False,
     help = "Choose to extract entities. \'single\' for only the top entity, \'all\' for all common "
-    "entities")
+    "entities, \'ngram\' for all ngrams (baseline)")
 parser.add_argument('-t', action = 'store_true',
     help = "Choose to include hashtags as entities")
 parser.add_argument('-o', action = 'store', 

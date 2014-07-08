@@ -43,11 +43,11 @@ class Event_pairs:
                         chunks = dateref_phrase[0]
                         refdates = dateref_phrase[1:]
                         textparts = text.split(" ")
-                        for i,word in enumerate(textparts):
-                            if re.search(r"^@",word):
-                                textparts[i] = "USER"
-                            elif re.search(r"^http://",word):
-                                textparts[i] = "URL"
+                        # for i,word in enumerate(textparts):
+                        #     if re.search(r"^@",word):
+                        #         textparts[i] = "USER"
+                        #     elif re.search(r"^http://",word):
+                        #         textparts[i] = "URL"
                         text = " ".join(textparts)
                         dtweet = self.Tweet()
                         units = [tokens[1],tokens[2],date,text,refdates,chunks]
@@ -62,6 +62,8 @@ class Event_pairs:
                                     dtweet.set_entities([entities[0][0]])
                                 elif ent == "all":
                                     dtweet.set_entities([x[0] for x in entities])
+                                elif ent == "ngram":
+                                    dtweet.set_entities([x[0] for x in entities],method="ngram")
                         if ht:
                             hashtags = [x for x in text.split(" ") if re.search(r"^#",x)]
                             if len(hashtags) > 0:
@@ -454,7 +456,7 @@ class Event_pairs:
                     if not pattern.unknown():
                         if self.dmodel[pattern] > 0.05:
                             ngram_score.append((ngram,self.dmodel[pattern]))
-            elif method = "ngram":
+            elif method == "ngram":
                 for ngram in ngrams:
                     ngram_score.append((ngram,1))
         return ngram_score
