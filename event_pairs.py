@@ -28,7 +28,7 @@ class Event_pairs:
             units = info[:5]
             units.append([x.strip() for x in info[5].split("|")])
             tweet.set_meta(units)
-            tweet.set_entities([x.strip() for x in info[6].split(" ")])            
+            tweet.set_entities([x.strip() for x in info[6].split(" | ")])            
             self.tweets.append(tweet)
 
     def select_date_entity_tweets(self,new_tweets,ent,ht):
@@ -220,6 +220,11 @@ class Event_pairs:
                             print("SIM",top[j][:2],top[i][3],top[j][3]) 
         else:
             return top
+
+    def pos_tweets(self):
+
+        for tweet in self.tweets:
+
 
     def extract_date(self,tweet,date):
         convert_nums = {"een":1, "twee":2, "drie":3, "vier":4,
