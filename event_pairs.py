@@ -134,7 +134,7 @@ class Event_pairs:
 
         print("calculating score")
         #for each pair
-        if ranking == "fit":
+        if ranking == "fit" or ranking == "cosine":
             total = len(self.tweets)
             for date in date_entity.keys():
                 #cluster entities
@@ -205,7 +205,6 @@ class Event_pairs:
         elif ranking == "cosine":
             print("resolving overlap cosine style")
             documents = [" ".join(x[3]) for x in top]
-            print(top,documents)
             tfidf_vectorizer = TfidfVectorizer()
             tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
             for i,document in enumerate(documents):
