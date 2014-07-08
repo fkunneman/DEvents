@@ -28,8 +28,8 @@ class Event_pairs:
             units = info[:5]
             units.append([x.strip() for x in info[5].split("|")])
             tweet.set_meta(units)
-            print(info,units)
-            tweet.set_entities([x.strip() for x in info[6].split(" | ")])            
+            if len(units) == 7:
+                tweet.set_entities([x.strip() for x in info[6].split(" | ")])            
             self.tweets.append(tweet)
 
     def select_date_entity_tweets(self,new_tweets,ent,ht):
