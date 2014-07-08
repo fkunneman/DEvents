@@ -76,15 +76,13 @@ for i,day in enumerate(sorted(day_files.keys())):
         ep.select_date_entity_tweets(tweetfile.readlines(),args.a,args.t)
         tweetfile.close()
     basedir = args.o + day + "/"
-    try:
+    if not os.path.isdir(basedir):
         os.mkdir(basedir)
-    except:
-        print("dir exists")
-    print(basedir)
     tweetinfo = open(basedir + "modeltweets.txt","w",encoding = "utf-8")
     for tweet in ep.tweets:
         info = [tweet.id,tweet.user,str(tweet.date),tweet.text," ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks])]
-        info.append(" ".join(tweet.entities))
+        if tweet.e:
+            info.append(" ".join(tweet.entities))
         tweetinfo.write("\t".join(info) + "\n")
         tweetinfo.write("\t".join(info) + "\n")
     tweetinfo.close()
