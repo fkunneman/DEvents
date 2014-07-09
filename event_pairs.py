@@ -212,8 +212,8 @@ class Event_pairs:
                 date = top[i][0]
                 print(top[i][:2]) 
                 for j,d in enumerate(cos):
-                    print(cos[i][j])
-                    if cos[i][j] > 0.7:
+#                    print(cos[i][j])
+                    if j != i and cos[i][j] > 0.7:
                         t = top[j]
                         if t[0] == date:
                             print("SIM",top[j][:2],top[i][3],top[j][3]) 
