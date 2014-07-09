@@ -224,7 +224,6 @@ class Event_pairs:
             dates = list(set([x.date for x in self.events]))
             for date in dates:
                 events = [x for x in self.events if x.date == date]
-                print len(events)
                 indexes = [x.id[0] for x in events]
                 pairs = [x for x in itertools.combinations(indexes,2)]
                 print(date)
@@ -235,7 +234,7 @@ class Event_pairs:
                     #print(scores_sorted)
                     while scores_sorted[0][2] > 0.7:
                         #print([x[2] for x in scores_sorted])
-                        print(len(scores_sorted))
+                        print(len(scores_sorted),len(events))
                         highest_sim = scores_sorted[0]
                         #merge events
                         event1 = [x for x in events if bool(set(highest_sim[0]) & set(x.id))][0]
