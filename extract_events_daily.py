@@ -59,11 +59,11 @@ if args.m:
         if not os.path.isdir(basedir):
             os.mkdir(basedir)
         # for j,ev in enumerate(event_vars):
-        ranked_events = ep.rank_events("cosine")
+        ep.rank_events("cosine")
         eventinfo = open(basedir + "events_fit.txt","w",encoding = "utf-8")
-        for event in ranked_events:
+        for event in sorted(ep.events,key = lambda x : x.score,reverse=True)
 #            try:
-            outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
+            outstr = "\n" + "\t".join([str(x.date),str(x.score)]) + "\t" + ", ".join(x.entities) + "\n" + "\n".join(x.tweets) + "\n"
             # except TypeError:
             #     outstr = "\n" + "\t".join([str(x) for x in event]) + "\n"
             eventinfo.write(outstr)
@@ -89,11 +89,12 @@ for i,day in enumerate(sorted(day_files.keys())):
     if len(set([x.date for x in ep.tweets])) >= 6:
         print("ranking events")
         # for j,ev in enumerate(event_vars):
-        ranked_events = ep.rank_events("cosine")
+        ep.rank_events("cosine")
         eventinfo = open(basedir + "events_fit.txt","w",encoding = "utf-8")
-        for event in ranked_events:
+        for event in sorted(ep.events,key = lambda x : x.score,reverse=True)
 #            try:
-            outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
+            outstr = "\n" + "\t".join([str(x.date),str(x.score)]) + "\t" + ", ".join(x.entities) + "\n" + "\n".join(x.tweets) + "\n"
+            #outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
             # except TypeError:
             #     outstr = "\n" + "\t".join([str(x) for x in event]) + "\n"
             eventinfo.write(outstr)

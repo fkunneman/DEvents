@@ -216,7 +216,6 @@ class Event_pairs:
                 self.events.append(self.Event(x,top[x]))
             #agglomerative clustering
             #order pairs by similarity
-            print("saving similarity scores")
             for i,document in enumerate(documents):
                 for j,sim in enumerate(cos[i]):
                     pair_sim[i][j] = cos[i][j]
@@ -226,15 +225,10 @@ class Event_pairs:
                 events = [x for x in self.events if x.date == date]
                 indexes = [x.id[0] for x in events]
                 pairs = [x for x in itertools.combinations(indexes,2)]
-                print(date)
                 scores = [([x[0]],[x[1]],pair_sim[x[0]][x[1]]) for x in pairs if pair_sim[x[0]][x[1]] > 0.7]
-                #print(date,len(events),indexes,scores)
                 if len(scores) > 0:
                     scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
-                    #print(scores_sorted)
                     while scores_sorted[0][2] > 0.7:
-                        #print([x[2] for x in scores_sorted])
-                        print(len(scores_sorted),len(events))
                         highest_sim = scores_sorted[0]
                         #merge events
                         event1 = [x for x in events if bool(set(highest_sim[0]) & set(x.id))][0]
@@ -249,11 +243,9 @@ class Event_pairs:
                             events.remove(event1)
                             self.events.remove(event1)
                             event = event2
-                        #recalculate similarity graph
                         all_s = []
                         remove_s = []
                         event_set = set(event.id)
-                        #print(event_set)
                         for score in scores:
                             if bool(event_set & set(score[0] + score[1])):
                                 remove_s.append(score)
@@ -266,36 +258,10 @@ class Event_pairs:
                                 if mean_sim > 0.7:
                                     scores.append((event.id,e.id,mean_sim))
                         scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
-#                        for ss in scores_sorted:
-#                            if s[0] == event.id or ss[1] == event.id:
-#                                print("YES!!",ss)
-#                            else:
-#                                print(ss)
-#                        print('******************************************************************')
                         if not len(scores_sorted) > 1:
                             break
-                    print([(x.id,x.entities) for x in events])
-#            quit()
-
-            # sorted_pairs = sorted(sim_pair.keys(),reverse = true)
-            
-
-            # for pair in sorted_pairs:
-            #     if pair[1] > 0.7:
-
-            #         nums = [str(x) for x in pair[0].split("_")]
-
-            # #1: find highest similarity pair       
-            #     date = top[i][0]
-            #     date_matches = [(j,m) for j,m in enumerate(cos[i]) if top[j][0] == date and m > 0.7]
-            #     if len(date_matches) > 0:
-
-            #     for j,d in enumerate(cos):
-            #         print(cos[i][j])
-            #         if cos[i][j] > 0.7:
-            #             t = top[j]
-            #             if t[0] == date:
-            #                 print("SIM",top[j][:2],top[i][3],top[j][3]) 
+            for event in self.events:
+                event.resolve_overlap_entities()
         else:
             return top
 
@@ -607,7 +573,14 @@ class Event_pairs:
                     new_entities.append(entity1)
             self.entities = new_entities
 
-#        def sort_entities(self):
+        # def sort_entities(self):
+        #     tweets = [x.split(" ") for x in self.tweets]
+
+
+
+        # def sort(self,list):
+
+
 
 
 
