@@ -14,7 +14,7 @@ parser.add_argument('-w', action = 'store', nargs='+', required = False,
     help = "The files with wikicores per n-gram")
 parser.add_argument('-d', action = 'store', required = False, 
     help = "The tmp dict for pattern indexing")
-parser.add_argument('-a', action = 'store', default = "single",
+parser.add_argument('-a', action = 'store', required = False,
     help = "Choose to extract entities. \'single\' for only the top entity, or \'all\' for all common "
     "entities")
 parser.add_argument('-t', action = 'store_true',

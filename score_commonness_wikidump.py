@@ -81,7 +81,6 @@ options = colibricore.PatternModelOptions(mintokens=1, maxlength=5)
 patternmodel = colibricore.UnindexedPatternModel()
 patternmodel.train(corpusfile, options, anchormodel) #(last argument constrains the training to patterns only occuring in that model, i.e the intersectino of these models, saves heaps of space)
 
-
 outfiles = []
 for i in range(1,6):
     outfiles.append( open(outdir + str(i) + "_grams.txt",'w',encoding='utf-8') )
