@@ -224,9 +224,9 @@ class Event_pairs:
             dates = list(set([x.date for x in self.events]))
             for date in dates:
                 events = [x for x in self.events if x.date == date]
-                indexes = [x.id for x in events]
+                indexes = [x.id[0] for x in events]
                 pairs = [x for x in itertools.combinations(indexes,2)]
-                print(date,len(events),[pairs])
+                print(date,len(events),pairs)
                 scores = [([x[0]],[x[1]],pair_sim[x[0]][x[1]]) for x in pairs]
                 print(date,len(events),indexes,scores)
                 if len(scores) > 0:
