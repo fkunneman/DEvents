@@ -252,13 +252,14 @@ class Event_pairs:
                         all_s = []
                         remove_s = []
                         event_set = set(event.id)
+                        #print(event_set)
                         for score in scores:
                             if bool(event_set & set(score[0] + score[1])):
                                 remove_s.append(score)
                         for s in remove_s:
                             scores.remove(s)
                         for e in events:
-                            if not bool(event_set & set(event.id)):
+                            if not bool(event_set & set(e.id)):
                                 sims = [(aa, bb) for aa in event.id for bb in e.id]
                                 mean_sim = numpy.mean([pair_sim[x[0]][x[1]] for x in sims])
                                 scores.append((event.id,e.id,mean_sim))
