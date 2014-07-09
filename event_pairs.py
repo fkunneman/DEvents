@@ -224,7 +224,7 @@ class Event_pairs:
             dates = list(set([x.date for x in self.events]))
             for date in dates:
                 events = [x for x in self.events if x.date == date]
-                print len(events)
+                print(len(events))
                 indexes = [x.id[0] for x in events]
                 pairs = [x for x in itertools.combinations(indexes,2)]
                 print(date)
