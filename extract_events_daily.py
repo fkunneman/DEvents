@@ -61,7 +61,7 @@ if args.m:
         # for j,ev in enumerate(event_vars):
         ep.rank_events("cosine")
         eventinfo = open(basedir + "events_fit.txt","w",encoding = "utf-8")
-        for event in sorted(ep.events,key = lambda x : x.score,reverse=True)
+        for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
 #            try:
             outstr = "\n" + "\t".join([str(x.date),str(x.score)]) + "\t" + ", ".join(x.entities) + "\n" + "\n".join(x.tweets) + "\n"
             # except TypeError:
@@ -91,7 +91,7 @@ for i,day in enumerate(sorted(day_files.keys())):
         # for j,ev in enumerate(event_vars):
         ep.rank_events("cosine")
         eventinfo = open(basedir + "events_fit.txt","w",encoding = "utf-8")
-        for event in sorted(ep.events,key = lambda x : x.score,reverse=True)
+        for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
 #            try:
             outstr = "\n" + "\t".join([str(x.date),str(x.score)]) + "\t" + ", ".join(x.entities) + "\n" + "\n".join(x.tweets) + "\n"
             #outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
