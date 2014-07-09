@@ -224,6 +224,7 @@ class Event_pairs:
             dates = list(set([x.date for x in self.events]))
             for date in dates:
                 events = [x for x in self.events if x.date == date]
+                print len(events)
                 indexes = [x.id[0] for x in events]
                 pairs = [x for x in itertools.combinations(indexes,2)]
                 print(date)
@@ -234,6 +235,7 @@ class Event_pairs:
                     #print(scores_sorted)
                     while scores_sorted[0][2] > 0.7:
                         #print([x[2] for x in scores_sorted])
+                        print(len(scores_sorted))
                         highest_sim = scores_sorted[0]
                         #merge events
                         event1 = [x for x in events if bool(set(highest_sim[0]) & set(x.id))][0]
@@ -591,6 +593,23 @@ class Event_pairs:
             self.entities.extend(clust.entities)
             self.score = max([self.score,clust.score])
             self.tweets = list(set(self.tweets + clust.tweets))
+
+        def resolve_overlap_entities(self):
+            new_entities = []
+            for entity1 in entities:
+                part = False
+                for entity2 in entities:
+                    if entity1 < entity2:
+                        if re.search(entity1,entity2):
+                            part = True
+                            break
+                if not part:
+                    new_entities.append(entity1)
+            self.entities = new_entities
+
+#        def sort_entities(self):
+
+
 
 
 
