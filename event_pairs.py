@@ -231,7 +231,9 @@ class Event_pairs:
                 #print(date,len(events),indexes,scores)
                 if len(scores) > 0:
                     scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
+                    #print(scores_sorted)
                     while scores_sorted[0][2] > 0.7:
+                        #print([x[2] for x in scores_sorted])
                         highest_sim = scores_sorted[0]
                         #merge events
                         event1 = [x for x in events if bool(set(highest_sim[0]) & set(x.id))][0]
@@ -261,6 +263,9 @@ class Event_pairs:
                                 mean_sim = numpy.mean([pair_sim[x[0]][x[1]] for x in sims])
                                 scores.append((event.id,e.id,mean_sim))
                         scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
+#                        print("after",[x[2] for x in scores_sorted])
+                        if not len(scores_sorted) > 2:
+                            break
                     print([(x.id,x.entities) for x in events])
             quit()
 
