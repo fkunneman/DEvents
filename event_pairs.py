@@ -264,16 +264,16 @@ class Event_pairs:
                                 mean_sim = numpy.mean([pair_sim[x[0]][x[1]] for x in sims])
                                 scores.append((event.id,e.id,mean_sim))
                         scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
-                        for ss in scores_sorted:
-                            if s[0] == event.id or ss[1] == event.id:
-                                print("YES!!",ss)
-                            else:
-                                print(ss)
-                        print('******************************************************************')
+#                        for ss in scores_sorted:
+#                            if s[0] == event.id or ss[1] == event.id:
+#                                print("YES!!",ss)
+#                            else:
+#                                print(ss)
+#                        print('******************************************************************')
                         if not len(scores_sorted) > 2:
                             break
                     print([(x.id,x.entities) for x in events])
-            quit()
+#            quit()
 
             # sorted_pairs = sorted(sim_pair.keys(),reverse = true)
             
