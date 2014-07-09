@@ -226,9 +226,9 @@ class Event_pairs:
                 events = [x for x in self.events if x.date == date]
                 indexes = [x.id[0] for x in events]
                 pairs = [x for x in itertools.combinations(indexes,2)]
-                print(date,len(events),pairs)
+                print(date)
                 scores = [([x[0]],[x[1]],pair_sim[x[0]][x[1]]) for x in pairs]
-                print(date,len(events),indexes,scores)
+                #print(date,len(events),indexes,scores)
                 if len(scores) > 0:
                     scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
                     while scores_sorted[0][2] > 0.7:
@@ -251,10 +251,10 @@ class Event_pairs:
                         remove_s = []
                         event_set = set(event.id)
                         for score in scores:
-                            if bool(event_set & set([score[0],score[1]])):
+                            if bool(event_set & set(score[0] + score[1])):
                                 remove_s.append(score)
                             else:
-                                all_s.extend([score[0],score[1]])
+                                all_s.extend(score[0] + score[1])
                         for s in remove_s:
                             scores.remove(s)
                         for s in set(all_s):
@@ -262,8 +262,8 @@ class Event_pairs:
                             mean_sim = numpy.mean([pair_sim[x[0]][x[1]] for x in sims])
                             scores.append((event.id,s,mean_sim))
                         scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
-                    print([(x.id,x.entities,x.tweets) for x in events])
-                    quit()
+                    print([(x.id,x.entities) for x in events])
+            quit()
 
             # sorted_pairs = sorted(sim_pair.keys(),reverse = true)
             
@@ -578,7 +578,7 @@ class Event_pairs:
 
         def merge(self,clust):
             self.id.extend(clust.id)
-            self.entities.append(clust.entities)
+            self.entities.extend(clust.entities)
             self.score = max([self.score,clust.score])
             self.tweets = list(set(self.tweets + clust.tweets))
 
