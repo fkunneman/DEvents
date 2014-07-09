@@ -263,7 +263,7 @@ class Event_pairs:
                                 mean_sim = numpy.mean([pair_sim[x[0]][x[1]] for x in sims])
                                 scores.append((event.id,e.id,mean_sim))
                         scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
-#                        print("after",[x[2] for x in scores_sorted])
+                        print("after",scores_sorted)
                         if not len(scores_sorted) > 2:
                             break
                     print([(x.id,x.entities) for x in events])
