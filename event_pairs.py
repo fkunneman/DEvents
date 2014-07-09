@@ -226,8 +226,9 @@ class Event_pairs:
                 events = [x for x in self.events if x.date == date]
                 indexes = [x.id for x in events]
                 pairs = itertools.combinations(indexes,2)
+                print(date,len(events),indexes,pairs)
                 scores = [([x[0]],[x[1]],pair_sim[x[0]][x[1]]) for x in pairs]
-                print(date,events,indexes,scores)
+                print(date,len(events),indexes,scores)
                 if len(scores) > 0:
                     scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
                     while scores_sorted[0][2] > 0.7:
