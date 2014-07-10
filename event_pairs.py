@@ -583,6 +583,7 @@ class Event_pairs:
                         continue
                     else:    
                         print(output)
+            quit()
 
             #             if args.events:
             #                 for hashtag in events:

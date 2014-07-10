@@ -25,7 +25,8 @@ parser.add_argument('-a', action = 'store', required = False,
     "entities, \'ngram\' for all ngrams (baseline)")
 parser.add_argument('-t', action = 'store_true',
     help = "Choose to include hashtags as entities")
-
+parser.add_argument('-x', action = 'store_true',
+    help = "Choose to add extra event informative terms to the description")
 parser.add_argument('-o', action = 'store', 
     help = "The directory to write files to")
 parser.add_argument('--window', type = int, action = 'store', default = 7,
@@ -60,6 +61,9 @@ if args.m:
             os.mkdir(basedir)
         # for j,ev in enumerate(event_vars):
         ep.rank_events("cosine")
+        if args.x:
+            for event in ep.events:
+                event.add_event_terms()
         eventinfo = open(basedir + "events_fit.txt","w",encoding = "utf-8")
         for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
 #            try:
@@ -90,6 +94,9 @@ for i,day in enumerate(sorted(day_files.keys())):
         print("ranking events")
         # for j,ev in enumerate(event_vars):
         ep.rank_events("cosine")
+        if args.x:
+            for event in ep.events:
+                event.add_event_terms()
         eventinfo = open(basedir + "events_fit.txt","w",encoding = "utf-8")
         for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
 #            try:
