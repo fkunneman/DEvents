@@ -63,7 +63,7 @@ if args.m:
         eventinfo = open(basedir + "events_fit.txt","w",encoding = "utf-8")
         for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
 #            try:
-            outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + ", ".join(event.entities) + "\n" + "\n".join(event.tweets) + "\n"
+            outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + ", ".join([x[0] for x in event.entities]) + "\n" + "\n".join(event.tweets) + "\n"
             # except TypeError:
             #     outstr = "\n" + "\t".join([str(x) for x in event]) + "\n"
             eventinfo.write(outstr)

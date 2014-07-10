@@ -565,11 +565,11 @@ class Event_pairs:
             for entity1 in entities:
                 keep = True
                 for entity2 in new_entities:
-                    if (set(entity1.split(" ")) & set(entity2.split(" "))) / len(entity2.split(" ")) > 0.5:
+                    if (set(entity1[0].split(" ")) & set(entity2[0].split(" "))) / len(entity2[0].split(" ")) > 0.5:
                         keep = False
                         break
-                    elif entity1 < entity2:
-                        if re.search(entity1,entity2):
+                    elif entity1[0] < entity2[0]:
+                        if re.search(entity1[0],entity2[0]):
                             keep = False
                             break
                 if keep:
