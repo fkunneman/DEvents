@@ -579,7 +579,7 @@ class Event_pairs:
             for tweet in self.tweets:
                 postweet = []
                 for output in self.fc.process(text):
-                    if output[0] == None or output[3] == "LET()"):
+                    if output[0] == None or output[3] == "LET()":
                         continue
                     else:    
                         print(output)
