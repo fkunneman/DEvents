@@ -562,13 +562,20 @@ class Event_pairs:
 
         def resolve_overlap_entities(self):
             new_entities = []
-            for entity1 in entities:
+            for entity1 in self.entities:
+#                print(entity1)
                 part = False
-                for entity2 in entities:
-                    if entity1 < entity2:
-                        if re.search(entity1,entity2):
-                            part = True
-                            break
+                for entity2 in self.entities:
+                    try:
+#                        print(entity2)
+                        if not entity1 == entity2:
+                            if len(entity1) < len(entity2):
+                                if re.search(entity1,entity2):
+                                    part = True
+                                    break
+                    except:
+                        continue
+#                print(part)
                 if not part:
                     new_entities.append(entity1)
             self.entities = new_entities
