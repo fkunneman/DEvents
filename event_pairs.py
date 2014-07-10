@@ -202,66 +202,64 @@ class Event_pairs:
         #                     merged[j] = True
         #         new_top.append([date,entity1,top[i][2],a])
         #     return new_top
-        if ranking == "cosine":
-            print("resolving overlap cosine style")
-            documents = [" ".join(x[3]) for x in top]
-            tfidf_vectorizer = TfidfVectorizer()
-            tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
-            cos = cosine_similarity(tfidf_matrix,tfidf_matrix)
-            new_top = []
-            pair_sim = defaultdict(lambda : defaultdict(list))
-            self.events = []
-            for x in range(len(documents)):
-                self.events.append(self.Event(x,top[x]))
-            #agglomerative clustering
-            #order pairs by similarity
-            for i,document in enumerate(documents):
-                for j,sim in enumerate(cos[i]):
-                    pair_sim[i][j] = cos[i][j]
-            dates = list(set([x.date for x in self.events]))
-            for date in dates:
-                events = [x for x in self.events if x.date == date]
-                indexes = [x.id[0] for x in events]
-                pairs = [x for x in itertools.combinations(indexes,2)]
-                scores = [([x[0]],[x[1]],pair_sim[x[0]][x[1]]) for x in pairs if pair_sim[x[0]][x[1]] > 0.7]
-                if len(scores) > 0:
+        print("resolving overlap")
+        documents = [" ".join(x[3]) for x in top]
+        tfidf_vectorizer = TfidfVectorizer()
+        tfidf_matrix = self.tfidf_vectorizer.fit_transform(documents)
+        cos = cosine_similarity(self.tfidf_matrix,self.tfidf_matrix)
+        new_top = []
+        pair_sim = defaultdict(lambda : defaultdict(list))
+        self.events = []
+        for x in range(len(documents)):
+            self.events.append(self.Event(x,top[x]))
+        #agglomerative clustering
+        #order pairs by similarity
+        for i,document in enumerate(documents):
+            for j,sim in enumerate(cos[i]):
+                pair_sim[i][j] = cos[i][j]
+        dates = list(set([x.date for x in self.events]))
+        for date in dates:
+            events = [x for x in self.events if x.date == date]
+            indexes = [x.id[0] for x in events]
+            pairs = [x for x in itertools.combinations(indexes,2)]
+            scores = [([x[0]],[x[1]],pair_sim[x[0]][x[1]]) for x in pairs if pair_sim[x[0]][x[1]] > 0.7]
+            if len(scores) > 0:
+                scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
+                while scores_sorted[0][2] > 0.7:
+                    highest_sim = scores_sorted[0]
+                    #merge events
+                    event1 = [x for x in events if bool(set(highest_sim[0]) & set(x.id))][0]
+                    event2 = [x for x in events if bool(set(highest_sim[1]) & set(x.id))][0]
+                    if event1.score > event2.score:
+                        event1.merge(event2)
+                        events.remove(event2)
+                        self.events.remove(event2)
+                        event = event1
+                    else:
+                        event2.merge(event1)
+                        events.remove(event1)
+                        self.events.remove(event1)
+                        event = event2
+                    all_s = []
+                    remove_s = []
+                    event_set = set(event.id)
+                    for score in scores:
+                        if bool(event_set & set(score[0] + score[1])):
+                            remove_s.append(score)
+                    for s in remove_s:
+                        scores.remove(s)
+                    for e in events:
+                        if not bool(event_set & set(e.id)):
+                            sims = [(aa, bb) for aa in event.id for bb in e.id]
+                            mean_sim = numpy.mean([pair_sim[x[0]][x[1]] for x in sims])
+                            if mean_sim > 0.7:
+                                scores.append((event.id,e.id,mean_sim))
                     scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
-                    while scores_sorted[0][2] > 0.7:
-                        highest_sim = scores_sorted[0]
-                        #merge events
-                        event1 = [x for x in events if bool(set(highest_sim[0]) & set(x.id))][0]
-                        event2 = [x for x in events if bool(set(highest_sim[1]) & set(x.id))][0]
-                        if event1.score > event2.score:
-                            event1.merge(event2)
-                            events.remove(event2)
-                            self.events.remove(event2)
-                            event = event1
-                        else:
-                            event2.merge(event1)
-                            events.remove(event1)
-                            self.events.remove(event1)
-                            event = event2
-                        all_s = []
-                        remove_s = []
-                        event_set = set(event.id)
-                        for score in scores:
-                            if bool(event_set & set(score[0] + score[1])):
-                                remove_s.append(score)
-                        for s in remove_s:
-                            scores.remove(s)
-                        for e in events:
-                            if not bool(event_set & set(e.id)):
-                                sims = [(aa, bb) for aa in event.id for bb in e.id]
-                                mean_sim = numpy.mean([pair_sim[x[0]][x[1]] for x in sims])
-                                if mean_sim > 0.7:
-                                    scores.append((event.id,e.id,mean_sim))
-                        scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
-                        if not len(scores_sorted) > 1:
-                            break
-            for event in self.events:
-                event.resolve_overlap_entities()
-        else:
-            return top
+                    if not len(scores_sorted) > 1:
+                        break
+        for event in self.events:
+            event.resolve_overlap_entities()
+
 
     # def pos_tweets(self,tweets):
     #     for tweet in tweets:
@@ -565,7 +563,7 @@ class Event_pairs:
             for entity1 in entities:
                 keep = True
                 for entity2 in new_entities:
-                    if (set(entity1[0].split(" ")) & set(entity2[0].split(" "))) / len(entity2[0].split(" ")) > 0.5:
+                    if len(set(entity1[0].split(" ")) & set(entity2[0].split(" "))) / len(entity2[0].split(" ")) > 0.5:
                         keep = False
                         break
                     elif entity1[0] < entity2[0]:
@@ -575,6 +573,8 @@ class Event_pairs:
                 if keep:
                     new_entities.append(entity1)
             self.entities = new_entities
+
+
 
         # def sort_entities(self):
         #     tweets = [x.split(" ") for x in self.tweets]
