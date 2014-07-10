@@ -44,11 +44,11 @@ class Event_pairs:
                         chunks = dateref_phrase[0]
                         refdates = dateref_phrase[1:]
                         textparts = text.split(" ")
-                        # for i,word in enumerate(textparts):
+                        for i,word in enumerate(textparts):
                         #     if re.search(r"^@",word):
                         #         textparts[i] = "USER"
-                        #     elif re.search(r"^http://",word):
-                        #         textparts[i] = "URL"
+                            if re.search(r"^http://",word):
+                                textparts[i] = "URL"
                         text = " ".join(textparts)
                         dtweet = self.Tweet()
                         units = [tokens[1],tokens[2],date,text,refdates,chunks]
@@ -134,7 +134,7 @@ class Event_pairs:
 
         print("calculating score")
         #for each pair
-        if ranking == "fit" or ranking == "cosine":
+        if ranking == "cosine":
             total = len(self.tweets)
             for date in date_entity.keys():
                 #cluster entities
@@ -147,62 +147,62 @@ class Event_pairs:
                         ode = date_entity[date][entity]
                         g2 = calculations.goodness_of_fit(total,dc,ec,ode)
                         g2_user = g2 * (users / len(date_entity_tweets[date][entity]))
-                        date_entity_score.append([date,entity,g2_user,[x.text for x in date_entity_tweets[date][entity]]])
+                        date_entity_score.append([date,(entity,g2_user),g2_user,[x.text for x in date_entity_tweets[date][entity]]])
         elif ranking == "freq":
             for date in date_entity.keys():
                 for entity in date_entity[date].keys():
                     date_entity_score.append([date,entity,len(date_entity_tweets[date][entity])])
         top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:2500]
         #resolve overlap
-        if ranking == "fit":
-            print("resolving overlap")
-            new_top = []
-            merged = {}
-            for i in range(len(top)):
-                merged[i] = False
-            for i in range(len(top)):
-                if merged[i]:
-                    continue
-                date = top[i][0]
-                entity1 = top[i][1]
-                a = top[i][3]
-                af = a[:5]
-                for j in range(i+1,len(top)):
-                    if merged[j]:
-                        continue
-                    #print(i,j)
-                    if date == top[j][0]:    
-                        entity2 = top[j][1] 
-                        b = top[j][3]
-                        #print("overlap")
-                        if calculations.return_overlap(af,b[:5]) > 0.30:
-                            #check ngram overlap 
-                            #print("YES")
-                            a_ngram = entity1.split()
-                            b_ngram = entity2.split()
-                            tweets = list(set(a+b))
-                            a = tweets
-                            #print("ngram")
-                            if bool(set(a_ngram) & set(b_ngram)):
-                                if not self.classencoder.buildpattern(entity1).unknown:
-                                    entity = entity1
-                                elif not self.classencoder.buildpattern(entity2).unknown:
-                                    entity = entity2
-                                elif len(entity1) < len(entity2):
-                                    entity = entity2
-                                else:
-                                    entity = entity1
-                            else:
-                                if not self.classencoder.buildpattern(entity1 + " " + entity2).unknown:
-                                    entity = entity1 + " " + entity2
-                                else:
-                                    entity = entity2 + " " + entity1
-                           # print("done")
-                            entity1 = entity
-                            merged[j] = True
-                new_top.append([date,entity1,top[i][2],a])
-            return new_top
-        elif ranking == "cosine":
+        # if ranking == "fit":
+        #     print("resolving overlap")
+        #     new_top = []
+        #     merged = {}
+        #     for i in range(len(top)):
+        #         merged[i] = False
+        #     for i in range(len(top)):
+        #         if merged[i]:
+        #             continue
+        #         date = top[i][0]
+        #         entity1 = top[i][1]
+        #         a = top[i][3]
+        #         af = a[:5]
+        #         for j in range(i+1,len(top)):
+        #             if merged[j]:
+        #                 continue
+        #             #print(i,j)
+        #             if date == top[j][0]:    
+        #                 entity2 = top[j][1] 
+        #                 b = top[j][3]
+        #                 #print("overlap")
+        #                 if calculations.return_overlap(af,b[:5]) > 0.30:
+        #                     #check ngram overlap 
+        #                     #print("YES")
+        #                     a_ngram = entity1.split()
+        #                     b_ngram = entity2.split()
+        #                     tweets = list(set(a+b))
+        #                     a = tweets
+        #                     #print("ngram")
+        #                     if bool(set(a_ngram) & set(b_ngram)):
+        #                         if not self.classencoder.buildpattern(entity1).unknown:
+        #                             entity = entity1
+        #                         elif not self.classencoder.buildpattern(entity2).unknown:
+        #                             entity = entity2
+        #                         elif len(entity1) < len(entity2):
+        #                             entity = entity2
+        #                         else:
+        #                             entity = entity1
+        #                     else:
+        #                         if not self.classencoder.buildpattern(entity1 + " " + entity2).unknown:
+        #                             entity = entity1 + " " + entity2
+        #                         else:
+        #                             entity = entity2 + " " + entity1
+        #                    # print("done")
+        #                     entity1 = entity
+        #                     merged[j] = True
+        #         new_top.append([date,entity1,top[i][2],a])
+        #     return new_top
+        if ranking == "cosine":
             print("resolving overlap cosine style")
             documents = [" ".join(x[3]) for x in top]
             tfidf_vectorizer = TfidfVectorizer()
@@ -210,7 +210,6 @@ class Event_pairs:
             cos = cosine_similarity(tfidf_matrix,tfidf_matrix)
             new_top = []
             pair_sim = defaultdict(lambda : defaultdict(list))
-            sim_pair = defaultdict(list)
             self.events = []
             for x in range(len(documents)):
                 self.events.append(self.Event(x,top[x]))
@@ -219,7 +218,6 @@ class Event_pairs:
             for i,document in enumerate(documents):
                 for j,sim in enumerate(cos[i]):
                     pair_sim[i][j] = cos[i][j]
-                    sim_pair[cos[i][j]].append([i,j]) 
             dates = list(set([x.date for x in self.events]))
             for date in dates:
                 events = [x for x in self.events if x.date == date]
@@ -382,14 +380,15 @@ class Event_pairs:
             regexPattern = '|'.join(map(re.escape, timephrases))
             output = [re.split(regexPattern, tweet)]
             if "timeunit" in nud:
-                for t in nud["timeunit"]: 
-                    num_match = t[1]
-                    if "num" in nud:
-                        days = t[0] * [x[0] for x in nud["num"] if x[1] == num_match][0]
-                        try:
-                            output.append(date + datetime.timedelta(days=days))
-                        except OverflowError:
-                            continue
+                if not "month" in nud and not "date" in nud: #overrule by more specific time indication
+                    for t in nud["timeunit"]: 
+                        num_match = t[1]
+                        if "num" in nud:
+                            days = t[0] * [x[0] for x in nud["num"] if x[1] == num_match][0]
+                            try:
+                                output.append(date + datetime.timedelta(days=days))
+                            except OverflowError:
+                                continue
             if "month" in nud:
                 for t in nud["month"]:
                     num_match = t[1]
@@ -453,7 +452,7 @@ class Event_pairs:
                         except:
                             continue
             if "weekday" in nud:
-                if not "date" in nud and not "month" in nud and not "timeunit" in nud:
+                if not "date" in nud and not "month" in nud and not "timeunit" in nud: # overrule by more specific indication
                     tweet_weekday=date.weekday()
                     for w in nud["weekday"]:
                         num_match = w[1]
@@ -561,15 +560,19 @@ class Event_pairs:
             self.tweets = list(set(self.tweets + clust.tweets))
 
         def resolve_overlap_entities(self):
+            entities = sorted(self.entities,key = lambda x : x[1],reverse=True)
             new_entities = []
             for entity1 in entities:
-                part = False
-                for entity2 in entities:
-                    if entity1 < entity2:
+                keep = True
+                for entity2 in new_entities:
+                    if (set(entity1.split(" ")) & set(entity2.split(" "))) / len(entity2.split(" ")) > 0.5:
+                        keep = False
+                        break
+                    elif entity1 < entity2:
                         if re.search(entity1,entity2):
-                            part = True
+                            keep = False
                             break
-                if not part:
+                if keep:
                     new_entities.append(entity1)
             self.entities = new_entities
 
