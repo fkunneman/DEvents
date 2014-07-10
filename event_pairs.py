@@ -205,8 +205,8 @@ class Event_pairs:
         print("resolving overlap")
         documents = [" ".join(x[3]) for x in top]
         tfidf_vectorizer = TfidfVectorizer()
-        tfidf_matrix = self.tfidf_vectorizer.fit_transform(documents)
-        cos = cosine_similarity(self.tfidf_matrix,self.tfidf_matrix)
+        tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
+        cos = cosine_similarity(tfidf_matrix,tfidf_matrix)
         new_top = []
         pair_sim = defaultdict(lambda : defaultdict(list))
         self.events = []
