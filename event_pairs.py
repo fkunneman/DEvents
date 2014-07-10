@@ -567,6 +567,7 @@ class Event_pairs:
                         keep = False
                         break
                     elif entity1[0] < entity2[0]:
+                        print(entity1,entity2) 
                         if re.search(entity1[0],entity2[0]):
                             keep = False
                             break
@@ -574,6 +575,40 @@ class Event_pairs:
                     new_entities.append(entity1)
             self.entities = new_entities
 
+        # def add_event_terms(self):
+        #     self.postweets = []
+        #     for tweet in self.tweets:
+        #         postweet = []
+        #         for output in self.fc.process(text):
+        #             if output[0] == None or (args.punct and output[3] == "LET()"):
+        #                 continue
+        #             else:    
+        #                 if args.events:
+        #                     for hashtag in events:
+        #                         if re.search(output[0],hashtag):
+        #                             outstring = output[0]
+        #                             break
+        #                 if args.ne and output[4] != "O":
+        #                     cat = re.search(r"B-([^_]+)",output[4])
+        #                     word = "[" + cat.groups()[0] + " " + output[0] + "]"
+        #                 else:
+        #                     word = output[0]
+        #                 words.append(word)    
+            
+        #         outfields[-1] = " ".join(words)
+        #         for field in outfields:
+        #             if outstring == "":
+        #                 outstring = field
+        #             else:
+        #                 try:
+        #                     outstring = outstring + "\t" + field
+        #                 except UnicodeDecodeError:
+        #                     outstring = outstring + "\t" + field.decode("utf-8")
+
+        #         outstring = outstring + "\n"
+        #         o.put(outstring)
+        #     if args.v:
+    #         print "Chunk " + str(i) + " done."
 
 
         # def sort_entities(self):
