@@ -220,6 +220,7 @@ class Event_pairs:
         dates = list(set([x.date for x in self.events]))
         for date in dates:
             events = [x for x in self.events if x.date == date]
+            print(date,[e.entities for e in events])
             indexes = [x.id[0] for x in events]
             pairs = [x for x in itertools.combinations(indexes,2)]
             scores = [([x[0]],[x[1]],pair_sim[x[0]][x[1]]) for x in pairs if pair_sim[x[0]][x[1]] > 0.7]
@@ -255,6 +256,7 @@ class Event_pairs:
                             if mean_sim > 0.7:
                                 scores.append((event.id,e.id,mean_sim))
                     scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
+                    print([e.entities for e in events])
                     if not len(scores_sorted) > 1:
                         break
         for event in self.events:
@@ -561,17 +563,20 @@ class Event_pairs:
             entities = sorted(self.entities,key = lambda x : x[1],reverse=True)
             new_entities = []
             for entity1 in entities:
+ #               print("entity1",entity1)
                 keep = True
                 for entity2 in new_entities:
+#                    print("entity2",entity2)
                     if len(set(entity1[0].split(" ")) & set(entity2[0].split(" "))) / len(entity2[0].split(" ")) > 0.5:
                         keep = False
                         break
-                    elif entity1[0] < entity2[0]:
+                    elif len(entity1[0]) < len(entity2[0]):
                         if re.search(entity1[0].replace(r'+',r'\+'),entity2[0].replace(r'+',r'\+')):
                             keep = False
                             break
                 if keep:
                     new_entities.append(entity1)
+  #              print("new_entities",new_entities)
             self.entities = new_entities
 
         def add_event_terms(self):
