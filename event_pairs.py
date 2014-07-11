@@ -492,9 +492,9 @@ class Event_pairs:
                 ngrams = zip(c, c[1:])
             elif i == 2:
                 ngrams = zip(c, c[1:], c[2:])
-            elif i == 3:
+            elif i == 3 and method != "ngram":
                 ngrams = zip(c, c[1:], c[2:], c[3:])
-            elif i == 4:
+            elif i == 4 and method != "ngram":
                 ngrams = zip(c, c[1:], c[2:], c[3:], c[4:])
             if method == "all" or method == "single":
                 for ngram in ngrams:
