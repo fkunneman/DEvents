@@ -14,7 +14,7 @@ import numpy
 
 class Event_pairs:
 
-    def __init__(self,pos):
+    def __init__(self,pos=False):
         self.tweets = []
         if pos:
             self.fc = pynlpl.clients.frogclient.FrogClient('localhost',pos,returnall = True)
