@@ -38,7 +38,7 @@ for infile in args.i:
     tweetfile = open(infile,"r",encoding = "utf-8")
     ep.select_date_entity_tweets(tweetfile.readlines(),"all",True)
     tweetfile.close()
-basedir = args.o + day + "/"
+basedir = args.o
 if not os.path.isdir(basedir):
     os.mkdir(basedir)
 ep.discard_last_day(args.window)
