@@ -33,7 +33,7 @@ class Event_pairs:
         #process tweets
         tweets = open(tweetfile,encoding = "utf-8")
         self.select_date_entity_tweets(tweets.readlines()[1:],"all",True,format = "twiqs")
-        tweetfile.close()
+        tweets.close()
         #prune tweets
         self.discard_last_day(30)
         #write modeltweets
