@@ -19,7 +19,7 @@ class Event_pairs:
         if pos:
             self.fc = pynlpl.clients.frogclient.FrogClient('localhost',pos,returnall = True)
 
-    def detect_events(self,tweets):
+    def detect_events(self,tweetfile):
         #setup colibricore
         self.load_commonness("tmp/","coco_out/1_grams.txt","coco_out/2_grams.txt","coco_out/3_grams.txt",
             "coco_out/4_grams.txt","coco_out/5_grams.txt")
@@ -31,7 +31,9 @@ class Event_pairs:
         except:
             print("no modeltweets")
         #process tweets
+        tweets = open(tweetfile,encoding = "utf-8")
         self.select_date_entity_tweets(tweets.readlines()[1:],"all",True,format = "twiqs")
+        tweetfile.close()
         #prune tweets
         self.discard_last_day(30)
         #write modeltweets
