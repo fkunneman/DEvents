@@ -246,7 +246,7 @@ class Event_pairs:
         #         new_top.append([date,entity1,top[i][2],a])
         #     return new_top
         print("resolving overlap")
-        documents = [" ".join(x[3].text) for x in top]
+        documents = [" ".join([y.text for y in x[3]]) for x in top]
         tfidf_vectorizer = TfidfVectorizer()
         tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
         cos = cosine_similarity(tfidf_matrix,tfidf_matrix)
