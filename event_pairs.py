@@ -19,6 +19,37 @@ class Event_pairs:
         if pos:
             self.fc = pynlpl.clients.frogclient.FrogClient('localhost',pos,returnall = True)
 
+    def detect_events(self,tweets):
+        #setup colibricore
+        self.load_commonness("tmp/","coco_out/1_grams.txt","coco_out/2_grams.txt","coco_out/3_grams.txt",
+            "coco_out/4_grams.txt","coco_out/5_grams.txt")
+        #start from last modeltweets
+        eventfile = open("tmp/modeltweets.txt","r",encoding = "utf-8")
+        self.append_eventtweets(eventfile.readlines())
+        eventfile.close()
+        #process tweets
+        self.select_date_entity_tweets(tweets.readlines()[1:],"all",True,format = "twiqs")
+        #prune tweets
+        self.discard_last_day(30)
+        #write modeltweets
+        tweetinfo = open("tmp/modeltweets.txt","w",encoding = "utf-8")
+        for tweet in self..tweets:
+            info = [tweet.id,tweet.user,str(tweet.date),tweet.text," ".join([str(x) for x in tweet.daterefs]),
+                "|".join([x for x in tweet.chunks])]
+            if tweet.e:
+                info.append(" | ".join(tweet.entities))
+            tweetinfo.write("\t".join(info) + "\n")
+        tweetinfo.close()
+        #rank events
+        self.rank_events("cosine")
+        eventdict = defaultdict{lambda : defaultdict{}}
+        for i,event in enumerate(sorted(ep.events,key = lambda x : x.score,reverse=True)):
+            event_unit = {"date":event.date,"keyterms":event.entities,"score":event.score,"tweets":[{"id":x.id,
+                "user":x.user,"date":x.date,"text":x.text,"date references":",".join(x.daterefs),
+                "entities":",".join(x.entities)} for x in event.tweets]} 
+            eventdict[i] = event_unit
+        return eventdict
+
     def append_eventtweets(self,eventtweets):
         for et in eventtweets:
             info = et.strip().split("\t")
@@ -32,12 +63,16 @@ class Event_pairs:
                 tweet.set_entities([x.strip() for x in info[6].split(" | ")])            
             self.tweets.append(tweet)
 
-    def select_date_entity_tweets(self,new_tweets,ent,ht):
+    def select_date_entity_tweets(self,new_tweets,ent,ht,format):
         for tweet in new_tweets:
             tokens = tweet.strip().split("\t")
-            if tokens[0] == "dutch" and not re.search("^RT ",tokens[-1]):
+            if (format == "twiqs" or (format == "exp" and tokens[0] == "dutch") 
+                and not re.search("^RT ",tokens[-1]):
                 text = tokens[-1].lower()
-                date = time_functions.return_datetime(tokens[3],setting="vs").date()
+                if format == "exp":
+                    date = time_functions.return_datetime(tokens[3],setting="vs").date()
+                else:
+                    date = time_functions.return_datetime(tokens[2],setting="vs").date()
                 dateref_phrase = self.extract_date(text,date)
                 if dateref_phrase:
                     if len(dateref_phrase) > 1:
@@ -51,7 +86,8 @@ class Event_pairs:
                                 textparts[i] = "URL"
                         text = " ".join(textparts)
                         dtweet = self.Tweet()
-                        units = [tokens[1],tokens[2],date,text,refdates,chunks]
+                        if format == "exp":
+                            units = [tokens[1],tokens[6],date,text,refdates,chunks]
                         dtweet.set_meta(units)
                         if ent:
                             entities = []
@@ -147,7 +183,7 @@ class Event_pairs:
                         ode = date_entity[date][entity]
                         g2 = calculations.goodness_of_fit(total,dc,ec,ode)
                         g2_user = g2 * (users / len(date_entity_tweets[date][entity]))
-                        date_entity_score.append([date,(entity,g2_user),g2_user,[x.text for x in date_entity_tweets[date][entity]]])
+                        date_entity_score.append([date,(entity,g2_user),g2_user,date_entity_tweets[date][entity]])
         elif ranking == "freq":
             for date in date_entity.keys():
                 for entity in date_entity[date].keys():
@@ -203,7 +239,7 @@ class Event_pairs:
         #         new_top.append([date,entity1,top[i][2],a])
         #     return new_top
         print("resolving overlap")
-        documents = [" ".join(x[3]) for x in top]
+        documents = [" ".join(x[3].text) for x in top]
         tfidf_vectorizer = TfidfVectorizer()
         tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
         cos = cosine_similarity(tfidf_matrix,tfidf_matrix)
