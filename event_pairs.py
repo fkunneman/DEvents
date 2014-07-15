@@ -302,8 +302,8 @@ class Event_pairs:
                     print([e.entities for e in events])
                     if not len(scores_sorted) > 1:
                         break
-        for event in self.events:
-            event.resolve_overlap_entities()
+        # for event in self.events:
+        #     event.resolve_overlap_entities()
 
 
     # def pos_tweets(self,tweets):
