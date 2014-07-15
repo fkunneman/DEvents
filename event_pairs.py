@@ -48,7 +48,7 @@ class Event_pairs:
         #rank events
         self.rank_events("cosine")
         eventdict = defaultdict(lambda : {})
-        for i,event in enumerate(sorted(ep.events,key = lambda x : x.score,reverse=True)):
+        for i,event in enumerate(sorted(self.events,key = lambda x : x.score,reverse=True)):
             event_unit = {"date":event.date,"keyterms":event.entities,"score":event.score,"tweets":[{"id":x.id,
                 "user":x.user,"date":x.date,"text":x.text,"date references":",".join(x.daterefs),
                 "entities":",".join(x.entities)} for x in event.tweets]} 
