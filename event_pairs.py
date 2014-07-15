@@ -24,9 +24,12 @@ class Event_pairs:
         self.load_commonness("tmp/","coco_out/1_grams.txt","coco_out/2_grams.txt","coco_out/3_grams.txt",
             "coco_out/4_grams.txt","coco_out/5_grams.txt")
         #start from last modeltweets
-        eventfile = open("tmp/modeltweets.txt","r",encoding = "utf-8")
-        self.append_eventtweets(eventfile.readlines())
-        eventfile.close()
+        try:
+            eventfile = open("tmp/modeltweets.txt","r",encoding = "utf-8")
+            self.append_eventtweets(eventfile.readlines())
+            eventfile.close()
+        except:
+            print("no modeltweets")
         #process tweets
         self.select_date_entity_tweets(tweets.readlines()[1:],"all",True,format = "twiqs")
         #prune tweets
