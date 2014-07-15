@@ -21,8 +21,8 @@ class Event_pairs:
 
     def detect_events(self,tweetfile):
         #setup colibricore
-        self.load_commonness("tmp/","coco_out/1_grams.txt","coco_out/2_grams.txt","coco_out/3_grams.txt",
-            "coco_out/4_grams.txt","coco_out/5_grams.txt")
+        self.load_commonness("tmp/coco",["coco_out/1_grams.txt","coco_out/2_grams.txt","coco_out/3_grams.txt",
+            "coco_out/4_grams.txt","coco_out/5_grams.txt"])
         #start from last modeltweets
         try:
             eventfile = open("tmp/modeltweets.txt","r",encoding = "utf-8")
@@ -38,7 +38,7 @@ class Event_pairs:
         self.discard_last_day(30)
         #write modeltweets
         tweetinfo = open("tmp/modeltweets.txt","w",encoding = "utf-8")
-        for tweet in self..tweets:
+        for tweet in self.tweets:
             info = [tweet.id,tweet.user,str(tweet.date),tweet.text," ".join([str(x) for x in tweet.daterefs]),
                 "|".join([x for x in tweet.chunks])]
             if tweet.e:
@@ -47,7 +47,7 @@ class Event_pairs:
         tweetinfo.close()
         #rank events
         self.rank_events("cosine")
-        eventdict = defaultdict{lambda : defaultdict{}}
+        eventdict = defaultdict(lambda : {})
         for i,event in enumerate(sorted(ep.events,key = lambda x : x.score,reverse=True)):
             event_unit = {"date":event.date,"keyterms":event.entities,"score":event.score,"tweets":[{"id":x.id,
                 "user":x.user,"date":x.date,"text":x.text,"date references":",".join(x.daterefs),
@@ -71,8 +71,8 @@ class Event_pairs:
     def select_date_entity_tweets(self,new_tweets,ent,ht,format):
         for tweet in new_tweets:
             tokens = tweet.strip().split("\t")
-            if (format == "twiqs" or (format == "exp" and tokens[0] == "dutch") 
-                and not re.search("^RT ",tokens[-1]):
+            if (format == "twiqs" or (format == "exp" and tokens[0] == "dutch")) \
+                    and not re.search("^RT ",tokens[-1]):
                 text = tokens[-1].lower()
                 if format == "exp":
                     date = time_functions.return_datetime(tokens[3],setting="vs").date()
