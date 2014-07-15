@@ -49,9 +49,9 @@ class Event_pairs:
         self.rank_events("cosine")
         eventdict = defaultdict(lambda : {})
         for i,event in enumerate(sorted(self.events,key = lambda x : x.score,reverse=True)):
-            print([(x.entities,x.text) for x in event.tweets])
+            #print([(x.entities,x.text) for x in event.tweets])
             event_unit = {"date":event.date,"keyterms":event.entities,"score":event.score,"tweets":[{"id":x.id,
-                "user":x.user,"date":x.date,"text":x.text,"date references":",".join(x.daterefs),
+                "user":x.user,"date":x.date,"text":x.text,"date references":",".join(str(x.daterefs)),
                 "entities":",".join(x.entities)} for x in event.tweets]} 
             eventdict[i] = event_unit
         return eventdict
@@ -264,7 +264,7 @@ class Event_pairs:
         dates = list(set([x.date for x in self.events]))
         for date in dates:
             events = [x for x in self.events if x.date == date]
-            print(date,[e.entities for e in events])
+            #print(date,[e.entities for e in events])
             indexes = [x.id[0] for x in events]
             pairs = [x for x in itertools.combinations(indexes,2)]
             scores = [([x[0]],[x[1]],pair_sim[x[0]][x[1]]) for x in pairs if pair_sim[x[0]][x[1]] > 0.7]
@@ -300,7 +300,7 @@ class Event_pairs:
                             if mean_sim > 0.7:
                                 scores.append((event.id,e.id,mean_sim))
                     scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
-                    print([e.entities for e in events])
+                    #print([e.entities for e in events])
                     if not len(scores_sorted) > 1:
                         break
         # for event in self.events:
