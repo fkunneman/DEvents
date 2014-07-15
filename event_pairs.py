@@ -51,7 +51,7 @@ class Event_pairs:
         for i,event in enumerate(sorted(self.events,key = lambda x : x.score,reverse=True)):
             #print([(x.entities,x.text) for x in event.tweets])
             event_unit = {"date":event.date,"keyterms":event.entities,"score":event.score,"tweets":[{"id":x.id,
-                "user":x.user,"date":x.date,"text":x.text,"date references":",".join([str(x) for x in daterefs]),
+                "user":x.user,"date":x.date,"text":x.text,"date references":",".join([str(y) for y in x.daterefs]),
                 "entities":",".join(x.entities)} for x in event.tweets]} 
             eventdict[i] = event_unit
         return eventdict
