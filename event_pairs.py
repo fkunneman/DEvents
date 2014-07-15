@@ -92,6 +92,8 @@ class Event_pairs:
                         text = " ".join(textparts)
                         dtweet = self.Tweet()
                         if format == "exp":
+                            units = [tokens[1],tokens[2],date,text,refdates,chunks]
+                        else:
                             units = [tokens[1],tokens[6],date,text,refdates,chunks]
                         dtweet.set_meta(units)
                         if ent:
