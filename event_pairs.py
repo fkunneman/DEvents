@@ -31,9 +31,10 @@ class Event_pairs:
         except:
             print("no modeltweets")
         #process tweets
-        tweets = open(tweetfile,encoding = "utf-8")
-        self.select_date_entity_tweets(tweets.readlines()[1:],"all",True,format = "twiqs")
-        tweets.close()
+        #tweets = open(tweetfile,encoding = "utf-8")
+        #self.select_date_entity_tweets(tweets.readlines()[1:],"all",True,format = "twiqs")
+        self.select_date_entity_tweets(tweetfile.split("\n")[1:],"all",True,format = "twiqs")
+        #tweets.close()
         #prune tweets
         self.discard_last_day(30)
         #write modeltweets
