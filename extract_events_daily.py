@@ -45,9 +45,9 @@ for infile in args.i:
     day_files[day].append(infile)
 
 ep = Event_pairs(args.p)
-if args.w:
-    print("preparing ngram commonness scores")
-    ep.load_commonness(args.d,args.w)
+#if args.w:
+#    print("preparing ngram commonness scores")
+#    ep.load_commonness(args.d,args.w)
 if args.m:
     print("loading event tweets")
     eventfile = open(args.m,"r",encoding = "utf-8")
