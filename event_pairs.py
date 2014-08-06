@@ -632,7 +632,7 @@ class Event_pairs:
                         one = True
                 overlap = False
                 for e in new_entities:
-                    if has_overlap(entities[i][0],e[0]):
+                    if self.has_overlap(entities[i][0],e[0]):
                         overlap = True
                 if one:
                     if not overlap:
@@ -654,7 +654,7 @@ class Event_pairs:
                     for se in sim_entities:
                         overlap = False
                         for e in new_entities:
-                            if has_overlap(se[0],e[0]):
+                            if self.has_overlap(se[0],e[0]):
                                 overlap = True
                         if not overlap:
                             new_entities.append(se)
