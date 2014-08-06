@@ -100,7 +100,7 @@ for i,day in enumerate(sorted(day_files.keys())):
         eventinfo = open(basedir + "events_fit.txt","w",encoding = "utf-8")
         for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
 #            try:
-            outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + ", ".join([x[0] for x in event.entities]) + "\n" + "\n".join(event.tweets) + "\n"
+            outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + ", ".join([x[0] for x in event.entities]) + "\n" + "\n".join([x.text for x in event.tweets]) + "\n"
             #outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
             # except TypeError:
             #     outstr = "\n" + "\t".join([str(x) for x in event]) + "\n"
