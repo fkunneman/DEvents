@@ -89,13 +89,13 @@ class Event_pairs:
                     if len(dateref_phrase) > 1:
                         chunks = dateref_phrase[0]
                         refdates = dateref_phrase[1:]
-                        textparts = text.split(" ")
-                        for i,word in enumerate(textparts):
+                        #textparts = text.split(" ")
+                        #for i,word in enumerate(textparts):
                         #     if re.search(r"^@",word):
                         #         textparts[i] = "USER"
-                            if re.search(r"^http://",word):
-                                textparts[i] = "URL"
-                        text = " ".join(textparts)
+                        #    if re.search(r"^http://",word):
+                        #        textparts[i] = "URL"
+                        #text = " ".join(textparts)
                         dtweet = self.Tweet()
                         if format == "exp":
                             units = [tokens[1],tokens[2],date,text,refdates,chunks]
@@ -158,6 +158,7 @@ class Event_pairs:
     def rank_events(self,ranking):
         date_entity_score = []
         date_entity_tweets = defaultdict(lambda : defaultdict(list))
+        date_entity_tweets_cleaned = defaultdict(lambda : defaultdict(list))
         #count dates and entities and pairs
         date_entity = defaultdict(lambda : defaultdict(int))
         entity_count = defaultdict(int)
@@ -180,6 +181,11 @@ class Event_pairs:
                         date_entity[date][entity] += 1
                         date_entity_tweets[date][entity].append(tweet)
                         entity_tweets[entity].append(tweet.text)
+                        textparts = tweet.text.split(" ")
+                        for i,word in enumerate(textparts):
+                            if re.search(r"^http",word):
+                               textparts[i] = "URL"
+                        date_entity_tweets_cleaned[date][entity].append(" ".join(textparts))
 
         print("calculating score")
         #for each pair
@@ -188,9 +194,8 @@ class Event_pairs:
             for date in date_entity.keys():
                 #cluster entities
                 for entity in date_entity[date].keys():
-                    date_entity_tweets[date][entity] = list(set(date_entity_tweets[date][entity]))
-                    users = len(list(set([x.user for x in date_entity_tweets[date][entity]])))
-                    if len(date_entity_tweets[date][entity]) >= 5:
+                    unique_tweets = list(set(date_entity_tweets_cleaned[date][entity]))
+                    if len(unique_tweets) >= 5:
                         dc = date_count[date]
                         ec = entity_count[entity]
                         ode = date_entity[date][entity]
@@ -596,14 +601,14 @@ class Event_pairs:
     class Event:
 
         def __init__(self,index,info):
-            self.id = [index]
+            self.ids = [index]
             self.date = info[0]
             self.entities = [info[1]]
             self.score = info[2]
             self.tweets = info[3]
 
         def merge(self,clust):
-            self.id.extend(clust.id)
+            self.id.extend(clust.ids)
             self.entities.extend(clust.entities)
             self.score = max([self.score,clust.score])
             self.tweets = list(set(self.tweets + clust.tweets))
