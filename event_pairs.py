@@ -195,13 +195,17 @@ class Event_pairs:
                 #cluster entities
                 for entity in date_entity[date].keys():
                     unique_tweets = list(set(date_entity_tweets_cleaned[date][entity]))
+                    print([x.text for x in date_entity_tweets[date][entity]],unique_tweets)
                     if len(unique_tweets) >= 5:
+                        print("YES")
                         dc = date_count[date]
                         ec = entity_count[entity]
                         ode = date_entity[date][entity]
                         g2 = calculations.goodness_of_fit(total,dc,ec,ode)
                         g2_user = g2 * (users / len(date_entity_tweets[date][entity]))
                         date_entity_score.append([date,(entity,g2_user),g2_user,date_entity_tweets[date][entity]])
+                    else:
+                        print("NO")
         elif ranking == "freq":
             for date in date_entity.keys():
                 for entity in date_entity[date].keys():
