@@ -196,9 +196,9 @@ class Event_pairs:
                 for entity in date_entity[date].keys():
                     unique_tweets = list(set(date_entity_tweets_cleaned[date][entity]))
                     users = len(list(set([x.user for x in date_entity_tweets[date][entity]])))
-                    print(len([x.text for x in date_entity_tweets[date][entity]]),len(unique_tweets))
+                    # print(len([x.text for x in date_entity_tweets[date][entity]]),len(unique_tweets))
                     if len(unique_tweets) >= 5:
-                        print("YES")
+                        # print("YES")
                         dc = date_count[date]
                         ec = entity_count[entity]
                         ode = date_entity[date][entity]
@@ -318,8 +318,8 @@ class Event_pairs:
                     #print([e.entities for e in events])
                     if not len(scores_sorted) > 1:
                         break
-        # for event in self.events:
-        #     event.resolve_overlap_entities()
+        for event in self.events:
+            event.resolve_overlap_entities()
 
 
     # def pos_tweets(self,tweets):
@@ -681,6 +681,11 @@ class Event_pairs:
                 return True
             else:
                 return False
+
+        def order_entities(self):
+            entity_position = []
+            for entity in self.entities:
+
 
         def add_event_terms(self):
             self.postweets = []
