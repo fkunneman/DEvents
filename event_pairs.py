@@ -682,9 +682,9 @@ class Event_pairs:
             else:
                 return False
 
-        def order_entities(self):
-            entity_position = []
-            for entity in self.entities:
+        #def order_entities(self):
+        #    entity_position = []
+        #    for entity in self.entities:
 
 
         def add_event_terms(self):
