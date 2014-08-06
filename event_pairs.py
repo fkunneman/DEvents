@@ -195,7 +195,8 @@ class Event_pairs:
                 #cluster entities
                 for entity in date_entity[date].keys():
                     unique_tweets = list(set(date_entity_tweets_cleaned[date][entity]))
-                    print([x.text for x in date_entity_tweets[date][entity]],unique_tweets)
+                    users = len(list(set([x.user for x in date_entity_tweets[date][entity]])))
+                    print(len([x.text for x in date_entity_tweets[date][entity]]),len(unique_tweets))
                     if len(unique_tweets) >= 5:
                         print("YES")
                         dc = date_count[date]
