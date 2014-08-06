@@ -206,8 +206,8 @@ class Event_pairs:
                         g2 = calculations.goodness_of_fit(total,dc,ec,ode)
                         g2_user = g2 * (users / len(date_entity_tweets[date][entity]))
                         date_entity_score.append([date,(entity,g2_user),g2_user,date_entity_tweets[date][entity]])
-                    else:
-                        print("NO")
+                    # else:
+                    #     print("NO")
         elif ranking == "freq":
             for date in date_entity.keys():
                 for entity in date_entity[date].keys():
@@ -643,9 +643,9 @@ class Event_pairs:
                     sim_entities = [entities[i],entities[i+1]]
                     j = i+2
                     while j < len(entities):
-                        if entities[j][1] == entities[i][1]:
-                            j+=1 
+                        if entities[j][1] == entities[i][1]: 
                             sim_entities.append(entities[j])
+                            j+=1
                         else:
                             break
                     i=j
