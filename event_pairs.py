@@ -280,7 +280,7 @@ class Event_pairs:
         for date in dates:
             events = [x for x in self.events if x.date == date]
             #print(date,[e.entities for e in events])
-            indexes = [x.id[0] for x in events]
+            indexes = [x.ids[0] for x in events]
             pairs = [x for x in itertools.combinations(indexes,2)]
             scores = [([x[0]],[x[1]],pair_sim[x[0]][x[1]]) for x in pairs if pair_sim[x[0]][x[1]] > 0.7]
             if len(scores) > 0:
@@ -288,8 +288,8 @@ class Event_pairs:
                 while scores_sorted[0][2] > 0.7:
                     highest_sim = scores_sorted[0]
                     #merge events
-                    event1 = [x for x in events if bool(set(highest_sim[0]) & set(x.id))][0]
-                    event2 = [x for x in events if bool(set(highest_sim[1]) & set(x.id))][0]
+                    event1 = [x for x in events if bool(set(highest_sim[0]) & set(x.ids))][0]
+                    event2 = [x for x in events if bool(set(highest_sim[1]) & set(x.ids))][0]
                     if event1.score > event2.score:
                         event1.merge(event2)
                         events.remove(event2)
@@ -302,18 +302,18 @@ class Event_pairs:
                         event = event2
                     all_s = []
                     remove_s = []
-                    event_set = set(event.id)
+                    event_set = set(event.ids)
                     for score in scores:
                         if bool(event_set & set(score[0] + score[1])):
                             remove_s.append(score)
                     for s in remove_s:
                         scores.remove(s)
                     for e in events:
-                        if not bool(event_set & set(e.id)):
-                            sims = [(aa, bb) for aa in event.id for bb in e.id]
+                        if not bool(event_set & set(e.ids)):
+                            sims = [(aa, bb) for aa in event.ids for bb in e.ids]
                             mean_sim = numpy.mean([pair_sim[x[0]][x[1]] for x in sims])
                             if mean_sim > 0.7:
-                                scores.append((event.id,e.id,mean_sim))
+                                scores.append((event.ids,e.ids,mean_sim))
                     scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
                     #print([e.entities for e in events])
                     if not len(scores_sorted) > 1:
@@ -613,7 +613,7 @@ class Event_pairs:
             self.tweets = info[3]
 
         def merge(self,clust):
-            self.id.extend(clust.ids)
+            self.ids.extend(clust.ids)
             self.entities.extend(clust.entities)
             self.score = max([self.score,clust.score])
             self.tweets = list(set(self.tweets + clust.tweets))
@@ -621,22 +621,66 @@ class Event_pairs:
         def resolve_overlap_entities(self):
             entities = sorted(self.entities,key = lambda x : x[1],reverse=True)
             new_entities = []
-            for entity1 in entities:
- #               print("entity1",entity1)
-                keep = True
-                for entity2 in new_entities:
-#                    print("entity2",entity2)
-                    if len(set(entity1[0].split(" ")) & set(entity2[0].split(" "))) / len(entity2[0].split(" ")) > 0.5:
-                        keep = False
-                        break
-                    elif len(entity1[0]) < len(entity2[0]):
-                        if re.search(entity1[0].replace(r'+',r'\+'),entity2[0].replace(r'+',r'\+')):
-                            keep = False
+            i = 0
+            while i < len(entities):
+                one = False
+                if i+1 >= len(entities):
+                    one = True 
+                else:
+                    if entities[i][1] > entities[i+1][1]:
+                        one = True
+                overlap = False
+                for e in new_entities:
+                    if has_overlap(entities[i][0],e[0]):
+                        overlap = True
+                if one:
+                    if not overlap:
+                        new_entities.append(entities[i])
+                    i+=1
+                else: #entities have the same score
+                    #make list of entities with similar score
+                    sim_entities = [entities[i],entities[i+1]]
+                    j = i+2
+                    while j < len(entities):
+                        if entities[j][1] == entities[i][1]:
+                            j+=1 
+                            sim_entities.append(entities[j])
+                        else:
                             break
-                if keep:
-                    new_entities.append(entity1)
+                    i=j
+                    #rank entities by length
+                    sim_entities = sorted(x,key = len(x[0].split(" ")))
+                    for se in sim_entities:
+                        overlap = False
+                        for e in new_entities:
+                            if has_overlap(se[0],e[0]):
+                                overlap = True
+                        if not overlap:
+                            new_entities.append(se)
+
+
+#             for entity1 in entities:
+#  #               print("entity1",entity1)
+#                 keep = True
+#                 for entity2 in new_entities:
+# #                    print("entity2",entity2)
+#                     if len(set(entity1[0].split(" ")) & set(entity2[0].split(" "))) / len(entity2[0].split(" ")) > 0.5:
+#                         keep = False
+#                         break
+#                     elif len(entity1[0]) < len(entity2[0]):
+#                         if re.search(entity1[0].replace(r'+',r'\+'),entity2[0].replace(r'+',r'\+')):
+#                             keep = False
+#                             break
+#                 if keep:
+#                     new_entities.append(entity1)
   #              print("new_entities",new_entities)
             self.entities = new_entities
+
+        def has_overlap(self,s1,s2):
+            if set(s1.split(" ")) & set(s2.split(" ")):
+                return True
+            else:
+                return False
 
         def add_event_terms(self):
             self.postweets = []
