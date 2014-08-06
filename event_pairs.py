@@ -650,7 +650,7 @@ class Event_pairs:
                             break
                     i=j
                     #rank entities by length
-                    sim_entities = sorted(x,key = len(x[0].split(" ")))
+                    sim_entities = sorted(sim_entities,key = lambda x : len(x[0].split(" ")))
                     for se in sim_entities:
                         overlap = False
                         for e in new_entities:
@@ -683,10 +683,13 @@ class Event_pairs:
             else:
                 return False
 
-        #def order_entities(self):
-        #    entity_position = []
-        #    for entity in self.entities:
-
+        def order_entities(self):
+            entity_position = []
+            for entity in self.entities:
+                positions = []
+                for tweet.text in self.tweets:
+                    wordsequence = tweet.text.split(" ")
+                    position                 
 
         def add_event_terms(self):
             self.postweets = []
