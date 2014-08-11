@@ -700,7 +700,7 @@ class Event_pairs:
             for w in sorted(words.items(),key = lambda x : x[1],reverse = True):
                 new = True
                 for entity in self.entities:
-                    if re.search(w,entity):
+                    if re.search(w,entity[0]):
                         new = False
                         break
                 if new:
