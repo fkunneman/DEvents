@@ -700,12 +700,12 @@ class Event_pairs:
             for w in sorted(words.items(),key = lambda x : x[1],reverse = True):
                 new = True
                 for entity in self.entities:
-                    print(w,entity[0])
-                    if re.search(w,entity[0]):
+                    #print(w[0],entity[0])
+                    if re.search(w[0],entity[0]):
                         new = False
                         break
                 if new:
-                    self.entities.append((w,0))
+                    self.entities.append((w[0],0))
 
                 #postweet = []
                 #for output in self.fc.process(text):
