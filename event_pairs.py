@@ -696,7 +696,7 @@ class Event_pairs:
             words = defaultdict(int)
             for tweet in self.tweets:
                 for word in tweet.text.split(" "):
-                    words[entity] += 1
+                    words[word] += 1
             for w in sorted(words.items(),key = lambda x : x[1],reverse = True):
                 new = True
                 for entity in self.entities:
