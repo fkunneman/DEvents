@@ -697,15 +697,19 @@ class Event_pairs:
             for tweet in self.tweets:
                 for word in tweet.text.split(" "):
                     words[word] += 1
-            for w in sorted(words.items(),key = lambda x : x[1],reverse = True):
+            for w in sorted(words.items(),key = lambda x : x[1],reverse = True)[:3]:
                 new = True
                 for entity in self.entities:
                     print(w[0],entity[0])
-                    if re.search(w[0],entity[0]):
+                    word = w[0]
+                    word = word.replace(')','\)')
+                    word = word.replace('(','\(')
+                    #print(w[0],entity[0])
+                    if re.search(word,entity[0]):
                         new = False
                         break
                 if new:
-                    self.entities.append((w[0],0))
+                    self.entities.append((word,0))
 
                 #postweet = []
                 #for output in self.fc.process(text):
