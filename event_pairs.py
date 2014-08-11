@@ -692,15 +692,27 @@ class Event_pairs:
                     position                 
 
         def add_event_terms(self):
-            self.postweets = []
+            #self.postweets = []
+            words = defaultdict(int)
             for tweet in self.tweets:
-                postweet = []
-                for output in self.fc.process(text):
-                    if output[0] == None or output[3] == "LET()":
-                        continue
-                    else:    
-                        print(output)
-            quit()
+                for word in tweet.text.split(" "):
+                    words[entity] += 1
+            for w in sorted(words.items(),key = lambda x : x[1],reverse = True):
+                new = True
+                for entity in self.entities:
+                    if re.search(w,entity):
+                        new = False
+                        break
+                if new:
+                    self.entities.append((w,0))
+
+                #postweet = []
+                #for output in self.fc.process(text):
+                #    if output[0] == None or output[3] == "LET()":
+                #        continue
+                #    else:    
+                #        print(output)
+            #quit()
 
             #             if args.events:
             #                 for hashtag in events:
