@@ -17,15 +17,12 @@ class Event_pairs:
     def __init__(self,pos=False,action="entity"):
         self.tweets = []
         if action != "ngram":
-            self.load_commonness("tmp/coco",["coco_out/1_grams.txt","coco_out/2_grams.txt","coco_out/3_grams.txt",
-                "coco_out/4_grams.txt","coco_out/5_grams.txt"])
+            self.load_commonness("tmp/coco",["coco_out/1_grams.txt","coco_out/2_grams.txt",
+                "coco_out/3_grams.txt","coco_out/4_grams.txt","coco_out/5_grams.txt"])
         if pos:
             self.fc = pynlpl.clients.frogclient.FrogClient('localhost',pos,returnall = True)
 
     def detect_events(self,tweetfile):
-        #setup colibricore
-        #self.load_commonness("tmp/coco",["coco_out/1_grams.txt","coco_out/2_grams.txt","coco_out/3_grams.txt",
-        #    "coco_out/4_grams.txt","coco_out/5_grams.txt"])
         #start from last modeltweets
         try:
             eventfile = open("tmp/modeltweets.txt","r",encoding = "utf-8")
@@ -43,8 +40,8 @@ class Event_pairs:
         #write modeltweets
         tweetinfo = open("tmp/modeltweets.txt","w",encoding = "utf-8")
         for tweet in self.tweets:
-            info = [tweet.id,tweet.user,str(tweet.date),tweet.text," ".join([str(x) for x in tweet.daterefs]),
-                "|".join([x for x in tweet.chunks])]
+            info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
+                " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks])]
             if tweet.e:
                 info.append(" | ".join(tweet.entities))
             tweetinfo.write("\t".join(info) + "\n")
@@ -54,8 +51,9 @@ class Event_pairs:
         eventdict = defaultdict(lambda : {})
         for i,event in enumerate(sorted(self.events,key = lambda x : x.score,reverse=True)):
             #print([(x.entities,x.text) for x in event.tweets])
-            event_unit = {"date":event.date,"keyterms":event.entities,"score":event.score,"tweets":[{"id":x.id,
-                "user":x.user,"date":x.date,"text":x.text,"date references":",".join([str(y) for y in x.daterefs]),
+            event_unit = {"date":event.date,"keyterms":event.entities,"score":event.score,
+                "tweets":[{"id":x.id,"user":x.user,"date":x.date,"text":x.text,
+                "date references":",".join([str(y) for y in x.daterefs]),
                 "entities":",".join(x.entities)} for x in event.tweets]} 
             eventdict[i] = event_unit
         self.tweets = []
@@ -66,7 +64,8 @@ class Event_pairs:
         for et in eventtweets:
             info = et.strip().split("\t")
             info[2] = time_functions.return_datetime(info[2],setting="vs").date()
-            info[4] = [time_functions.return_datetime(x,setting="vs").date() for x in info[4].split(" ")]
+            info[4] = [time_functions.return_datetime(x,setting="vs").date() \
+                for x in info[4].split(" ")]
             tweet = self.Tweet()
             units = info[:5]
             units.append([x.strip() for x in info[5].split("|")])
@@ -156,7 +155,8 @@ class Event_pairs:
                 self.dmodel[pattern] = float(tokens[3])
             ngramopen.close()
 
-    def rank_events(self,ranking):
+    def rank_events(self,ranking,outfile):
+        outwrite = open(outfile,"w",encoding="utf-8")
         date_entity_score = []
         date_entity_tweets = defaultdict(lambda : defaultdict(list))
         date_entity_tweets_cleaned = defaultdict(lambda : defaultdict(list))
@@ -283,14 +283,20 @@ class Event_pairs:
             #print(date,[e.entities for e in events])
             indexes = [x.ids[0] for x in events]
             pairs = [x for x in itertools.combinations(indexes,2)]
-            scores = [([x[0]],[x[1]],pair_sim[x[0]][x[1]]) for x in pairs if pair_sim[x[0]][x[1]] > 0.7]
+            scores = [([x[0]],[x[1]],pair_sim[x[0]][x[1]]) for x in pairs if pair_sim[x[0]][x[1]] > 0.5]
             if len(scores) > 0:
                 scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
-                while scores_sorted[0][2] > 0.7:
+                while scores_sorted[0][2] > 0.5:
                     highest_sim = scores_sorted[0]
                     #merge events
                     event1 = [x for x in events if bool(set(highest_sim[0]) & set(x.ids))][0]
                     event2 = [x for x in events if bool(set(highest_sim[1]) & set(x.ids))][0]
+                    outwrite.write("\n" + "\t".join([str(event1.date),str(event1.score)]) + "\t" + 
+                        ", ".join([x[0] for x in event1.entities]) + "\n" + 
+                        "\n".join([x.text for x in event1.tweets]) + "\n" +
+                        "****************\n" + "\t".join([str(event2.date),str(event2.score)]) + 
+                        "\t" + ", ".join([x[0] for x in event2.entities]) + "\n" + 
+                        "\n".join([x.text for x in event2.tweets]) + "\n")
                     if event1.score > event2.score:
                         event1.merge(event2)
                         events.remove(event2)
@@ -319,8 +325,47 @@ class Event_pairs:
                     #print([e.entities for e in events])
                     if not len(scores_sorted) > 1:
                         break
+        outwrite.close()
         for event in self.events:
             event.resolve_overlap_entities()
+            # if method = "frequency":
+            #     #self.postweets = []
+            #     words = defaultdict(int)
+            #     for tweet in self.tweets:
+            #         for word in tweet.text.split(" "):
+            #             words[word] += 1
+            #     for w in sorted(words.items(),key = lambda x : x[1],reverse = True)[:3]:
+            #         new = True
+            #         for entity in self.entities:
+            #             print(w[0],entity[0])
+            #             word = w[0]
+            #             word = word.replace(')','\)')
+            #             word = word.replace('(','\(')
+            #             #print(w[0],entity[0])
+            #             if re.search(word,entity[0]):
+            #                 new = False
+            #                 break
+            #         if new:
+            #             self.entities.append((word,0))
+            # elif method = "commonness":
+
+            #adding terms
+            current_entities = [x[0] for x in event.entities]
+            entity_count = defaultdict(int)
+            for tweet in event.tweets:
+                for chunk in tweet.chunks:
+                    entities = self.extract_entity(chunk,1,"all")
+                    for entity in entities:
+                        new = True
+                        for centity in current_entities:
+                            if re.search(entity,centity):
+                                new = False
+                                break
+                        if new:
+                            entity_count[entity] += 1
+            for entity in entity_count.keys():
+                if entity_count[entity] / len(event.tweets) > 0.75:
+                    event.entities.append((entity,0))
 
 
     # def pos_tweets(self,tweets):
@@ -354,9 +399,7 @@ class Event_pairs:
     #         outstring = outstring + "\n"
     #         o.put(outstring)
     #     if args.v:
-    #         print "Chunk " + str(i) + " done."
-
-
+   #         print "Chunk " + str(i) + " done."
 
     def extract_date(self,tweet,date):
         convert_nums = {"een":1, "twee":2, "drie":3, "vier":4,"vijf":5, "zes":6, "zeven":7, "acht":8, 
@@ -691,25 +734,7 @@ class Event_pairs:
                     wordsequence = tweet.text.split(" ")
                     position                 
 
-        def add_event_terms(self):
-            #self.postweets = []
-            words = defaultdict(int)
-            for tweet in self.tweets:
-                for word in tweet.text.split(" "):
-                    words[word] += 1
-            for w in sorted(words.items(),key = lambda x : x[1],reverse = True)[:3]:
-                new = True
-                for entity in self.entities:
-                    print(w[0],entity[0])
-                    word = w[0]
-                    word = word.replace(')','\)')
-                    word = word.replace('(','\(')
-                    #print(w[0],entity[0])
-                    if re.search(word,entity[0]):
-                        new = False
-                        break
-                if new:
-                    self.entities.append((word,0))
+
 
                 #postweet = []
                 #for output in self.fc.process(text):

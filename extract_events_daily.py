@@ -93,7 +93,7 @@ for i,day in enumerate(sorted(day_files.keys())):
     if len(set([x.date for x in ep.tweets])) >= 6:
         print("ranking events")
         # for j,ev in enumerate(event_vars):
-        ep.rank_events("cosine")
+        ep.rank_events("cosine",basedir + "clusters.txt")
         if args.x:
             for event in ep.events:
                 event.add_event_terms()
