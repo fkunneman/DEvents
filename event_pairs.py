@@ -308,7 +308,7 @@ class Event_pairs:
         event_meanrank = []
         for event in self.events:
             event_meanrank.append((event,numpy.mean([event.g2_rank,event.tt_rank])))
-        self.events = [x[0] for x in sorted(event_meanrank,key=lambda x : x[1]))]
+        self.events = [x[0] for x in sorted(event_meanrank,key=lambda x : x[1])]
 
     # def pos_tweets(self,tweets):
     #     for tweet in tweets:
