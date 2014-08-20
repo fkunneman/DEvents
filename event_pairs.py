@@ -205,7 +205,8 @@ class Event_pairs:
                         ode = date_entity[date][entity]
                         g2 = calculations.goodness_of_fit(total,dc,ec,ode)
                         tokens = []
-                        tokens.extend(x.text.split(" ")) for x in date_entity_tweets[date][entity]
+                        for x in date_entity_tweets[date][entity]:
+                            tokens.extend(x.text.split(" ")) 
                         g2_user_tt = g2 * (users / len(date_entity_tweets[date][entity])) * (len(list(set(tokens))) / len(tokens))
                         date_entity_score.append([date,(entity,g2_user_tt),g2_user_tt,date_entity_tweets[date][entity]])
                     # else:
