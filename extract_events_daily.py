@@ -93,9 +93,9 @@ for i,day in enumerate(sorted(day_files.keys())):
                 event.add_event_terms()
         eventinfo = open(basedir + "events_fit.txt","w",encoding = "utf-8")
         for event in ep.events:
-            outstr = "\n" + "\t".join([str(event.date),str(event.score),str(event.g2_rank),
-                str(event.tt_rank),str(event.tt_ratio)]) + "\t" + \
-                ", ".join([x[0] for x in event.entities]) + "\n" + \
-                "\n".join([x.text for x in event.tweets]) + "\n"
-            eventinfo.write(outstr)
+            if event.tt_ratio > 0.4:
+                outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + \
+                    ", ".join([x[0] for x in event.entities]) + "\n" + \
+                    "\n".join([x.text for x in event.tweets]) + "\n"
+                eventinfo.write(outstr)
         eventinfo.close()
