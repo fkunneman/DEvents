@@ -14,7 +14,7 @@ parser.add_argument('-i', action = 'store', nargs='+',required = False,
     help = "the input files")  
 parser.add_argument('-m', action = 'store', required = False, 
     help = "The file with information on existing pairs")
-parser.add_argument('-w', action = 'store', nargs='+', required = False, 
+parser.add_argument('-w', action = 'store', required = False, 
     help = "The files with wikiscores per n-gram")
 parser.add_argument('-d', action = 'store', required = False, 
     help = "The tmp dict for pattern indexing")
