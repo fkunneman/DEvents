@@ -365,7 +365,7 @@ class Event_pairs:
                             entity_count[entity] += 1
             for entity in entity_count.keys():
                 if entity_count[entity] / len(event.tweets) > 0.75:
-                    event.entities.append((entity,0))
+                    event.entities.append(entity)
 
 
     # def pos_tweets(self,tweets):
