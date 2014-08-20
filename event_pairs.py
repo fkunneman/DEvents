@@ -358,7 +358,7 @@ class Event_pairs:
                     for entity in entities:
                         new = True
                         for centity in current_entities:
-                            if re.search(entity,centity):
+                            if re.search(entity[0],centity):
                                 new = False
                                 break
                         if new:
