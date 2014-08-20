@@ -92,7 +92,7 @@ for i,day in enumerate(sorted(day_files.keys())):
             for event in ep.events:
                 event.add_event_terms()
         eventinfo = open(basedir + "events_fit.txt","w",encoding = "utf-8")
-        for event in ep.events:
+        for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
             if event.tt_ratio > 0.4:
                 outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + \
                     ", ".join([x[0] for x in event.entities]) + "\n" + \

@@ -184,9 +184,9 @@ class Event_pairs:
                         ec = entity_count[entity]
                         ode = date_entity[date][entity]
                         g2 = calculations.goodness_of_fit(total,dc,ec,ode)
-                        g2_user = g2 * (users / len(date_entity_tweets[date][entity])) 
+                        # g2_user = g2 * (users / len(date_entity_tweets[date][entity])) 
                           #print("tt",tt_ratio,"g2user",g2_user,"g2usertt",g2_user_tt,[x.text for x in date_entity_tweets[date][entity]])
-                        date_entity_score.append([date,(entity,g2_user),g2_user,date_entity_tweets[date][entity]])
+                        date_entity_score.append([date,(entity,g2),g2,date_entity_tweets[date][entity]])
         elif ranking == "freq":
             for date in date_entity.keys():
                 for entity in date_entity[date].keys():
@@ -248,7 +248,7 @@ class Event_pairs:
                         if not bool(event_set & set(e.ids)):
                             sims = [(aa, bb) for aa in event.ids for bb in e.ids]
                             mean_sim = numpy.mean([pair_sim[x[0]][x[1]] for x in sims])
-                            if mean_sim > 0.7:
+                            if mean_sim > 0.5:
                                 scores.append((event.ids,e.ids,mean_sim))
                     scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
                     #print([e.entities for e in events])
@@ -302,13 +302,13 @@ class Event_pairs:
             #calculate type-token
             event.add_ttratio()
         #rank events
-        tt_sorted = sorted(self.events,key = lambda x : x.tt_ratio,reverse = True)
-        for i,event in enumerate(tt_sorted):
-            event.tt_rank = i+1
-        event_meanrank = []
-        for event in self.events:
-            event_meanrank.append((event,numpy.mean([event.g2_rank,event.tt_rank])))
-        self.events = [x[0] for x in sorted(event_meanrank,key=lambda x : x[1])]
+        # tt_sorted = sorted(self.events,key = lambda x : x.tt_ratio,reverse = True)
+        # for i,event in enumerate(tt_sorted):
+        #     event.tt_rank = i+1
+        # event_meanrank = []
+        # for event in self.events:
+        #     event_meanrank.append((event,numpy.mean([event.g2_rank,event.tt_rank])))
+        # self.events = [x[0] for x in sorted(event_meanrank,key=lambda x : x[1])]
 
     # def pos_tweets(self,tweets):
     #     for tweet in tweets:
