@@ -31,10 +31,7 @@ class Event_pairs:
         except:
             print("no modeltweets")
         #process tweets
-        #tweets = open(tweetfile,encoding = "utf-8")
-        #self.select_date_entity_tweets(tweets.readlines()[1:],"all",True,format = "twiqs")
         self.select_date_entity_tweets(tweetfile.split("\n")[1:],"all",True,format = "twiqs")
-        #tweets.close()
         #prune tweets
         self.discard_last_day(30)
         #write modeltweets
@@ -89,13 +86,6 @@ class Event_pairs:
                     if len(dateref_phrase) > 1:
                         chunks = dateref_phrase[0]
                         refdates = dateref_phrase[1:]
-                        #textparts = text.split(" ")
-                        #for i,word in enumerate(textparts):
-                        #     if re.search(r"^@",word):
-                        #         textparts[i] = "USER"
-                        #    if re.search(r"^http://",word):
-                        #        textparts[i] = "URL"
-                        #text = " ".join(textparts)
                         dtweet = self.Tweet()
                         if format == "exp":
                             units = [tokens[1],tokens[2],date,text,refdates,chunks]
@@ -135,10 +125,7 @@ class Event_pairs:
                 for line in ngramopen.readlines():
                     tokens = line.strip().split("\t")
                     g.write(tokens[0] + "\n")
-                    # ngramdict[tokens[0]] = float(tokens[3])
                 ngramopen.close()
-        # g.close()
-            # self.ngramdicts.append(ngramdict)
         self.classencoder = colibricore.ClassEncoder()
         self.classencoder.build(textfile)
         self.classencoder.save(classfile)
@@ -170,13 +157,6 @@ class Event_pairs:
             for date in tweet.daterefs:
                 date_count[date] += 1
                 if tweet.e:
-                    # if clust:
-                    #     tups = calculations.extract_unique(tweet.entities)
-                    #     for s in tups:
-                    #         entity_count[s] += 1
-                    #         date_entity[date][s] += 1
-                    #         date_entity_tweets[date][s].append(tweet.text)
-                    # else:
                     for entity in tweet.entities:
                         entity_count[entity] += 1
                         date_entity[date][entity] += 1
@@ -210,64 +190,13 @@ class Event_pairs:
                         tt_ratio = len(list(set(tokens))) / len(tokens)
                         g2_user = g2 * (users / len(date_entity_tweets[date][entity])) 
                         g2_user_tt = g2_user * tt_ratio
-                        print("tt",tt_ratio,"g2user",g2_user,"g2usertt",g2_user_tt,[x.text for x in date_entity_tweets[date][entity]])
-                        date_entity_score.append([date,(entity,g2_user_tt),g2_user_tt,date_entity_tweets[date][entity]])
-                    # else:
-                    #     print("NO")
+                        #print("tt",tt_ratio,"g2user",g2_user,"g2usertt",g2_user_tt,[x.text for x in date_entity_tweets[date][entity]])
+                        date_entity_score.append([date,(entity,g2_user),g2_user,date_entity_tweets[date][entity]])
         elif ranking == "freq":
             for date in date_entity.keys():
                 for entity in date_entity[date].keys():
                     date_entity_score.append([date,entity,len(date_entity_tweets[date][entity])])
         top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:2500]
-        #resolve overlap
-        # if ranking == "fit":
-        #     print("resolving overlap")
-        #     new_top = []
-        #     merged = {}
-        #     for i in range(len(top)):
-        #         merged[i] = False
-        #     for i in range(len(top)):
-        #         if merged[i]:
-        #             continue
-        #         date = top[i][0]
-        #         entity1 = top[i][1]
-        #         a = top[i][3]
-        #         af = a[:5]
-        #         for j in range(i+1,len(top)):
-        #             if merged[j]:
-        #                 continue
-        #             #print(i,j)
-        #             if date == top[j][0]:    
-        #                 entity2 = top[j][1] 
-        #                 b = top[j][3]
-        #                 #print("overlap")
-        #                 if calculations.return_overlap(af,b[:5]) > 0.30:
-        #                     #check ngram overlap 
-        #                     #print("YES")
-        #                     a_ngram = entity1.split()
-        #                     b_ngram = entity2.split()
-        #                     tweets = list(set(a+b))
-        #                     a = tweets
-        #                     #print("ngram")
-        #                     if bool(set(a_ngram) & set(b_ngram)):
-        #                         if not self.classencoder.buildpattern(entity1).unknown:
-        #                             entity = entity1
-        #                         elif not self.classencoder.buildpattern(entity2).unknown:
-        #                             entity = entity2
-        #                         elif len(entity1) < len(entity2):
-        #                             entity = entity2
-        #                         else:
-        #                             entity = entity1
-        #                     else:
-        #                         if not self.classencoder.buildpattern(entity1 + " " + entity2).unknown:
-        #                             entity = entity1 + " " + entity2
-        #                         else:
-        #                             entity = entity2 + " " + entity1
-        #                    # print("done")
-        #                     entity1 = entity
-        #                     merged[j] = True
-        #         new_top.append([date,entity1,top[i][2],a])
-        #     return new_top
         print("resolving overlap")
         documents = [" ".join([y.text for y in x[3]]) for x in top]
         tfidf_vectorizer = TfidfVectorizer()
@@ -286,7 +215,6 @@ class Event_pairs:
         dates = list(set([x.date for x in self.events]))
         for date in dates:
             events = [x for x in self.events if x.date == date]
-            #print(date,[e.entities for e in events])
             indexes = [x.ids[0] for x in events]
             pairs = [x for x in itertools.combinations(indexes,2)]
             scores = [([x[0]],[x[1]],pair_sim[x[0]][x[1]]) for x in pairs if pair_sim[x[0]][x[1]] > 0.5]
@@ -357,7 +285,7 @@ class Event_pairs:
             #adding terms
             current_entities = [x[0] for x in event.entities]
             entity_count = defaultdict(int)
-            print("before",[x[0] for x in event.entities])
+            #print("before",[x[0] for x in event.entities])
             for tweet in event.tweets:
                 for chunk in tweet.chunks:
                     entities = self.extract_entity(chunk,1,"all")
@@ -372,7 +300,7 @@ class Event_pairs:
             for entity in entity_count.keys():
                 if entity_count[entity] / len(event.tweets) > 0.75:
                     event.entities.append(entity)
-            print("after",[x[0] for x in event.entities])
+            #print("after",[x[0] for x in event.entities])
             event.resolve_overlap_entities()
             event.order_entities()
 
@@ -709,23 +637,6 @@ class Event_pairs:
                                 overlap = True
                         if not overlap:
                             new_entities.append(se)
-
-
-#             for entity1 in entities:
-#  #               print("entity1",entity1)
-#                 keep = True
-#                 for entity2 in new_entities:
-# #                    print("entity2",entity2)
-#                     if len(set(entity1[0].split(" ")) & set(entity2[0].split(" "))) / len(entity2[0].split(" ")) > 0.5:
-#                         keep = False
-#                         break
-#                     elif len(entity1[0]) < len(entity2[0]):
-#                         if re.search(entity1[0].replace(r'+',r'\+'),entity2[0].replace(r'+',r'\+')):
-#                             keep = False
-#                             break
-#                 if keep:
-#                     new_entities.append(entity1)
-  #              print("new_entities",new_entities)
             self.entities = new_entities
 
         def has_overlap(self,s1,s2):
@@ -744,55 +655,3 @@ class Event_pairs:
                 entity_position.append((entity,numpy.mean(positions)))   
             ranked_positions = sorted(entity_position,key = lambda x : x[1],reverse = True)
             self.entities = [x[0] for x in ranked_positions]              
-
-
-
-                #postweet = []
-                #for output in self.fc.process(text):
-                #    if output[0] == None or output[3] == "LET()":
-                #        continue
-                #    else:    
-                #        print(output)
-            #quit()
-
-            #             if args.events:
-            #                 for hashtag in events:
-            #                     if re.search(output[0],hashtag):
-            #                         outstring = output[0]
-            #                         break
-            #             if args.ne and output[4] != "O":
-            #                 cat = re.search(r"B-([^_]+)",output[4])
-            #                 word = "[" + cat.groups()[0] + " " + output[0] + "]"
-            #             else:
-            #                 word = output[0]
-            #             words.append(word)    
-            
-            #     outfields[-1] = " ".join(words)
-            #     for field in outfields:
-            #         if outstring == "":
-            #             outstring = field
-            #         else:
-            #             try:
-            #                 outstring = outstring + "\t" + field
-            #             except UnicodeDecodeError:
-            #                 outstring = outstring + "\t" + field.decode("utf-8")
-
-            #     outstring = outstring + "\n"
-            #     o.put(outstring)
-            # if args.v:
-            # print "Chunk " + str(i) + " done."
-
-
-        # def sort_entities(self):
-        #     tweets = [x.split(" ") for x in self.tweets]
-
-
-
-        # def sort(self,list):
-
-
-
-
-
-
-

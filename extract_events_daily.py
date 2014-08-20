@@ -35,8 +35,6 @@ parser.add_argument('--start', action = 'store_true',
     help = "Choose to rank events from the existing pairs (only applies when \'-m\' is included")
 args = parser.parse_args() 
 
-#event_vars = [["fit",False,"events_fit.txt"],["freq",False,"events_freq.txt"]]
-
 #sort input-files
 day_files = defaultdict(list)
 for infile in args.i:
@@ -45,9 +43,6 @@ for infile in args.i:
     day_files[day].append(infile)
 
 ep = Event_pairs(args.a,args.w,args.d,args.p)
-#if args.w:
-#    print("preparing ngram commonness scores")
-#    ep.load_commonness(args.d,args.w)
 if args.m:
     print("loading event tweets")
     eventfile = open(args.m,"r",encoding = "utf-8")
@@ -66,10 +61,9 @@ if args.m:
                 event.add_event_terms()
         eventinfo = open(basedir + "events_fit.txt","w",encoding = "utf-8")
         for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
-#            try:
-            outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + ", ".join([x[0] for x in event.entities]) + "\n" + "\n".join([x.text for x in event.tweets]) + "\n"
-            # except TypeError:
-            #     outstr = "\n" + "\t".join([str(x) for x in event]) + "\n"
+            outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + 
+                ", ".join([x[0] for x in event.entities]) + "\n" + 
+                "\n".join([x.text for x in event.tweets]) + "\n"
             eventinfo.write(outstr)
         eventinfo.close()
 
@@ -84,7 +78,8 @@ for i,day in enumerate(sorted(day_files.keys())):
         os.mkdir(basedir)
     tweetinfo = open(basedir + "modeltweets.txt","w",encoding = "utf-8")
     for tweet in ep.tweets:
-        info = [tweet.id,tweet.user,str(tweet.date),tweet.text," ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks])]
+        info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
+            " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks])]
         if tweet.e:
             info.append(" | ".join(tweet.entities))
         tweetinfo.write("\t".join(info) + "\n")
@@ -92,17 +87,14 @@ for i,day in enumerate(sorted(day_files.keys())):
     ep.discard_last_day(args.window)
     if len(set([x.date for x in ep.tweets])) >= 6:
         print("ranking events")
-        # for j,ev in enumerate(event_vars):
         ep.rank_events("cosine",basedir + "clusters.txt")
         if args.x:
             for event in ep.events:
                 event.add_event_terms()
         eventinfo = open(basedir + "events_fit.txt","w",encoding = "utf-8")
         for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
-#            try:
-            outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + ", ".join([x[0] for x in event.entities]) + "\n" + "\n".join([x.text for x in event.tweets]) + "\n"
-            #outstr = "\n" + "\t".join([str(x) for x in event[:-1]]) + "\n" + "\n".join(event[-1]) + "\n"
-            # except TypeError:
-            #     outstr = "\n" + "\t".join([str(x) for x in event]) + "\n"
+            outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + 
+                ", ".join([x[0] for x in event.entities]) + "\n" + 
+                "\n".join([x.text for x in event.tweets]) + "\n"
             eventinfo.write(outstr)
         eventinfo.close()
