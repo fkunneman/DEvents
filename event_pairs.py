@@ -351,7 +351,7 @@ class Event_pairs:
             #adding terms
             current_entities = [x[0] for x in event.entities]
             entity_count = defaultdict(int)
-            print("before",x[0] for x in event.entities)
+            print("before",[x[0] for x in event.entities])
             for tweet in event.tweets:
                 for chunk in tweet.chunks:
                     entities = self.extract_entity(chunk,1,"all")
@@ -366,7 +366,7 @@ class Event_pairs:
             for entity in entity_count.keys():
                 if entity_count[entity] / len(event.tweets) > 0.75:
                     event.entities.append(entity)
-            print("after",x[0] for x in event.entities)
+            print("after",[x[0] for x in event.entities])
             event.resolve_overlap_entities()
 
     # def pos_tweets(self,tweets):
