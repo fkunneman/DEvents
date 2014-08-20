@@ -207,7 +207,10 @@ class Event_pairs:
                         tokens = []
                         for x in date_entity_tweets[date][entity]:
                             tokens.extend(x.text.split(" ")) 
-                        g2_user_tt = g2 * (users / len(date_entity_tweets[date][entity])) * (len(list(set(tokens))) / len(tokens))
+                        tt_ratio = len(list(set(tokens))) / len(tokens)
+                        g2_user = g2 * (users / len(date_entity_tweets[date][entity])) 
+                        g2_user_tt = g2_user * tt_ratio
+                        print("tt",tt_ratio,"g2user",g2_user,"g2usertt",g2_user_tt,[x.text for x in date_entity_tweets[date][entity]])
                         date_entity_score.append([date,(entity,g2_user_tt),g2_user_tt,date_entity_tweets[date][entity]])
                     # else:
                     #     print("NO")
