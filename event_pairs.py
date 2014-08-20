@@ -14,11 +14,11 @@ import numpy
 
 class Event_pairs:
 
-    def __init__(self,pos=False,action="entity"):
+    def __init__(self,pos=False,action="entity",wikidir,tmpdir):
         self.tweets = []
         if action != "ngram":
-            self.load_commonness("tmp/coco",["coco_out/1_grams.txt","coco_out/2_grams.txt",
-                "coco_out/3_grams.txt","coco_out/4_grams.txt","coco_out/5_grams.txt"])
+            self.load_commonness(tmpdir + "coco",[wikidir + "1_grams.txt",wikidir + "2_grams.txt",
+                wikidir + "3_grams.txt",wikidir + "4_grams.txt",wikidir + "5_grams.txt"])
         if pos:
             self.fc = pynlpl.clients.frogclient.FrogClient('localhost',pos,returnall = True)
 

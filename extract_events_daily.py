@@ -15,7 +15,7 @@ parser.add_argument('-i', action = 'store', nargs='+',required = False,
 parser.add_argument('-m', action = 'store', required = False, 
     help = "The file with information on existing pairs")
 parser.add_argument('-w', action = 'store', nargs='+', required = False, 
-    help = "The files with wikicores per n-gram")
+    help = "The files with wikiscores per n-gram")
 parser.add_argument('-d', action = 'store', required = False, 
     help = "The tmp dict for pattern indexing")
 parser.add_argument('-p', action = 'store', required = False, 
@@ -44,7 +44,7 @@ for infile in args.i:
     day = parts[-3][:2] + "_" + parts[-2]
     day_files[day].append(infile)
 
-ep = Event_pairs(args.p,args.a)
+ep = Event_pairs(args.p,args.a,args.w,args.d)
 #if args.w:
 #    print("preparing ngram commonness scores")
 #    ep.load_commonness(args.d,args.w)
