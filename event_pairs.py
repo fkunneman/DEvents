@@ -14,7 +14,7 @@ import numpy
 
 class Event_pairs:
 
-    def __init__(self,pos=False,action="entity",wikidir,tmpdir):
+    def __init__(self,action,wikidir,tmpdir,pos=False):
         self.tweets = []
         if action != "ngram":
             self.load_commonness(tmpdir + "coco",[wikidir + "1_grams.txt",wikidir + "2_grams.txt",

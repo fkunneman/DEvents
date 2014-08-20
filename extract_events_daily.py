@@ -44,7 +44,7 @@ for infile in args.i:
     day = parts[-3][:2] + "_" + parts[-2]
     day_files[day].append(infile)
 
-ep = Event_pairs(args.p,args.a,args.w,args.d)
+ep = Event_pairs(args.a,args.w,args.d,args.p)
 #if args.w:
 #    print("preparing ngram commonness scores")
 #    ep.load_commonness(args.d,args.w)
