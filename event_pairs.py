@@ -184,14 +184,9 @@ class Event_pairs:
                         ec = entity_count[entity]
                         ode = date_entity[date][entity]
                         g2 = calculations.goodness_of_fit(total,dc,ec,ode)
-                        tokens = []
-                        for x in date_entity_tweets[date][entity]:
-                            tokens.extend(x.text.split(" ")) 
-                        tt_ratio = len(list(set(tokens))) / len(tokens)
                         g2_user = g2 * (users / len(date_entity_tweets[date][entity])) 
-                        g2_user_tt = g2_user * (tt_ratio/4)
-                        #print("tt",tt_ratio,"g2user",g2_user,"g2usertt",g2_user_tt,[x.text for x in date_entity_tweets[date][entity]])
-                        date_entity_score.append([date,(entity,g2_user_tt),g2_user_tt,date_entity_tweets[date][entity]])
+                          #print("tt",tt_ratio,"g2user",g2_user,"g2usertt",g2_user_tt,[x.text for x in date_entity_tweets[date][entity]])
+                        date_entity_score.append([date,(entity,g2_user),g2_user,date_entity_tweets[date][entity]])
         elif ranking == "freq":
             for date in date_entity.keys():
                 for entity in date_entity[date].keys():
@@ -260,7 +255,7 @@ class Event_pairs:
                     if not len(scores_sorted) > 1:
                         break
         outwrite.close()
-        for event in self.events:
+        for i,event in enumerate(self.events):
             # if method = "frequency":
             #     #self.postweets = []
             #     words = defaultdict(int)
@@ -282,6 +277,7 @@ class Event_pairs:
             #             self.entities.append((word,0))
             # elif method = "commonness":
 
+            event.g2_rank = i+1
             #adding terms
             current_entities = [x[0] for x in event.entities]
             entity_count = defaultdict(int)
@@ -303,6 +299,16 @@ class Event_pairs:
             #print("after",[x[0] for x in event.entities])
             event.resolve_overlap_entities()
             event.order_entities()
+            #calculate type-token
+            event.add_ttratio()
+        #rank events
+        tt_sorted = sorted(self.events,key = lambda x : x.tt_ratio,reverse = True)
+        for i,event in enumerate(tt_sorted):
+            event.tt_rank = i+1
+        event_meanrank = []
+        for event in self.events:
+            event_meanrank.append((event,numpy.mean([event.g2_rank,event.tt_rank])))
+        self.events = [x[0] for x in sorted(event_meanrank,key=lambda x : x[1]))]
 
     # def pos_tweets(self,tweets):
     #     for tweet in tweets:
@@ -655,3 +661,9 @@ class Event_pairs:
                 entity_position.append((entity,numpy.mean(positions)))   
             ranked_positions = sorted(entity_position,key = lambda x : x[1],reverse = True)
             self.entities = [x[0] for x in ranked_positions]              
+
+        def add_ttratio(self):
+            tokens = []
+            for tweet in self.tweets:
+                tokens.extend(tweet.text.split(" ")) 
+            self.tt_ratio = len(list(set(tokens))) / len(tokens)
