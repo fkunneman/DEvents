@@ -18,7 +18,7 @@ class Event_pairs:
         self.tweets = []
         wikilist = [wikidir + "1_grams.txt",wikidir + "2_grams.txt",
                 wikidir + "3_grams.txt",wikidir + "4_grams.txt",wikidir + "5_grams.txt"]
-        print wikidir
+        print(wikidir)
         print(wikilist)
         if action != "ngram":
             self.load_commonness(tmpdir + "coco",[wikidir + "1_grams.txt",wikidir + "2_grams.txt",
