@@ -61,8 +61,8 @@ if args.m:
                 event.add_event_terms()
         eventinfo = open(basedir + "events_fit.txt","w",encoding = "utf-8")
         for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
-            outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + 
-                ", ".join([x[0] for x in event.entities]) + "\n" + 
+            outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + \
+                ", ".join([x[0] for x in event.entities]) + "\n" + \
                 "\n".join([x.text for x in event.tweets]) + "\n"
             eventinfo.write(outstr)
         eventinfo.close()
