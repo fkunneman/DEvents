@@ -189,9 +189,9 @@ class Event_pairs:
                             tokens.extend(x.text.split(" ")) 
                         tt_ratio = len(list(set(tokens))) / len(tokens)
                         g2_user = g2 * (users / len(date_entity_tweets[date][entity])) 
-                        g2_user_tt = g2_user * tt_ratio
+                        g2_user_tt = g2_user * (tt_ratio/4)
                         #print("tt",tt_ratio,"g2user",g2_user,"g2usertt",g2_user_tt,[x.text for x in date_entity_tweets[date][entity]])
-                        date_entity_score.append([date,(entity,g2_user),g2_user,date_entity_tweets[date][entity]])
+                        date_entity_score.append([date,(entity,g2_user_tt),g2_user_tt,date_entity_tweets[date][entity]])
         elif ranking == "freq":
             for date in date_entity.keys():
                 for entity in date_entity[date].keys():
