@@ -204,8 +204,10 @@ class Event_pairs:
                         ec = entity_count[entity]
                         ode = date_entity[date][entity]
                         g2 = calculations.goodness_of_fit(total,dc,ec,ode)
-                        g2_user = g2 * (users / len(date_entity_tweets[date][entity]))
-                        date_entity_score.append([date,(entity,g2_user),g2_user,date_entity_tweets[date][entity]])
+                        tokens = []
+                        tokens.extend(x.text.split(" ")) for x in date_entity_tweets[date][entity]
+                        g2_user_tt = g2 * (users / len(date_entity_tweets[date][entity])) * (len(list(set(tokens))) / len(tokens))
+                        date_entity_score.append([date,(entity,g2_user_tt),g2_user_tt,date_entity_tweets[date][entity]])
                     # else:
                     #     print("NO")
         elif ranking == "freq":
@@ -368,6 +370,7 @@ class Event_pairs:
                     event.entities.append(entity)
             print("after",[x[0] for x in event.entities])
             event.resolve_overlap_entities()
+            event.order_entities()
 
     # def pos_tweets(self,tweets):
     #     for tweet in tweets:
@@ -729,11 +732,14 @@ class Event_pairs:
 
         def order_entities(self):
             entity_position = []
-            for entity in self.entities:
+            for entity in self.entities:   
                 positions = []
-                for tweet.text in self.tweets:
-                    wordsequence = tweet.text.split(" ")
-                    position                 
+                for tweet in self.tweets:
+                    if re.search(entity[0],tweet.text):
+                        positions.append(tweet.text.index(entity[0]))
+                entity_position.append((entity,numpy.mean(positions)))   
+            ranked_positions = sorted(entity_position,key = lambda x : x[1],reverse = True)
+            self.entities = [x[0] for x in ranked_positions]              
 
 
 
