@@ -215,18 +215,18 @@ class Event_pairs:
             scores = [([x[0]],[x[1]],pair_sim[x[0]][x[1]]) for x in pairs if pair_sim[x[0]][x[1]] > 0.5]
             if len(scores) > 0:
                 scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
-                while scores_sorted[0][2] > 0.5:
-                    highest_sim = scores_sorted[0]
+                while scores_sorted[0][2] > 0.5: #scores are not static 
+                    highest_sim = scores_sorted[0] #start with top
                     #merge events
-                    event1 = [x for x in events if bool(set(highest_sim[0]) & set(x.ids))][0]
-                    event2 = [x for x in events if bool(set(highest_sim[1]) & set(x.ids))][0]
-                    outwrite.write("\n" + "\t".join([str(event1.date),str(event1.score)]) + "\t" + 
+                    event1 = [x for x in events if bool(set(highest_sim[0]) & set(x.ids))][0] #collect all events as part of possibly merged event
+                    event2 = [x for x in events if bool(set(highest_sim[1]) & set(x.ids))][0] 
+                    outwrite.write("\n" + "\t".join([str(event1.date),str(event1.score)]) + "\t" + #for checking 
                         ", ".join([x[0] for x in event1.entities]) + "\n" + 
                         "\n".join([x.text for x in event1.tweets]) + "\n" +
                         "****************\n" + "\t".join([str(event2.date),str(event2.score)]) + 
                         "\t" + ", ".join([x[0] for x in event2.entities]) + "\n" + 
                         "\n".join([x.text for x in event2.tweets]) + "\n")
-                    if event1.score > event2.score:
+                    if event1.score > event2.score: #merge to event with highest score
                         event1.merge(event2)
                         events.remove(event2)
                         self.events.remove(event2)
@@ -240,6 +240,8 @@ class Event_pairs:
                     remove_s = []
                     event_set = set(event.ids)
                     for score in scores:
+                        print(event_set,score[0] + score[1])
+                        quit()
                         if bool(event_set & set(score[0] + score[1])):
                             remove_s.append(score)
                     for s in remove_s:
@@ -684,7 +686,7 @@ class Event_pairs:
                     if re.search(entity[0],tweet.text):
                         positions.append(tweet.text.index(entity[0]))
                 entity_position.append((entity,numpy.mean(positions)))   
-            ranked_positions = sorted(entity_position,key = lambda x : x[1],reverse = True)
+            ranked_positions = sorted(entity_position,key = lambda x : x[1])
             self.entities = [x[0] for x in ranked_positions]              
 
         def add_ttratio(self):
