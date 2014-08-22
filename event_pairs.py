@@ -288,9 +288,9 @@ class Event_pairs:
             event.resolve_overlap_entities()
             if len(event.entities) <= 3:
                 tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
-                print(doc_tfidf[i],tfidf_tuples)
                 tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
                 top_terms = [word_indexes[j[0]] for j in tfidf_sorted[:3]]
+                print(tfidf_sorted,top_terms)
                 current_entities = [x[0] for x in event.entities]
                 print("before",[x[0] for x in event.entities])
                 for term in top_terms:
@@ -643,7 +643,7 @@ class Event_pairs:
                         one = True
                 overlap = False
                 for e in new_entities:
-                    if self.has_overlap(entities[i][0],e[0]):
+                    if self.has_overlap(re.sub('#','',entities[i][0]),re.sub('#','',e[0])):
                         overlap = True
                 if one:
                     if not overlap:
