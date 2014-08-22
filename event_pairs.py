@@ -257,11 +257,10 @@ class Event_pairs:
         outwrite.close()
 
         documents = [" ".join([x.text for x in y.tweets]) for y in self.events]
-        print(documents)
         tfidf_vectorizer = TfidfVectorizer()
         tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
         word_indexes = tfidf_vectorizer.get_feature_names()
-        #print(word_indexes)
+        print(word_indexes)
         doc_tfidf = tfidf_matrix.toarray()
         for i,event in enumerate(self.events):
             # if method = "frequency":
@@ -288,16 +287,25 @@ class Event_pairs:
             #event.g2_rank = i+1
             #adding terms
             event.resolve_overlap_entities()
-            tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
-            tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
-            top_terms = [word_indexes[j[0]] for j in tfidf_sorted[:3]]
-            current_entities = [x[0] for x in event.entities]
-            print("before",[x[0] for x in event.entities])
-            for term in top_terms:
-                for entity in current_entities:
-                    if not re.search(term,entity):
+            if len(event.entities) <= 3:
+                tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
+                tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
+                top_terms = [word_indexes[j[0]] for j in tfidf_sorted[:3]]
+                current_entities = [x[0] for x in event.entities]
+                print("before",[x[0] for x in event.entities])
+                for term in top_terms:
+                    ap = False
+                    for tweet in event.tweets:
+                        for chunk in event.chunks:
+                            if re.search(term,chunk):
+                                ap = True
+                                break
+                    for entity in current_entities:
+                        if re.search(term,entity):
+                            ap = False
+                    if ap:
                         event.entities.append((term,0))
-            print("after",[x[0] for x in event.entities])
+                print("after",[x[0] for x in event.entities])
             # entity_count = defaultdict(int)
             # #print("before",[x[0] for x in event.entities])
             # for tweet in event.tweets:
