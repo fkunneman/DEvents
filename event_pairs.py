@@ -220,17 +220,19 @@ class Event_pairs:
                     #merge events
                     ijs1 = 0
                     ijs2 = 0
-                    event1 = []
-                    event2 = []
+                    e1list = []
+                    e2list = []
                     for x in events: #collect the event that matches the id list
                         if highest_sim[0] == x.ids: 
-                            event1.append(x)
+                            e1list.append(x)
+                            event1 = x
                             ijs1 += 1
                         if highest_sim[1] == x.ids:
-                            event2.append(x)
+                            e2list.append(x)
+                            event2 = x
                             ijs2 += 1
                     if ijs1 > 1 or ijs2 > 1:
-                        print("ALARM",ijs1,ijs2,event1,event2)
+                        print("ALARM",ijs1,ijs2,e1list,e2list)
                     #event2 = [x for x in events if highest_sim[1] == x.ids][0] 
                     outwrite.write("\n" + "\t".join([str(event1.date),str(event1.score)]) + "\t" + #for checking 
                         ", ".join([x[0] for x in event1.entities]) + "\n" + 
@@ -238,16 +240,16 @@ class Event_pairs:
                         "****************\n" + "\t".join([str(event2.date),str(event2.score)]) + 
                         "\t" + ", ".join([x[0] for x in event2.entities]) + "\n" + 
                         "\n".join([x.text for x in event2.tweets]) + "\n")
-                    if event1[0].score > event2[0].score: #merge to event with highest score
-                        event1[0].merge(event2[0])
-                        events.remove(event2[0])
-                        self.events.remove(event2[0])
-                        event = event1[0]
+                    if event1.score > event2.score: #merge to event with highest score
+                        event1.merge(event2)
+                        events.remove(event2)
+                        self.events.remove(event2)
+                        event = event1
                     else:
-                        event2[0].merge(event1[0])
-                        events.remove(event1[0])
-                        self.events.remove(event1[0])
-                        event = event2[0]
+                        event2.merge(event1)
+                        events.remove(event1)
+                        self.events.remove(event1)
+                        event = event2
                     all_s = []
                     remove_s = []
                     event_set = set(event.ids)
