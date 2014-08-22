@@ -257,9 +257,11 @@ class Event_pairs:
         outwrite.close()
 
         documents = [" ".join([x.text for x in y.tweets]) for y in self.events]
+        print(documents)
         tfidf_vectorizer = TfidfVectorizer()
         tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
         word_indexes = tfidf_vectorizer.get_feature_names()
+        #print(word_indexes)
         doc_tfidf = tfidf_matrix.toarray()
         for i,event in enumerate(self.events):
             # if method = "frequency":
