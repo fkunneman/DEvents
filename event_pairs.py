@@ -260,7 +260,6 @@ class Event_pairs:
         tfidf_vectorizer = TfidfVectorizer()
         tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
         word_indexes = tfidf_vectorizer.get_feature_names()
-        print(word_indexes)
         doc_tfidf = tfidf_matrix.toarray()
         for i,event in enumerate(self.events):
             # if method = "frequency":
@@ -289,6 +288,7 @@ class Event_pairs:
             event.resolve_overlap_entities()
             if len(event.entities) <= 3:
                 tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
+                print(doc_tfidf[i],tfidf_tuples)
                 tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
                 top_terms = [word_indexes[j[0]] for j in tfidf_sorted[:3]]
                 current_entities = [x[0] for x in event.entities]
@@ -296,7 +296,7 @@ class Event_pairs:
                 for term in top_terms:
                     ap = False
                     for tweet in event.tweets:
-                        for chunk in event.chunks:
+                        for chunk in tweet.chunks:
                             if re.search(term,chunk):
                                 ap = True
                                 break
@@ -306,6 +306,7 @@ class Event_pairs:
                     if ap:
                         event.entities.append((term,0))
                 print("after",[x[0] for x in event.entities])
+                quit()
             # entity_count = defaultdict(int)
             # #print("before",[x[0] for x in event.entities])
             # for tweet in event.tweets:
