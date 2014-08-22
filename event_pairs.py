@@ -255,7 +255,14 @@ class Event_pairs:
                     if not len(scores_sorted) > 1:
                         break
         outwrite.close()
+
+        documents = [" ".join([x.text for x in y.tweets]) for y in self.events]
+        tfidf_vectorizer = TfidfVectorizer()
+        tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
+        word_indexes = tfidf_vectorizer.get_feature_names()
+        doc_tfidf = tfidf_matrix.toarray()
         for i,event in enumerate(self.events):
+            print(doc_tfidf[i])
             # if method = "frequency":
             #     #self.postweets = []
             #     words = defaultdict(int)
@@ -667,3 +674,4 @@ class Event_pairs:
             for tweet in self.tweets:
                 tokens.extend(tweet.text.split(" ")) 
             self.tt_ratio = len(list(set(tokens))) / len(tokens)
+
