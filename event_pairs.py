@@ -305,7 +305,7 @@ class Event_pairs:
                 top_terms = [word_indexes[j[0]] for j in tfidf_sorted[:3]]
                 print(top_terms)
                 current_entities = [x[0] for x in event.entities]
-                print("before",[x[0] for x in event.entities])
+                #print("before",[x[0] for x in event.entities])
                 for term in top_terms:
                     ap = False
                     for tweet in event.tweets:
@@ -318,7 +318,7 @@ class Event_pairs:
                             ap = False
                     if ap:
                         event.entities.append((term,0))
-                print("after",[x[0] for x in event.entities])
+                #print("after",[x[0] for x in event.entities])
             # entity_count = defaultdict(int)
             # #print("before",[x[0] for x in event.entities])
             # for tweet in event.tweets:
@@ -694,6 +694,7 @@ class Event_pairs:
             for entity in self.entities:   
                 positions = []
                 for tweet in self.tweets:
+                    print(entity[0],tweet.text)
                     if re.search(entity[0],tweet.text):
                         positions.append(tweet.text.index(entity[0]))
                 entity_position.append((entity,numpy.mean(positions)))   
