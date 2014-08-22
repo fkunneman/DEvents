@@ -218,41 +218,50 @@ class Event_pairs:
                 while scores_sorted[0][2] > 0.5: #scores are not static 
                     highest_sim = scores_sorted[0] #start with top
                     #merge events
-                    event1 = [x for x in events if bool(set(highest_sim[0]) & set(x.ids))][0] #collect all events as part of possibly merged event
-                    event2 = [x for x in events if bool(set(highest_sim[1]) & set(x.ids))][0] 
+                    ijs1 = 0
+                    ijs2 = 0
+                    event1 = []
+                    event2 = []
+                    for x in events: #collect the event that matches the id list
+                        if highest_sim[0] == x.ids: 
+                            event1.append(x)
+                            ijs1 += 1
+                        if highest_sim[1] == x.ids:
+                            event2.append(x)
+                            ijs2 += 1
+                    if ijs1 > 1 or ijs2 > 1:
+                        print("ALARM",ijs1,ijs2,event1,event2)
+                    #event2 = [x for x in events if highest_sim[1] == x.ids][0] 
                     outwrite.write("\n" + "\t".join([str(event1.date),str(event1.score)]) + "\t" + #for checking 
                         ", ".join([x[0] for x in event1.entities]) + "\n" + 
                         "\n".join([x.text for x in event1.tweets]) + "\n" +
                         "****************\n" + "\t".join([str(event2.date),str(event2.score)]) + 
                         "\t" + ", ".join([x[0] for x in event2.entities]) + "\n" + 
                         "\n".join([x.text for x in event2.tweets]) + "\n")
-                    if event1.score > event2.score: #merge to event with highest score
-                        event1.merge(event2)
-                        events.remove(event2)
-                        self.events.remove(event2)
-                        event = event1
+                    if event1[0].score > event2[0].score: #merge to event with highest score
+                        event1[0].merge(event2[0])
+                        events.remove(event2[0])
+                        self.events.remove(event2[0])
+                        event = event1[0]
                     else:
-                        event2.merge(event1)
-                        events.remove(event1)
-                        self.events.remove(event1)
-                        event = event2
+                        event2[0].merge(event1[0])
+                        events.remove(event1[0])
+                        self.events.remove(event1[0])
+                        event = event2[0]
                     all_s = []
                     remove_s = []
                     event_set = set(event.ids)
-                    for score in scores:
-                        print(event_set,score[0] + score[1])
-                        quit()
-                        if bool(event_set & set(score[0] + score[1])):
+                    for score in scores: #remove event sets that contain the same event(s)
+                        if bool(event_set & set(score[0] + score[1])): 
                             remove_s.append(score)
                     for s in remove_s:
                         scores.remove(s)
-                    for e in events:
+                    for e in events: #add new similarities as mean of the similarity between seperate events
                         if not bool(event_set & set(e.ids)):
                             sims = [(aa, bb) for aa in event.ids for bb in e.ids]
                             mean_sim = numpy.mean([pair_sim[x[0]][x[1]] for x in sims])
-                            if mean_sim > 0.5:
-                                scores.append((event.ids,e.ids,mean_sim))
-                    scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
+                            scores.append((event.ids,e.ids,mean_sim))
+                    scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True) #resort scores
                     #print([e.entities for e in events])
                     if not len(scores_sorted) > 1:
                         break
