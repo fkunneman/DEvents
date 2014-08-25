@@ -12,6 +12,7 @@ import time_functions
 import calculations
 import numpy
 
+
 class Event_pairs:
 
     def __init__(self,action,wikidir,tmpdir,pos=False):
@@ -275,35 +276,14 @@ class Event_pairs:
         word_indexes = tfidf_vectorizer.get_feature_names()
         doc_tfidf = tfidf_matrix.toarray()
         for i,event in enumerate(self.events):
-            # if method = "frequency":
-            #     #self.postweets = []
-            #     words = defaultdict(int)
-            #     for tweet in self.tweets:
-            #         for word in tweet.text.split(" "):
-            #             words[word] += 1
-            #     for w in sorted(words.items(),key = lambda x : x[1],reverse = True)[:3]:
-            #         new = True
-            #         for entity in self.entities:
-            #             print(w[0],entity[0])
-            #             word = w[0]
-            #             word = word.replace(')','\)')
-            #             word = word.replace('(','\(')
-            #             #print(w[0],entity[0])
-            #             if re.search(word,entity[0]):
-            #                 new = False
-            #                 break
-            #         if new:
-            #             self.entities.append((word,0))
-            # elif method = "commonness":
-
-            #event.g2_rank = i+1
             #adding terms
             event.resolve_overlap_entities()
             if len(event.entities) <= 3:
                 tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
                 tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
-                top_terms = [word_indexes[j[0]] for j in tfidf_sorted[:3]]
-                #print(top_terms)
+                top_terms = [word_indexes[j[0]] for j in tfidf_sorted[:5]]
+                for topterm in top_terms:
+
                 current_entities = [x[0] for x in event.entities]
                 #print("before",[x[0] for x in event.entities])
                 for term in top_terms:
@@ -433,7 +413,7 @@ class Event_pairs:
                     if unit in ns:
                         nud["num"].append((convert_nums[unit],i))
                     elif re.search(r"\d+ en",unit):
-                        print(units,unit)
+                        print(units,unit,re.search(r"\d+",unit).groups())
                         print("en",units,int(re.search(r"\d+",unit).groups()[0]))
                         nud["concat"].append(int(re.search(r"\d+",unit).groups()[0]))
                     elif re.search(r"\d+, ",unit):
