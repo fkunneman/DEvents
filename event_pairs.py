@@ -303,7 +303,7 @@ class Event_pairs:
                 tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
                 tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
                 top_terms = [word_indexes[j[0]] for j in tfidf_sorted[:3]]
-                print(top_terms)
+                #print(top_terms)
                 current_entities = [x[0] for x in event.entities]
                 #print("before",[x[0] for x in event.entities])
                 for term in top_terms:
@@ -694,9 +694,9 @@ class Event_pairs:
             for entity in self.entities:   
                 positions = []
                 for tweet in self.tweets:
-                    print(entity[0],tweet.text)
+                    #print(entity[0],tweet.text)
                     if re.search(entity[0],tweet.text):
-                        positions.append(tweet.text.index(entity[0]))
+                        positions.append(re.search(entity[0],tweet.text).span()[0])
                 entity_position.append((entity,numpy.mean(positions)))   
             ranked_positions = sorted(entity_position,key = lambda x : x[1])
             self.entities = [x[0] for x in ranked_positions]              
