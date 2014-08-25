@@ -413,12 +413,11 @@ class Event_pairs:
                     if unit in ns:
                         nud["num"].append((convert_nums[unit],i))
                     elif re.search(r"\d+ en",unit):
-                        print(units,unit,re.search(r"\d+",unit).groups())
-                        print("en",units,int(re.search(r"\d+",unit).groups()[0]))
-                        nud["concat"].append(int(re.search(r"\d+",unit).groups()[0]))
+                        print("en",units,int(re.search(r"(\d+)",unit).groups()[0]))
+                        nud["concat"].append(int(re.search(r"(\d+)",unit).groups()[0]))
                     elif re.search(r"\d+, ",unit):
-                        print(",",units,int(re.search(r"\d+",unit).groups()[0]))
-                        nud["concat"].append(int(re.search(r"\d+",unit).groups()[0]))
+                        print(",",units,int(re.search(r"(\d+)",unit).groups()[0]))
+                        nud["concat"].append(int(re.search(r"(\d+)",unit).groups()[0]))
                     elif unit in timeus:
                         if not "weekday" in nud:
                             nud["timeunit"].append((convert_timeunit[unit],i))
