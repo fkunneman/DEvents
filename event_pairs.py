@@ -282,7 +282,7 @@ class Event_pairs:
                 tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
                 tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
                 top_terms = [word_indexes[j[0]] for j in tfidf_sorted[:5]]
-                for topterm in top_terms:
+                #for topterm in top_terms:
 
                 current_entities = [x[0] for x in event.entities]
                 #print("before",[x[0] for x in event.entities])
