@@ -283,8 +283,9 @@ class Event_pairs:
                 tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
                 top_terms = [word_indexes[j[0]] for j in tfidf_sorted[:5]]
                 for topterm in top_terms:
-                    postag = self.fc.process(topterm)
-                    print(topterm,postag)
+                    print(topterm)
+                    print(self.fc.process(topterm))
+                    #print(topterm,postag)
                     #         if output[0] == None or (args.punct and output[3] == "LET()"):
                     #             continue
                     #         else:    
