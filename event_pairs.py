@@ -282,7 +282,38 @@ class Event_pairs:
                 tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
                 tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
                 top_terms = [word_indexes[j[0]] for j in tfidf_sorted[:5]]
-                #for topterm in top_terms:
+                for topterm in top_terms:
+                    postag = self.fc.process(topterm):
+                    print(topterm,postag)
+                    #         if output[0] == None or (args.punct and output[3] == "LET()"):
+                    #             continue
+                    #         else:    
+                    #             if args.events:
+                    #                 for hashtag in events:
+                    #                     if re.search(output[0],hashtag):
+                    #                         outstring = output[0]
+                    #                         break
+                    #             if args.ne and output[4] != "O":
+                    #                 cat = re.search(r"B-([^_]+)",output[4])
+                    #                 word = "[" + cat.groups()[0] + " " + output[0] + "]"
+                    #             else:
+                    #                 word = output[0]
+                    #             words.append(word)    
+                    
+                    #     outfields[-1] = " ".join(words)
+                    #     for field in outfields:
+                    #         if outstring == "":
+                    #             outstring = field
+                    #         else:
+                    #             try:
+                    #                 outstring = outstring + "\t" + field
+                    #             except UnicodeDecodeError:
+                    #                 outstring = outstring + "\t" + field.decode("utf-8")
+
+                    #     outstring = outstring + "\n"
+                    #     o.put(outstring)
+                    # if args.v:
+                    #    print "Chunk " + str(i) + " done."
 
                 current_entities = [x[0] for x in event.entities]
                 #print("before",[x[0] for x in event.entities])
@@ -394,8 +425,7 @@ class Event_pairs:
             r"( nog)? te gaan",r"(\b|^)" + (nums) + " " + (months) + r"( |$)" + r"(\d{2,4})?",
             r"(\b|^)(\d{1,2}-\d{1,2})(-\d{2,4})?(\b|$)",r"(\b|^)(\d{2,4}/)?(\d{1,2}/\d{1,2})(\b|$)",
             r"(\b|$)(volgende week)? ?(maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag|"
-            "overmorgen) ?(avond|nacht|ochtend|middag)?( |$)",r"(\b|^)(\d+, )?(\d+ en) (maandag |dinsdag |woensdag |"
-            "donderdag |vrijdag |zaterdag |zondag )?"])
+            "overmorgen) ?(avond|nacht|ochtend|middag)?( |$)"])
 
         date_eu = re.compile(r"(\d{1,2})-(\d{1,2})-?(\d{2,4})?")
         date_vs = re.compile(r"(\d{2,4})?/?(\d{1,2})/(\d{1,2})")
@@ -412,12 +442,6 @@ class Event_pairs:
                 for unit in units:
                     if unit in ns:
                         nud["num"].append((convert_nums[unit],i))
-                    elif re.search(r"\d+ en",unit):
-                        print("en",units,int(re.search(r"(\d+)",unit).groups()[0]))
-                        nud["concat"].append(int(re.search(r"(\d+)",unit).groups()[0]))
-                    elif re.search(r"\d+, ",unit):
-                        print(",",units,int(re.search(r"(\d+)",unit).groups()[0]))
-                        nud["concat"].append(int(re.search(r"(\d+)",unit).groups()[0]))
                     elif unit in timeus:
                         if not "weekday" in nud:
                             nud["timeunit"].append((convert_timeunit[unit],i))
@@ -474,10 +498,6 @@ class Event_pairs:
                             y = date.year
                         if date < datetime.date(y,m,d):
                             output.append(datetime.date(y,m,d))
-                        if "concat" in nud:
-                            add_days = nud["concat"]
-                            for add_day in add_days:
-                                output.append(datetime.date(y,m,add_day))
                     except:
                         continue
             if "date" in nud:
