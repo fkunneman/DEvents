@@ -414,7 +414,8 @@ class Event_pairs:
             r"( nog)? te gaan",r"(\b|^)" + (nums) + " " + (months) + r"( |$)" + r"(\d{2,4})?",
             r"(\b|^)(\d{1,2}-\d{1,2})(-\d{2,4})?(\b|$)",r"(\b|^)(\d{2,4}/)?(\d{1,2}/\d{1,2})(\b|$)",
             r"(\b|$)(volgende week)? ?(maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag|"
-            "overmorgen) ?(avond|nacht|ochtend|middag)?( |$)"])
+            "overmorgen) ?(avond|nacht|ochtend|middag)?( |$)",r"(\b|^)(\d+, )(\d+ en) (maandag |dinsdag |woensdag |"
+            "donderdag |vrijdag |zaterdag |zondag )?"])
 
         date_eu = re.compile(r"(\d{1,2})-(\d{1,2})-?(\d{2,4})?")
         date_vs = re.compile(r"(\d{2,4})?/?(\d{1,2})/(\d{1,2})")
@@ -431,6 +432,10 @@ class Event_pairs:
                 for unit in units:
                     if unit in ns:
                         nud["num"].append((convert_nums[unit],i))
+                    elif re.search("en",unit):
+                        nud["concat"].append(int(re.search("\d+",unit).groups()[0]))
+                    elif re.search(",",unit):
+                        nud["concat"].append(int(re.search("\d+",unit).groups()[0]))
                     elif unit in timeus:
                         if not "weekday" in nud:
                             nud["timeunit"].append((convert_timeunit[unit],i))
@@ -487,6 +492,10 @@ class Event_pairs:
                             y = date.year
                         if date < datetime.date(y,m,d):
                             output.append(datetime.date(y,m,d))
+                        if "concat" in nud:
+                            add_days = nud["concat"]
+                            for add_day in add_days:
+                                output.append(datetime.date(y,m,add_day))
                     except:
                         continue
             if "date" in nud:
