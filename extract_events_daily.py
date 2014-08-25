@@ -42,7 +42,7 @@ for infile in args.i:
     day = parts[-3][:2] + "_" + parts[-2]
     day_files[day].append(infile)
 
-ep = Event_pairs(args.a,args.w,args.d,args.p)
+ep = Event_pairs(args.a,args.w,args.d)
 if args.m:
     print("loading event tweets")
     eventfile = open(args.m,"r",encoding = "utf-8")
@@ -55,7 +55,7 @@ if args.m:
         if not os.path.isdir(basedir):
             os.mkdir(basedir)
         # for j,ev in enumerate(event_vars):
-        ep.rank_events("cosine")
+        ep.rank_events("cosine",basedir + "clusters.txt",args.p)
         if args.x:
             for event in ep.events:
                 event.add_event_terms()
@@ -87,7 +87,7 @@ for i,day in enumerate(sorted(day_files.keys())):
     ep.discard_last_day(args.window)
     if len(set([x.date for x in ep.tweets])) >= 6:
         print("ranking events")
-        ep.rank_events("cosine",basedir + "clusters.txt")
+        ep.rank_events("cosine",basedir + "clusters.txt",args.p)
         if args.x:
             for event in ep.events:
                 event.add_event_terms()

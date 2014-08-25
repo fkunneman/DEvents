@@ -15,13 +15,11 @@ import numpy
 
 class Event_pairs:
 
-    def __init__(self,action,wikidir,tmpdir,pos=False):
+    def __init__(self,action,wikidir,tmpdir):
         self.tweets = []
         if action != "ngram":
             self.load_commonness(tmpdir + "coco",[wikidir + "1_grams.txt",wikidir + "2_grams.txt",
                 wikidir + "3_grams.txt",wikidir + "4_grams.txt",wikidir + "5_grams.txt"])
-        if pos:
-            self.fc = pynlpl.clients.frogclient.FrogClient('localhost',pos,returnall = True)
 
     def detect_events(self,tweetfile):
         #start from last modeltweets
@@ -143,7 +141,7 @@ class Event_pairs:
                 self.dmodel[pattern] = float(tokens[3])
             ngramopen.close()
 
-    def rank_events(self,ranking,outfile):
+    def rank_events(self,ranking,outfile,pos=False):
         outwrite = open(outfile,"w",encoding="utf-8")
         date_entity_score = []
         date_entity_tweets = defaultdict(lambda : defaultdict(list))
@@ -282,9 +280,11 @@ class Event_pairs:
                 tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
                 tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
                 top_terms = [word_indexes[j[0]] for j in tfidf_sorted[:5]]
-                for topterm in top_terms:
-                    print(topterm)
-                    print(self.fc.process(topterm))
+                if pos:
+                    fc = pynlpl.clients.frogclient.FrogClient('localhost',pos,returnall = True)
+                    for topterm in top_terms:
+                        print(topterm)
+                        print(fc.process(topterm))
                     #print(topterm,postag)
                     #         if output[0] == None or (args.punct and output[3] == "LET()"):
                     #             continue
