@@ -141,8 +141,9 @@ class Event_pairs:
                 self.dmodel[pattern] = float(tokens[3])
             ngramopen.close()
 
-    def rank_events(self,ranking,outfile,pos=False):
-        outwrite = open(outfile,"w",encoding="utf-8")
+    def rank_events(self,ranking,outfile=False,pos=False):
+        if outfile:
+            outwrite = open(outfile,"w",encoding="utf-8")
         date_entity_score = []
         date_entity_tweets = defaultdict(lambda : defaultdict(list))
         date_entity_tweets_cleaned = defaultdict(lambda : defaultdict(list))
@@ -233,12 +234,13 @@ class Event_pairs:
                     if ijs1 > 1 or ijs2 > 1:
                         print("ALARM",ijs1,ijs2,e1list,e2list)
                     #event2 = [x for x in events if highest_sim[1] == x.ids][0] 
-                    outwrite.write("\n" + "\t".join([str(event1.date),str(event1.score)]) + "\t" + #for checking 
-                        ", ".join([x[0] for x in event1.entities]) + "\n" + 
-                        "\n".join([x.text for x in event1.tweets]) + "\n" +
-                        "****************\n" + "\t".join([str(event2.date),str(event2.score)]) + 
-                        "\t" + ", ".join([x[0] for x in event2.entities]) + "\n" + 
-                        "\n".join([x.text for x in event2.tweets]) + "\n")
+                    if outfile:
+                        outwrite.write("\n" + "\t".join([str(event1.date),str(event1.score)]) + "\t" + #for checking 
+                            ", ".join([x[0] for x in event1.entities]) + "\n" + 
+                            "\n".join([x.text for x in event1.tweets]) + "\n" +
+                            "****************\n" + "\t".join([str(event2.date),str(event2.score)]) + 
+                            "\t" + ", ".join([x[0] for x in event2.entities]) + "\n" + 
+                            "\n".join([x.text for x in event2.tweets]) + "\n")
                     if event1.score > event2.score: #merge to event with highest score
                         event1.merge(event2)
                         events.remove(event2)
@@ -266,7 +268,8 @@ class Event_pairs:
                     #print([e.entities for e in events])
                     if not len(scores_sorted) > 1:
                         break
-        outwrite.close()
+        if outfile:
+            outwrite.close()
 
         documents = [" ".join([x.text for x in y.tweets]) for y in self.events]
         tfidf_vectorizer = TfidfVectorizer()
@@ -281,10 +284,12 @@ class Event_pairs:
                 tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
                 top_terms = [word_indexes[j[0]] for j in tfidf_sorted[:5]]
                 if pos:
-                    fc = pynlpl.clients.frogclient.FrogClient('localhost',pos,returnall = True)
+                    fc = pynlpl.clients.frogclient.FrogClient('localhost',pos)
                     for topterm in top_terms:
                         print(topterm)
-                        print(fc.process(topterm))
+                        print(dir(fc))
+                        for output in fc.process(topterm):
+                            print(output)
                     #print(topterm,postag)
                     #         if output[0] == None or (args.punct and output[3] == "LET()"):
                     #             continue
