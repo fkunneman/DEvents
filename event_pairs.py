@@ -282,14 +282,14 @@ class Event_pairs:
             if len(event.entities) <= 3:
                 tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
                 tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
-                top_terms = [word_indexes[j[0]] for j in tfidf_sorted[:5]]
-                if pos:
-                    fc = pynlpl.clients.frogclient.FrogClient('localhost',pos)
-                    for topterm in top_terms:
-                        print(topterm)
-                        print(dir(fc))
-                        for output in fc.process(topterm):
-                            print(output)
+                top_terms = [word_indexes[j[0]] for j in tfidf_sorted[:3]]
+                # if pos:
+                #     fc = pynlpl.clients.frogclient.FrogClient('localhost',pos)
+                #     for topterm in top_terms:
+                #         print(topterm)
+                #         print(dir(fc))
+                #         for output in fc.process(topterm):
+                #             print(output)
                     #print(topterm,postag)
                     #         if output[0] == None or (args.punct and output[3] == "LET()"):
                     #             continue
