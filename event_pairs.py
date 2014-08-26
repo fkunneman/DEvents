@@ -711,7 +711,7 @@ class Event_pairs:
             for entity in self.entities:   
                 positions = []
                 for tweet in self.tweets:
-                    print(entity[0],tweet.text)
+                    #print(entity[0],tweet.text)
                     if re.search(re.escape(entity[0]),tweet.text):
                         positions.append(re.search(re.escape(entity[0]),tweet.text).span()[0])
                 entity_position.append((entity,numpy.mean(positions)))   
