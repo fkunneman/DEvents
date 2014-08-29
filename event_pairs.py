@@ -291,7 +291,7 @@ class Event_pairs:
                 #perform part of speach tagging
                 for tweettexts in [x.chunks for x in event.tweets]:
                     for tweettext in tweettexts:
-                        os.system("curl -d \"text=" + tweettext + "&language=dutch\" http://text-processing.com/api/tag/ >> " + temppos)
+                        os.system("curl -d \"text=" + unicode(tweettext) + "&language=dutch\" http://text-processing.com/api/tag/ >> " + temppos)
                 #process pos-output
                 tempposopen = open(temppos)
                 postagged = tempposopen.read()
