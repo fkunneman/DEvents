@@ -3,6 +3,7 @@ import re
 import datetime
 from collections import defaultdict
 import itertools
+import os
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -17,8 +18,9 @@ class Event_pairs:
 
     def __init__(self,action,wikidir,tmpdir):
         self.tweets = []
+        self.tmpdir = tmpdir
         if action != "ngram":
-            self.load_commonness(tmpdir + "coco",[wikidir + "1_grams.txt",wikidir + "2_grams.txt",
+            self.load_commonness(self.tmpdir + "coco",[wikidir + "1_grams.txt",wikidir + "2_grams.txt",
                 wikidir + "3_grams.txt",wikidir + "4_grams.txt",wikidir + "5_grams.txt"])
 
     def detect_events(self,tweetfile):
@@ -282,7 +284,36 @@ class Event_pairs:
             if len(event.entities) <= 3:
                 tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
                 tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
-                top_terms = [word_indexes[j[0]] for j in tfidf_sorted[:3]]
+                top_terms = [word_indexes[j[0]] for j in tfidf_sorted[:10]]
+                term_poscat_counts = defaultdict(lambda : defaultdict(int))
+                term_poscat = {}
+                temppos = self.tmpdir + "postags.txt"
+                #perform part of speach tagging
+                for tweettexts in [x.chunks for x in event.tweets]:
+                    for tweettext in tweettexts:
+                        os.system("curl -d \"text=" + tweettext + "&language=dutch\" http://text-processing.com/api/tag/ >> " + temppos)
+                #process pos-output
+                tempposopen = open(temppos)
+                postagged = tempposopen.read()
+                tempposopen.close()
+                chunks = postagged.split("}{")
+                for chunk in chunks:
+                    terms = chunk.split("  ")
+                    for term in terms:
+                        if re.search("/",term):
+                            tokens = term.split("/")
+                            word = tokens[0].lower()
+                            tag = re.sub("\\\\n","",tokens[1])
+                            tag = re.sub("\)\"","",tag)
+                            tag = re.sub("}","",tag)
+                            term_poscat_counts[word][tag] += 1
+                for k in term_poscat_counts.keys():
+                    term_poscat[k] = sorted(term_poscat_counts[k],key = term_poscat_counts[k].get,reverse=True)[0]
+                candidates = [x for x in term_poscat.keys() if term_poscat[x] in ["V","N","Adj"]]
+                new_candidates = []
+                for candidate in candidates:
+                    if candidate in topterms:
+                        new_candidates.append(candidate)                
                 # if pos:
                 #     fc = pynlpl.clients.frogclient.FrogClient('localhost',pos)
                 #     for topterm in top_terms:
@@ -323,13 +354,7 @@ class Event_pairs:
 
                 current_entities = [x[0] for x in event.entities]
                 #print("before",[x[0] for x in event.entities])
-                for term in top_terms:
-                    ap = False
-                    for tweet in event.tweets:
-                        for chunk in tweet.chunks:
-                            if re.search(term,chunk):
-                                ap = True
-                                break
+                for term in new_candidates:
                     for entity in current_entities:
                         if re.search(term,entity):
                             ap = False
