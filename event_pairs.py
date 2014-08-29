@@ -67,8 +67,8 @@ class Event_pairs:
             tweet = self.Tweet()
             units = info[:5]
             units.append([x.strip() for x in info[5].split("|")]) #chunks
-            units.append([tuple(x.split(",")) for x in info[6].split(" ")])
             tweet.set_meta(units)
+            tweet.set_postags([tuple(x.split(",")) for x in info[6].split(" ")])
             if len(info) >= 8:
                 tweet.set_entities([x.strip() for x in info[7].split(" | ")])            
             self.tweets.append(tweet)
@@ -321,7 +321,6 @@ class Event_pairs:
             self.text = units[3]
             self.daterefs = units[4]
             self.chunks = units[5]
-            self.postags = units[6]
 
         def set_entities(self,entities):
             self.entities = entities
