@@ -41,26 +41,30 @@ for infile in args.i:
     day_files[day].append(infile)
 
 ep = Event_pairs(args.a,args.w,args.d)
+
+def output_events(d):
+    print("ranking events")
+    ep.rank_events()
+    ep.resolve_overlap_events(d + "clusters.txt")
+    ep.enrich_events(args.x)
+    eventinfo = open(d + "events_fit.txt","w",encoding = "utf-8")
+    for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
+        if event.tt_ratio > 0.4:
+            outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + \
+                ", ".join([x[0] for x in event.entities]) + "\n" + \
+                "\n".join([x.text for x in event.tweets]) + "\n"
+            eventinfo.write(outstr)
+    eventinfo.close()
+
 if args.m:
     print("loading event tweets")
     eventfile = open(args.m,"r",encoding = "utf-8")
     ep.append_eventtweets(eventfile.readlines())
     eventfile.close()
     if args.start:
-        print("ranking events")
-        day = args.m.split("/")[-3][:2] + "_" + args.m.split("/")[-2] + "/"
-        basedir = args.o + day    
-        if not os.path.isdir(basedir):
-            os.mkdir(basedir)
-        # for j,ev in enumerate(event_vars):
-        ep.rank_events("cosine",basedir + "clusters.txt")
-        eventinfo = open(basedir + "events_fit.txt","w",encoding = "utf-8")
-        for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
-            outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + \
-                ", ".join([x[0] for x in event.entities]) + "\n" + \
-                "\n".join([x.text for x in event.tweets]) + "\n"
-            eventinfo.write(outstr)
-        eventinfo.close()
+        day = args.m.split("/")[-3][:2] + "_" + args.m.split("/")[-2]
+        basedir = args.o + day + "/"
+        output_events(basedir)
 
 for i,day in enumerate(sorted(day_files.keys())):
     print("extracting tweets with a time reference posted on",day)
@@ -74,20 +78,11 @@ for i,day in enumerate(sorted(day_files.keys())):
     tweetinfo = open(basedir + "modeltweets.txt","w",encoding = "utf-8")
     for tweet in ep.tweets:
         info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
-            " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks])]
+            " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks])," ".join([",".join(x) for x in tweet.postags])]
         if tweet.e:
             info.append(" | ".join(tweet.entities))
         tweetinfo.write("\t".join(info) + "\n")
     tweetinfo.close()
     ep.discard_last_day(args.window)
     if len(set([x.date for x in ep.tweets])) >= 6:
-        print("ranking events")
-        ep.rank_events("cosine",basedir + "clusters.txt")
-        eventinfo = open(basedir + "events_fit.txt","w",encoding = "utf-8")
-        for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
-            if event.tt_ratio > 0.4:
-                outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + \
-                    ", ".join([x[0] for x in event.entities]) + "\n" + \
-                    "\n".join([x.text for x in event.tweets]) + "\n"
-                eventinfo.write(outstr)
-        eventinfo.close()
+        output_events(basedir)
