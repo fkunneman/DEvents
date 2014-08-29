@@ -318,6 +318,7 @@ class Event_pairs:
                 current_entities = [x[0] for x in event.entities]
                 #print("before",[x[0] for x in event.entities])
                 for term in new_candidates:
+                    ap = True
                     for entity in current_entities:
                         if re.search(term,entity):
                             ap = False
