@@ -113,8 +113,10 @@ class Event_pairs:
                                     dtweet.entities.extend(hashtags)
                                 else:
                                     dtweet.set_entities(hashtags)
+                        print("extracting postags")
                         postags = calculations.return_postags(dtweet,self.tmpdir)
                         dtweet.set_postags([(x,postags[x]) for x in postags.keys() if postags[x] in ["V","N","Adj"]])
+                        print(dtweet.postags)
                         self.tweets.append(dtweet)
 
     def rank_events(self):
