@@ -32,6 +32,7 @@ def return_postags(tweet,tmp):
     temppos = tmp + "postags.txt"
     #perform part of speach tagging
     for tweettext in tweet.chunks:
+        print(tweettext)
         os.system("curl --silent -d \"text=" + tweettext + "&language=dutch\" http://text-processing.com/api/tag/ >> " + temppos)
     #process pos-output
     tempposopen = open(temppos)
