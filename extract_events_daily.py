@@ -18,8 +18,6 @@ parser.add_argument('-w', action = 'store', required = False,
     help = "The files with wikiscores per n-gram")
 parser.add_argument('-d', action = 'store', required = False, 
     help = "The tmp dict for pattern indexing")
-parser.add_argument('-p', action = 'store', required = False, 
-    help = "The server id for part-of-speech tagging")
 parser.add_argument('-a', action = 'store', required = False,
     help = "Choose to extract entities. \'single\' for only the top entity, \'all\' for all common "
     "entities, \'ngram\' for all ngrams (baseline)")
@@ -55,10 +53,7 @@ if args.m:
         if not os.path.isdir(basedir):
             os.mkdir(basedir)
         # for j,ev in enumerate(event_vars):
-        ep.rank_events("cosine",basedir + "clusters.txt",args.p)
-        if args.x:
-            for event in ep.events:
-                event.add_event_terms()
+        ep.rank_events("cosine",basedir + "clusters.txt")
         eventinfo = open(basedir + "events_fit.txt","w",encoding = "utf-8")
         for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
             outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + \
@@ -87,10 +82,7 @@ for i,day in enumerate(sorted(day_files.keys())):
     ep.discard_last_day(args.window)
     if len(set([x.date for x in ep.tweets])) >= 6:
         print("ranking events")
-        ep.rank_events("cosine",basedir + "clusters.txt",args.p)
-        if args.x:
-            for event in ep.events:
-                event.add_event_terms()
+        ep.rank_events("cosine",basedir + "clusters.txt")
         eventinfo = open(basedir + "events_fit.txt","w",encoding = "utf-8")
         for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
             if event.tt_ratio > 0.4:

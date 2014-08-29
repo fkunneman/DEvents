@@ -143,7 +143,7 @@ class Event_pairs:
                 self.dmodel[pattern] = float(tokens[3])
             ngramopen.close()
 
-    def rank_events(self,ranking,outfile=False,pos=False):
+    def rank_events(self,ranking,outfile=False):
         if outfile:
             outwrite = open(outfile,"w",encoding="utf-8")
         date_entity_score = []
@@ -312,45 +312,8 @@ class Event_pairs:
                 candidates = [x for x in term_poscat.keys() if term_poscat[x] in ["V","N","Adj"]]
                 new_candidates = []
                 for candidate in candidates:
-                    if candidate in topterms:
+                    if candidate in top_terms:
                         new_candidates.append(candidate)                
-                # if pos:
-                #     fc = pynlpl.clients.frogclient.FrogClient('localhost',pos)
-                #     for topterm in top_terms:
-                #         print(topterm)
-                #         print(dir(fc))
-                #         for output in fc.process(topterm):
-                #             print(output)
-                    #print(topterm,postag)
-                    #         if output[0] == None or (args.punct and output[3] == "LET()"):
-                    #             continue
-                    #         else:    
-                    #             if args.events:
-                    #                 for hashtag in events:
-                    #                     if re.search(output[0],hashtag):
-                    #                         outstring = output[0]
-                    #                         break
-                    #             if args.ne and output[4] != "O":
-                    #                 cat = re.search(r"B-([^_]+)",output[4])
-                    #                 word = "[" + cat.groups()[0] + " " + output[0] + "]"
-                    #             else:
-                    #                 word = output[0]
-                    #             words.append(word)    
-                    
-                    #     outfields[-1] = " ".join(words)
-                    #     for field in outfields:
-                    #         if outstring == "":
-                    #             outstring = field
-                    #         else:
-                    #             try:
-                    #                 outstring = outstring + "\t" + field
-                    #             except UnicodeDecodeError:
-                    #                 outstring = outstring + "\t" + field.decode("utf-8")
-
-                    #     outstring = outstring + "\n"
-                    #     o.put(outstring)
-                    # if args.v:
-                    #    print "Chunk " + str(i) + " done."
 
                 current_entities = [x[0] for x in event.entities]
                 #print("before",[x[0] for x in event.entities])
@@ -360,68 +323,9 @@ class Event_pairs:
                             ap = False
                     if ap:
                         event.entities.append((term,0))
-                #print("after",[x[0] for x in event.entities])
-            # entity_count = defaultdict(int)
-            # #print("before",[x[0] for x in event.entities])
-            # for tweet in event.tweets:
-            #     for chunk in tweet.chunks:
-            #         entities = self.extract_entity(chunk,1,"all")
-            #         for entity in entities:
-            #             new = True
-            #             for centity in current_entities:
-            #                 if re.search(entity[0],centity):
-            #                     new = False
-            #                     break
-            #             if new:
-            #                 entity_count[entity] += 1
-            # for entity in entity_count.keys():
-            #     if entity_count[entity] / len(event.tweets) > 0.75:
-            #         event.entities.append(entity)
-            #print("after",[x[0] for x in event.entities])
             event.order_entities()
             #calculate type-token
             event.add_ttratio()
-        #rank events
-        # tt_sorted = sorted(self.events,key = lambda x : x.tt_ratio,reverse = True)
-        # for i,event in enumerate(tt_sorted):
-        #     event.tt_rank = i+1
-        # event_meanrank = []
-        # for event in self.events:
-        #     event_meanrank.append((event,numpy.mean([event.g2_rank,event.tt_rank])))
-        # self.events = [x[0] for x in sorted(event_meanrank,key=lambda x : x[1])]
-
-    # def pos_tweets(self,tweets):
-    #     for tweet in tweets:
-    #         for output in fc.process(text):
-    #             if output[0] == None or (args.punct and output[3] == "LET()"):
-    #                 continue
-    #             else:    
-    #                 if args.events:
-    #                     for hashtag in events:
-    #                         if re.search(output[0],hashtag):
-    #                             outstring = output[0]
-    #                             break
-    #                 if args.ne and output[4] != "O":
-    #                     cat = re.search(r"B-([^_]+)",output[4])
-    #                     word = "[" + cat.groups()[0] + " " + output[0] + "]"
-    #                 else:
-    #                     word = output[0]
-    #                 words.append(word)    
-        
-    #         outfields[-1] = " ".join(words)
-    #         for field in outfields:
-    #             if outstring == "":
-    #                 outstring = field
-    #             else:
-    #                 try:
-    #                     outstring = outstring + "\t" + field
-    #                 except UnicodeDecodeError:
-    #                     outstring = outstring + "\t" + field.decode("utf-8")
-
-    #         outstring = outstring + "\n"
-    #         o.put(outstring)
-    #     if args.v:
-   #         print "Chunk " + str(i) + " done."
 
     def extract_date(self,tweet,date):
         convert_nums = {"een":1, "twee":2, "drie":3, "vier":4,"vijf":5, "zes":6, "zeven":7, "acht":8, 
