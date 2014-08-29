@@ -30,6 +30,7 @@ def goodness_of_fit(total,dc,ec,ode):
 def return_postags(tweet,tmp):
     terms_postag = {}
     temppos = tmp + "postags.txt"
+    print(tweet)
     #perform part of speach tagging
     for tweettext in tweet.chunks:
         print(tweettext)
