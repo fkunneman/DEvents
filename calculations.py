@@ -5,6 +5,7 @@ import itertools
 import numpy
 import re
 import os
+import datetime
 from collections import defaultdict
 
 def goodness_of_fit(total,dc,ec,ode):
