@@ -28,11 +28,11 @@ def goodness_of_fit(total,dc,ec,ode):
     return g2
 
 def return_postags(tweet,tmp):
-    term_postags = {}
+    terms_postag = {}
     temppos = tmp + "postags.txt"
     #perform part of speach tagging
     for tweettext in tweet.chunks:
-        os.system("curl -d \"text=" + tweettext + "&language=dutch\" http://text-processing.com/api/tag/ >> " + temppos)
+        os.system("curl -s -d \"text=" + tweettext + "&language=dutch\" http://text-processing.com/api/tag/ >> " + temppos)
     #process pos-output
     tempposopen = open(temppos)
     postagged = tempposopen.read()
@@ -48,8 +48,8 @@ def return_postags(tweet,tmp):
                 tag = re.sub("\\\\n","",tokens[1])
                 tag = re.sub("\)\"","",tag)
                 tag = re.sub("}","",tag)
-                term_poscat[word] = tag
-    return term_postags
+                terms_postag[word] = tag
+    return terms_postag
 
 def extract_date(tweet,date):
     convert_nums = {"een":1, "twee":2, "drie":3, "vier":4,"vijf":5, "zes":6, "zeven":7, "acht":8, 
