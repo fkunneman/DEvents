@@ -3,6 +3,7 @@ import argparse
 from collections import defaultdict
 import os
 import datetime
+import re
 
 from event_pairs import Event_pairs
 
@@ -39,10 +40,18 @@ args = parser.parse_args()
 
 #sort input-files
 day_files = defaultdict(list)
-for infile in args.i:
-    parts = infile.split("/")
-    day = parts[-3][:2] + "_" + parts[-2]
-    day_files[day].append(infile)
+if args.f == "twiqs":
+    for infile in args.i:
+        day = re.sub(r"\.txt","",infile.split("/")[1])
+        day_files[day].append(infile)
+elif args.f == "exp":
+    for infile in args.i:
+        parts = infile.split("/")
+        day = parts[-3][:2] + "_" + parts[-2]
+        day_files[day].append(infile)
+else:
+    print("format not included, exiting program")
+    quit()
 
 ep = Event_pairs(args.a,args.w,args.d)
 
@@ -78,9 +87,6 @@ for i,day in enumerate(sorted(day_files.keys())):
             ep.select_date_entity_tweets(tweetfile.readlines()[1:],args.a,args.t,"twiqs")
         elif args.f == "exp":
             ep.select_date_entity_tweets(tweetfile.readlines(),args.a,args.t,"exp")
-        else:
-            print("format not included, exiting program")
-            quit()
         if args.pos:
             ep.pos_tweets(args.pos)
         tweetfile.close()
