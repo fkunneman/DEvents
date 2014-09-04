@@ -3,7 +3,6 @@ import argparse
 from collections import defaultdict
 import os
 import datetime
-import re
 
 from event_pairs import Event_pairs
 
@@ -42,7 +41,7 @@ args = parser.parse_args()
 day_files = defaultdict(list)
 if args.f == "twiqs":
     for infile in args.i:
-        day = re.sub(r"\.txt","",infile.split("/")[-1])
+        day = infile.split("/")[-1][:-6]
         day_files[day].append(infile)
 elif args.f == "exp":
     for infile in args.i:
