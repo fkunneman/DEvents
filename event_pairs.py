@@ -84,7 +84,8 @@ class Event_pairs:
                 else:
                     date = time_functions.return_datetime(tokens[2],setting="vs").date()
                 dateref_phrase = calculations.extract_date(text,date)
-                print(dateref_phrase,len(dateref_phrase))
+                if dateref_phrase:
+                    print(dateref_phrase,len(dateref_phrase))
                 if dateref_phrase:
                     if len(dateref_phrase) > 1:
                         chunks = dateref_phrase[0]
