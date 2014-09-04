@@ -115,7 +115,6 @@ class Event_pairs:
                                     dtweet.set_entities(hashtags)
                         print("extracting postags")
                         postags = calculations.return_postags(dtweet,self.tmpdir)
-                        print(postags)
                         dtweet.set_postags([(x,postags[x]) for x in postags.keys() if postags[x] in ["V","N","Adj"]])
                         print(dtweet.postags)
                         self.tweets.append(dtweet)
