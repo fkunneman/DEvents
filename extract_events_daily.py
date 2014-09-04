@@ -42,7 +42,7 @@ args = parser.parse_args()
 day_files = defaultdict(list)
 if args.f == "twiqs":
     for infile in args.i:
-        day = re.sub(r"\.txt","",infile.split("/")[1])
+        day = re.sub(r"\.txt","",infile.split("/")[-1])
         day_files[day].append(infile)
 elif args.f == "exp":
     for infile in args.i:
