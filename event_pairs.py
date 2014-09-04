@@ -82,7 +82,10 @@ class Event_pairs:
                 if format == "exp":
                     date = time_functions.return_datetime(tokens[3],setting="vs").date()
                 else:
-                    date = time_functions.return_datetime(tokens[2],setting="vs").date()
+                    try:
+                        date = time_functions.return_datetime(tokens[2],setting="vs").date()
+                    except:
+                        print("dateerror",tweet,tokens)
                 dateref_phrase = calculations.extract_date(text,date)
                 if dateref_phrase:
                     if len(dateref_phrase) > 1:
