@@ -25,6 +25,8 @@ parser.add_argument('-t', action = 'store_true',
     help = "Choose to include hashtags as entities")
 parser.add_argument('-x', action = 'store_true',
     help = "Choose to add extra event informative terms to the description")
+parser.add_argument('-f', action = 'store', default = "twiqs", choices = ["exp","twiqs"],
+    help = "Specify the format of the inputted tweet files")
 parser.add_argument('-o', action = 'store', 
     help = "The directory to write files to")
 parser.add_argument('--pos', action = 'store', 
@@ -72,7 +74,13 @@ for i,day in enumerate(sorted(day_files.keys())):
     print("extracting tweets with a time reference posted on",day)
     for infile in day_files[day]:
         tweetfile = open(infile,"r",encoding = "utf-8")
-        ep.select_date_entity_tweets(tweetfile.readlines(),args.a,args.t,"twiqs")
+        if args.f == "twiqs":
+            ep.select_date_entity_tweets(tweetfile.readlines()[1:],args.a,args.t,"twiqs")
+        elif args.f == "exp":
+            ep.select_date_entity_tweets(tweetfile.readlines(),args.a,args.t,"exp")
+        else:
+            print("format not included, exiting program")
+            quit()
         if args.pos:
             ep.pos_tweets(args.pos)
         tweetfile.close()
