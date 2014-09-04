@@ -73,7 +73,7 @@ class Event_pairs:
                 tweet.set_entities([x.strip() for x in info[7].split(" | ")])            
             self.tweets.append(tweet)
 
-    def select_date_entity_tweets(self,new_tweets,ent,ht,format):
+    def select_date_entity_tweets(self,new_tweets,ent,ht,format,pos=False):
         for tweet in new_tweets:
             tokens = tweet.strip().split("\t")
             if (format == "twiqs" or (format == "exp" and tokens[0] == "dutch")) \
@@ -84,6 +84,7 @@ class Event_pairs:
                 else:
                     date = time_functions.return_datetime(tokens[2],setting="vs").date()
                 dateref_phrase = calculations.extract_date(text,date)
+                print(dateref_phrase,len(dateref_phrase))
                 if dateref_phrase:
                     if len(dateref_phrase) > 1:
                         chunks = dateref_phrase[0]
@@ -113,12 +114,22 @@ class Event_pairs:
                                     dtweet.entities.extend(hashtags)
                                 else:
                                     dtweet.set_entities(hashtags)
+<<<<<<< HEAD
                         print("extracting postags")
                         postags = calculations.return_postags(dtweet,self.tmpdir)
                         dtweet.set_postags([(x,postags[x]) for x in postags.keys() if postags[x] in ["V","N","Adj"]])
                         print(dtweet.postags)
+=======
+>>>>>>> 05af2bbdbeae88f930d64eb2cce55fe3c9451e34
                         self.tweets.append(dtweet)
 
+    def pos_tweets(pos):
+        print("extracting postags")
+        postags = calculations.return_postags(self.tweets,pos)
+        
+        # dtweet.set_postags([(x,postags[x]) for x in postags.keys() if postags[x] in ["V","N","Adj"]])
+        # print(dtweet.postags)
+                        
     def rank_events(self):
         if outfile:
             outwrite = open(outfile,"w",encoding="utf-8")

@@ -7,6 +7,7 @@ import re
 import os
 import datetime
 from collections import defaultdict
+import pynlpl.clients.frogclient
 
 def goodness_of_fit(total,dc,ec,ode):
     g2 = 0
@@ -27,29 +28,32 @@ def goodness_of_fit(total,dc,ec,ode):
         g2 += ondne * (math.log(ondne/endne)/math.log(2))
     return g2
 
-def return_postags(tweet,tmp):
-    terms_postag = {}
-    temppos = tmp + "postags.txt"
-    #perform part of speach tagging
-    for tweettext in tweet.chunks:
-        os.system("curl --silent -d \"text=" + tweettext + "&language=dutch\" http://text-processing.com/api/tag/ >> " + temppos)
-    #process pos-output
-    tempposopen = open(temppos)
-    postagged = tempposopen.read()
-    tempposopen.close()
-    os.system("rm " + temppos)
-    chunks = postagged.split("}{")
-    for chunk in chunks:
-        terms = chunk.split("  ")
-        for term in terms:
-            if re.search("/",term):
-                tokens = term.split("/")
-                word = tokens[0].lower()
-                tag = re.sub("\\\\n","",tokens[1])
-                tag = re.sub("\)\"","",tag)
-                tag = re.sub("}","",tag)
-                terms_postag[word] = tag
-    return terms_postag
+def return_postags(tweets,pos):
+    fc = pynlpl.clients.frogclient.FrogClient('localhost',pos,returnall = True)
+    for tweet in tweets:
+        terms_postag = {}
+        for tweettext in tweet.chunks:
+            print(tweettext)
+            for output in fc.process(text):
+                #os.system("curl --silent -d \"text=" + tweettext + "&language=dutch\" http://text-processing.com/api/tag/ >> " + temppos)
+                print output[3]
+    # #process pos-output
+    # tempposopen = open(temppos)
+    # postagged = tempposopen.read()
+    # tempposopen.close()
+    # os.system("rm " + temppos)
+    # chunks = postagged.split("}{")
+    # for chunk in chunks:
+    #     terms = chunk.split("  ")
+    #     for term in terms:
+    #         if re.search("/",term):
+    #             tokens = term.split("/")
+    #             word = tokens[0].lower()
+    #             tag = re.sub("\\\\n","",tokens[1])
+    #             tag = re.sub("\)\"","",tag)
+    #             tag = re.sub("}","",tag)
+    #             terms_postag[word] = tag
+    # return terms_postag
 
 def extract_date(tweet,date):
     convert_nums = {"een":1, "twee":2, "drie":3, "vier":4,"vijf":5, "zes":6, "zeven":7, "acht":8, 
