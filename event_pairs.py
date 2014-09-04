@@ -126,8 +126,6 @@ class Event_pairs:
         # print(dtweet.postags)
                         
     def rank_events(self):
-        if outfile:
-            outwrite = open(outfile,"w",encoding="utf-8")
         date_entity_score = []
         date_entity_tweets = defaultdict(lambda : defaultdict(list))
         date_entity_tweets_cleaned = defaultdict(lambda : defaultdict(list))
