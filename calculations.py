@@ -36,7 +36,7 @@ def return_postags(tweets,pos):
             print(tweettext)
             for output in fc.process(text):
                 #os.system("curl --silent -d \"text=" + tweettext + "&language=dutch\" http://text-processing.com/api/tag/ >> " + temppos)
-                print output[3]
+                print(output[3])
     # #process pos-output
     # tempposopen = open(temppos)
     # postagged = tempposopen.read()
