@@ -27,6 +27,8 @@ parser.add_argument('-x', action = 'store_true',
     help = "Choose to add extra event informative terms to the description")
 parser.add_argument('-o', action = 'store', 
     help = "The directory to write files to")
+parser.add_argument('--pos', action = 'store', 
+    help = "To perform pos-tagging, specify the frog-port")
 parser.add_argument('--window', type = int, action = 'store', default = 7,
     help = "The window in days of tweets on which event extraction is based (default = 7 days)")
 parser.add_argument('--start', action = 'store_true',
@@ -70,7 +72,9 @@ for i,day in enumerate(sorted(day_files.keys())):
     print("extracting tweets with a time reference posted on",day)
     for infile in day_files[day]:
         tweetfile = open(infile,"r",encoding = "utf-8")
-        ep.select_date_entity_tweets(tweetfile.readlines(),args.a,args.t,"exp")
+        ep.select_date_entity_tweets(tweetfile.readlines(),args.a,args.t,"twiqs")
+        if args.pos:
+            ep.pos_tweets(args.pos)
         tweetfile.close()
     basedir = args.o + day + "/"
     if not os.path.isdir(basedir):
