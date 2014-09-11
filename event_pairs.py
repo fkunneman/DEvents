@@ -107,7 +107,8 @@ class Event_pairs:
                                 elif ent == "ngram":
                                     dtweet.set_entities([x[0] for x in entities])
                         if ht:
-                            hashtags = [x for x in text.split(" ") if re.search(r"^#",x)]
+                            for chunk in chunks:
+                                hashtags = [x for x in text.split(" ") if re.search(r"^#",x) and len(x) > 1]
                             if len(hashtags) > 0:
                                 if dtweet.e:
                                     dtweet.entities.extend(hashtags)
@@ -130,7 +131,6 @@ class Event_pairs:
         date_entity = defaultdict(lambda : defaultdict(int))
         entity_count = defaultdict(int)
         date_count = defaultdict(int)
-        entity_tweets = defaultdict(list)
         for tweet in self.tweets:
             for date in tweet.daterefs:
                 date_count[date] += 1
@@ -139,7 +139,6 @@ class Event_pairs:
                         entity_count[entity] += 1
                         date_entity[date][entity] += 1
                         date_entity_tweets[date][entity].append(tweet)
-                        entity_tweets[entity].append(tweet.text)
                         textparts = tweet.text.split(" ")
                         for i,word in enumerate(textparts):
                             if re.search(r"^http",word):
@@ -152,7 +151,6 @@ class Event_pairs:
             #cluster entities
             for entity in date_entity[date].keys():
                 unique_tweets = list(set(date_entity_tweets_cleaned[date][entity]))
-                users = len(list(set([x.user for x in date_entity_tweets[date][entity]])))
                 if len(unique_tweets) >= 5:
                     dc = date_count[date]
                     ec = entity_count[entity]
