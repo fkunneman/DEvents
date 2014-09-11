@@ -11,30 +11,21 @@ import pynlpl.clients.frogclient
 
 def goodness_of_fit(total,dc,ec,ode):
     g2 = 0
-    print("total",total,"dc",dc,"ec",ec,"ode",ode)
     ede = (dc * ec) / total
     if ode > 0 and ede > 0:
-        print("ode",ode,"log",(math.log(ode/ede)/math.log(2)),"plus",ode * (math.log(ode/ede)/math.log(2)))
         g2 += ode * (math.log(ode/ede)/math.log(2))
-    print("1",g2)
     odne = dc - ode
     edne = (dc * (total-ec)) / total
     if edne > 0 and odne > 0:
-        print("ode",odne,"log",(math.log(odne/edne)/math.log(2)),"plus",odne * (math.log(odne/edne)/math.log(2)))
         g2 += odne * (math.log(odne/edne)/math.log(2))
-    print("2",g2)
     onde = ec - ode
     ende = (ec * (total-dc)) / total
     if onde > 0 and ende > 0:
-        print("ode",onde,"log",(math.log(onde/ende)/math.log(2)),"plus",onde * (math.log(onde/ende)/math.log(2)))
         g2 += onde * (math.log(onde/ende)/math.log(2))
-    print("3",g2)
     ondne = total - (ode+odne+onde) 
     endne = ((total-dc) * (total-ec)) / total
     if ondne > 0 and endne > 0:
-        print("ode",ondne,"log",(math.log(ondne/endne)/math.log(2)),"plus",ondne * (math.log(ondne/endne)/math.log(2)))
         g2 += ondne * (math.log(ondne/endne)/math.log(2))
-    print("last",g2)
     return g2
 
 def return_postags(tweets,pos):
