@@ -82,7 +82,10 @@ class Event_pairs:
                 if format == "exp":
                     date = time_functions.return_datetime(tokens[3],setting="vs").date()
                 else:
-                    date = time_functions.return_datetime(tokens[2],setting="vs").date()
+                    try:
+                        date = time_functions.return_datetime(tokens[2],setting="vs").date()
+                    except:
+                        print("dateerror",tweet,tokens)
                 dateref_phrase = calculations.extract_date(text,date)
                 if dateref_phrase:
                     if len(dateref_phrase) > 1:
@@ -116,7 +119,7 @@ class Event_pairs:
                                     dtweet.set_entities(hashtags)
                         self.tweets.append(dtweet)
 
-    def pos_tweets(pos):
+    def pos_tweets(self,pos):
         print("extracting postags")
         postags = calculations.return_postags(self.tweets,pos)
         
@@ -148,21 +151,27 @@ class Event_pairs:
         #for each pair
         total = len(self.tweets)
         for date in date_entity.keys():
+#            if date.month == 9 and date.day == 14:
+#                print("yes!",date_entity[date].keys())
             #cluster entities
             for entity in date_entity[date].keys():
                 unique_tweets = list(set(date_entity_tweets_cleaned[date][entity]))
                 if len(unique_tweets) >= 5:
+#                    if date.month == 9 and date.day == 14:
+#                        print(unique_tweets)
                     dc = date_count[date]
                     ec = entity_count[entity]
                     ode = date_entity[date][entity]
                     g2 = calculations.goodness_of_fit(total,dc,ec,ode)
+                    if date.month == 9 and date.day == 14:
+                        print(g2)                  
                     date_entity_score.append([date,(entity,g2),g2,date_entity_tweets[date][entity]])
         top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:2500]
         self.events = []
         for x in range(len(top)):
             self.events.append(self.Event(x,top[x]))
 
-    def resolve_overlap_events(outfile):
+    def resolve_overlap_events(self,outfile):
         outwrite = open(outfile,"w",encoding="utf-8")
         documents = [" ".join([y.text for y in x.tweets]) for x in self.events]
         tfidf_vectorizer = TfidfVectorizer()
@@ -176,6 +185,8 @@ class Event_pairs:
                 pair_sim[i][j] = cos[i][j]
         dates = list(set([x.date for x in self.events]))
         for date in dates:
+            if date.month == 9 and date.day == 14:
+                print("yes overlap")
             events = [x for x in self.events if x.date == date]
             indexes = [x.ids[0] for x in events]
             pairs = [x for x in itertools.combinations(indexes,2)]
@@ -238,32 +249,33 @@ class Event_pairs:
             if add: #add terms
                 tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
                 tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
-                top_terms = [word_indexes[j[0]] for j in tfidf_sorted[:10]]
-                term_postag_counts = defaultdict(lambda : defaultdict(int))
-                term_postag = {}
+                top_terms = [word_indexes[j[0]] for j in tfidf_sorted[:5]]
+                #term_postag_counts = defaultdict(lambda : defaultdict(int))
+                #term_postag = {}
                 #acquire most frequent postag for each term (provided postag is a verm, adjective or noun)
-                for tweet in event.tweets:
-                    for postag in tweet.postags:
-                        term_postag_counts[postag[0]][postag[1]] += 1 
-                for k in term_postag_counts.keys():
-                    term_postag[k] = sorted(term_poscat_counts[k],key = term_poscat_counts[k].get,reverse=True)[0]
+                #for tweet in event.tweets:
+                #    for postag in tweet.postags:
+                #        term_postag_counts[postag[0]][postag[1]] += 1 
+                #for k in term_postag_counts.keys():
+                #    term_postag[k] = sorted(term_poscat_counts[k],key = term_poscat_counts[k].get,reverse=True)[0]
                 #keep terms that are in the top 10 tfidf
-                candidates = term_postag.keys()
-                new_candidates = []
-                for candidate in candidates:
-                    if candidate in top_terms:
-                        new_candidates.append(candidate)                
+                #candidates = term_postag.keys()
+                #new_candidates = []
+                #for candidate in candidates:
+                #    if candidate in top_terms:
+                #        new_candidates.append(candidate)                
                 #remove term that is already in entity set
                 current_entities = [x[0] for x in event.entities]
-                for term in new_candidates:
+                #for term in new_candidates:
+                for term in top_terms:
                     ap = True
                     for entity in current_entities:
                         if re.search(term,entity):
                             ap = False
                     if ap:
                         event.entities.append((term,0))
-        event.order_entities() #order entities by their average position in the tweets
-        event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
+            event.order_entities() #order entities by their average position in the tweets
+            event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
 
     def discard_last_day(self,window):
         print("before",len(self.tweets))
