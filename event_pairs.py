@@ -111,7 +111,7 @@ class Event_pairs:
                                     dtweet.set_entities([x[0] for x in entities])
                         if ht:
                             for chunk in chunks:
-                                hashtags = [x for x in text.split(" ") if re.search(r"^#",x) and len(x) > 1]
+                                hashtags = [x for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1]
                             if len(hashtags) > 0:
                                 if dtweet.e:
                                     dtweet.entities.extend(hashtags)
@@ -179,8 +179,6 @@ class Event_pairs:
                 pair_sim[i][j] = cos[i][j]
         dates = list(set([x.date for x in self.events]))
         for date in dates:
-            if date.month == 9 and date.day == 14:
-                print("yes overlap")
             events = [x for x in self.events if x.date == date]
             indexes = [x.ids[0] for x in events]
             pairs = [x for x in itertools.combinations(indexes,2)]
@@ -231,7 +229,7 @@ class Event_pairs:
         outwrite.close()
 
     def enrich_events(self,add=False):
-        documents = [" ".join([x.text for x in y.tweets]) for y in self.events]
+        documents = [" ".join([" ".join(x.chunks) for x in y.tweets]) for y in self.events]
         if add:
             tfidf_vectorizer = TfidfVectorizer()
             tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
