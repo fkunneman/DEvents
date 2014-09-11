@@ -152,15 +152,21 @@ class Event_pairs:
         #for each pair
         total = len(self.tweets)
         for date in date_entity.keys():
+#            if date.month == 9 and date.day == 14:
+#                print("yes!",date_entity[date].keys())
             #cluster entities
             for entity in date_entity[date].keys():
                 unique_tweets = list(set(date_entity_tweets_cleaned[date][entity]))
                 users = len(list(set([x.user for x in date_entity_tweets[date][entity]])))
                 if len(unique_tweets) >= 5:
+#                    if date.month == 9 and date.day == 14:
+#                        print(unique_tweets)
                     dc = date_count[date]
                     ec = entity_count[entity]
                     ode = date_entity[date][entity]
                     g2 = calculations.goodness_of_fit(total,dc,ec,ode)
+                    if date.month == 9 and date.day == 14:
+                        print(g2)                  
                     date_entity_score.append([date,(entity,g2),g2,date_entity_tweets[date][entity]])
         top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:2500]
         self.events = []
@@ -181,6 +187,8 @@ class Event_pairs:
                 pair_sim[i][j] = cos[i][j]
         dates = list(set([x.date for x in self.events]))
         for date in dates:
+            if date.month == 9 and date.day == 14:
+                print("yes overlap")
             events = [x for x in self.events if x.date == date]
             indexes = [x.ids[0] for x in events]
             pairs = [x for x in itertools.combinations(indexes,2)]
