@@ -185,10 +185,10 @@ class Event_pairs:
             events = [x for x in self.events if x.date == date]
             indexes = [x.ids[0] for x in events]
             pairs = [x for x in itertools.combinations(indexes,2)]
-            scores = [([x[0]],[x[1]],pair_sim[x[0]][x[1]]) for x in pairs if pair_sim[x[0]][x[1]] > 0.5]
+            scores = [([x[0]],[x[1]],pair_sim[x[0]][x[1]]) for x in pairs if pair_sim[x[0]][x[1]] > 0.7]
             if len(scores) > 0:
                 scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
-                while scores_sorted[0][2] > 0.5: #scores are not static 
+                while scores_sorted[0][2] > 0.7: #scores are not static 
                     highest_sim = scores_sorted[0] #start with top
                     #merge events
                     for x in events: #collect the event that matches the id list
