@@ -270,14 +270,12 @@ class Event_pairs:
             event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
 
     def discard_last_day(self,window):
-        print("before",len(self.tweets))
         days = sorted(set([x.date for x in self.tweets]))
         size = len(days)
         if size <= window:
             print("not enough days, no discard") 
         while size > window:
             ld = days[0]
-            print("last day",ld)
             self.tweets = [t for t in self.tweets if t.date != ld]
             days = sorted(set([x.date for x in self.tweets]))
             size = len(days)
