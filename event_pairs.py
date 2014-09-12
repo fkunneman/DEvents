@@ -275,14 +275,12 @@ class Event_pairs:
     def discard_last_day(self,window):
         days = sorted(set([x.date for x in self.tweets]))
         size = len(days)
-        if size <= window:
-            print("not enough days, no discard") 
         while size > window:
             ld = days[0]
             self.tweets = [t for t in self.tweets if t.date != ld]
             days = sorted(set([x.date for x in self.tweets]))
             size = len(days)
-        print("after",len(self.tweets))
+        print(len(self.tweets),"tweets")
 
     def load_commonness(self,tmp,wiki_commonness):
         #load in commonness files per ngram
