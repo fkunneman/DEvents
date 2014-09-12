@@ -163,7 +163,7 @@ class Event_pairs:
                     ode = date_entity[date][entity]
                     g2 = calculations.goodness_of_fit(total,dc,ec,ode)             
                     date_entity_score.append([date,(entity,g2),g2,date_entity_tweets[date][entity]])
-        top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:2500]
+        top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:1000]
         self.events = []
         for x in range(len(top)):
             self.events.append(self.Event(x,top[x]))
