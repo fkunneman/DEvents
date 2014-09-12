@@ -97,7 +97,7 @@ class Event_pairs:
                         else:
                             units = [tokens[1],tokens[6],date,text,refdates,chunks]
                         dtweet.set_meta(units)
-                        if ent:
+                        if ent != "ngram":
                             entities = []
                             for chunk in chunks:
                                 entities.extend(calculations.extract_entity(self.classencoder,self.dmodel,chunk,ht,ent))
