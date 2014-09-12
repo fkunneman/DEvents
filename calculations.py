@@ -218,13 +218,12 @@ def extract_date(tweet,date):
                         add = 7
                     else:
                         add = 0
-                    if ref_weekday == tweet_weekday:
-                        days_ahead = 7
-                    elif tweet_weekday < ref_weekday:
-                        days_ahead = ref_weekday - tweet_weekday + add
-                    else:
-                        days_ahead = ref_weekday + (7-tweet_weekday) + add
-                    output.append(date + datetime.timedelta(days=days_ahead))
+                    if not ref_weekday == tweet_weekday and not num_match in [x[1] for x in nud["nweek"]]: 
+                        if tweet_weekday < ref_weekday:
+                            days_ahead = ref_weekday - tweet_weekday + add
+                        else:
+                            days_ahead = ref_weekday + (7-tweet_weekday) + add
+                        output.append(date + datetime.timedelta(days=days_ahead))
         if "sday" in nud:
             for s in nud["sday"]:
                 num_match = s[1] 
