@@ -237,7 +237,7 @@ def extract_date(tweet,date):
         else:
             return output
 
-def extract_entity(classencoder,dmodel,text,no_hashtag,method):
+def extract_entity(text,no_hashtag,method,classencoder=False,dmodel=False):
     ngram_score = []
     c = text.split()
     if not no_hashtag:
@@ -253,14 +253,14 @@ def extract_entity(classencoder,dmodel,text,no_hashtag,method):
             ngrams = zip(c, c[1:], c[2:], c[3:])
         elif i == 4 and method != "ngram":
             ngrams = zip(c, c[1:], c[2:], c[3:], c[4:])
-        if method == "all" or method == "single":
+        if method != "ngram":
             for ngram in ngrams:
                 ngram = " ".join(ngram)
                 pattern = classencoder.buildpattern(ngram)
                 if not pattern.unknown():
                     if dmodel[pattern] > 0.05:
                         ngram_score.append((ngram,dmodel[pattern]))
-        elif method == "ngram":
+        else:
             for ngram in ngrams:
                 ngram_score.append((" ".join(ngram),1))
     return ngram_score

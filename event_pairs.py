@@ -97,18 +97,21 @@ class Event_pairs:
                         else:
                             units = [tokens[1],tokens[6],date,text,refdates,chunks]
                         dtweet.set_meta(units)
-                        if ent != "ngram":
-                            entities = []
+                        entities = []
+                        if ent == "ngram":
                             for chunk in chunks:
-                                entities.extend(calculations.extract_entity(self.classencoder,self.dmodel,chunk,ht,ent))
-                            entities = sorted(entities,key = lambda x: x[1],reverse=True)
-                            if len(entities) > 0:
-                                if ent == "single":
-                                    dtweet.set_entities([entities[0][0]])
-                                elif ent == "all":
-                                    dtweet.set_entities([x[0] for x in entities])
-                                elif ent == "ngram":
-                                    dtweet.set_entities([x[0] for x in entities])
+                                entities.extend(calculations.extract_entity(chunk,ht,ent))
+                        else:
+                            for chunk in chunks:
+                                entities.extend(calculations.extract_entity(chunk,ht,ent,self.classencoder,self.dmodel))
+                        entities = sorted(entities,key = lambda x: x[1],reverse=True)
+                        if len(entities) > 0:
+                            if ent == "single":
+                                dtweet.set_entities([entities[0][0]])
+                            elif ent == "all":
+                                dtweet.set_entities([x[0] for x in entities])
+                            elif ent == "ngram":
+                                dtweet.set_entities([x[0] for x in entities])
                         if ht:
                             for chunk in chunks:
                                 hashtags = [x for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1]
