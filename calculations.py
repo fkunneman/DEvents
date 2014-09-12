@@ -143,7 +143,8 @@ def extract_date(tweet,date):
                     if "num" in nud:
                         days = t[0] * [x[0] for x in nud["num"] if x[1] == num_match][0]
                         try:
-                            output.append(date + datetime.timedelta(days=days))
+                            if days > 0:
+                                output.append(date + datetime.timedelta(days=days))
                         except OverflowError:
                             continue
         if "month" in nud:
@@ -181,7 +182,7 @@ def extract_date(tweet,date):
                         try:
                             if ds[2] == None:
                                 if date < datetime.date(date.year,dsi[1],dsi[0]):
-                                    output.append(datetime.date(date.year,dsi[1],dsi[0]))
+                                        output.append(datetime.date(date.year,dsi[1],dsi[0]))
                             else:
                                 if dsi[2] in range(2010,2020):
                                     if date < datetime.date(dsi[2],dsi[1],dsi[0]):
