@@ -21,7 +21,7 @@ class Event_pairs:
             self.load_commonness(self.tmpdir + "coco",[wikidir + "1_grams.txt",wikidir + "2_grams.txt",
                 wikidir + "3_grams.txt",wikidir + "4_grams.txt",wikidir + "5_grams.txt"])
 
-    def detect_events(self,tweetfile,outfile):
+    def detect_events(self,tweetfile):
         #start from last modeltweets
         try:
             eventfile = open("tmp/modeltweets.txt","r",encoding = "utf-8")
@@ -44,7 +44,7 @@ class Event_pairs:
         tweetinfo.close()
         #rank events, resolve overlap and enrich events
         self.rank_events()
-        self.resolve_overlap_events(outfile)
+        self.resolve_overlap_events()
         self.enrich_events(add=True)
         #output events
         eventdict = defaultdict(lambda : {})
@@ -168,8 +168,9 @@ class Event_pairs:
         for x in range(len(top)):
             self.events.append(self.Event(x,top[x]))
 
-    def resolve_overlap_events(self,outfile):
-        outwrite = open(outfile,"w",encoding="utf-8")
+    def resolve_overlap_events(self,outfile = False):
+        if outfile:
+            outwrite = open(outfile,"w",encoding="utf-8")
         documents = [" ".join([y.text for y in x.tweets]) for x in self.events]
         tfidf_vectorizer = TfidfVectorizer()
         tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
@@ -197,12 +198,13 @@ class Event_pairs:
                         if highest_sim[1] == x.ids:
                             event2 = x
                     #to check clustering performance
-                    outwrite.write("\n" + "\t".join([str(event1.date),str(event1.score)]) + "\t" + #for checking 
-                        ", ".join([x[0] for x in event1.entities]) + "\n" + 
-                        "\n".join([x.text for x in event1.tweets]) + "\n" +
-                        "****************\n" + "\t".join([str(event2.date),str(event2.score)]) + 
-                        "\t" + ", ".join([x[0] for x in event2.entities]) + "\n" + 
-                        "\n".join([x.text for x in event2.tweets]) + "\n")
+                    if outfile:
+                        outwrite.write("\n" + "\t".join([str(event1.date),str(event1.score)]) + "\t" + #for checking 
+                            ", ".join([x[0] for x in event1.entities]) + "\n" + 
+                            "\n".join([x.text for x in event1.tweets]) + "\n" +
+                            "****************\n" + "\t".join([str(event2.date),str(event2.score)]) + 
+                            "\t" + ", ".join([x[0] for x in event2.entities]) + "\n" + 
+                            "\n".join([x.text for x in event2.tweets]) + "\n")
                     if event1.score > event2.score: #merge to event with highest score
                         event1.merge(event2)
                         events.remove(event2)
@@ -229,7 +231,8 @@ class Event_pairs:
                     scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True) #resort scores
                     if not len(scores_sorted) > 1:
                         break
-        outwrite.close()
+        if outfile:
+            outwrite.close()
 
     def enrich_events(self,add=False):
         documents = [" ".join([" ".join(x.chunks) for x in y.tweets]) for y in self.events]
