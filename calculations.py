@@ -28,7 +28,7 @@ def goodness_of_fit(total,dc,ec,ode):
         g2 += ondne * (math.log(ondne/endne)/math.log(2))
     return g2
 
-def return_postags(text,f):
+def return_postags(text,f,ww=False):
     output = []
     adj = re.compile(r"^ADJ\(")
     n = re.compile(r"^N\(")
@@ -36,11 +36,13 @@ def return_postags(text,f):
     data = f.process(text)
     for token in data:
         pos = token["pos"]
-        if adj.search(pos) or n.search(pos) or ww.search(pos):
+        if ww.search(pos):
+            output.append((token["text"],token["pos"]))
+        if (adj.search(pos) or n.search(pos)) and not ww:
             output.append((token["text"],token["pos"]))
     return output
 
-def extract_date(tweet,date):
+def extract_date(tweet,date,f):
     convert_nums = {"een":1, "twee":2, "drie":3, "vier":4,"vijf":5, "zes":6, "zeven":7, "acht":8, 
         "negen":9, "tien":10, "elf":11, "twaalf":12, "dertien":13,"veertien":14, "vijftien":15,
         "zestien":16, "zeventien":17,"achtien":18, "negentien":19, "twintig":20,"eenentwintig":21,
@@ -71,7 +73,7 @@ def extract_date(tweet,date):
         r"met( nog)? (minimaal |maximaal |tenminste |bijna |ongeveer |maar |slechts |pakweg |ruim |"
         "krap |(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + (nums) + " " + (timeunits) + 
         r"( nog)? te gaan",r"(\b|^)" + (nums) + " " + (months) + r"( |$)" + r"(\d{4})?",
-        r"(\b|^)(\d{1,2}-\d{1,2})(-\d{2,4})?(\b|$)",r"(\b|^)(\d{2,4}/)?(\d{1,2}/\d{1,2})(\b|$)",
+        r"(\b|^)(\d{1,2}-\d{1,2})(-\d{2,4})?(\b|$)",
         r"(\b|$)(volgende week)? ?(maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag|"
         "overmorgen) ?(avond|nacht|ochtend|middag)?( |$)"])
 
@@ -196,20 +198,28 @@ def extract_date(tweet,date):
                         continue
         if "weekday" in nud:
             if not "date" in nud and not "month" in nud and not "timeunit" in nud: # overrule by more specific indication
-                tweet_weekday=date.weekday()
-                for w in nud["weekday"]:
-                    num_match = w[1]
-                    ref_weekday=weekdays.index(w[0])
-                    if num_match in [x[1] for x in nud["nweek"]]:
-                        add = 7
-                    else:
-                        add = 0
-                    if not ref_weekday == tweet_weekday and not num_match in [x[1] for x in nud["nweek"]]: 
-                        if tweet_weekday < ref_weekday:
-                            days_ahead = ref_weekday - tweet_weekday + add
+                print(tweet)
+                ptags = return_postags(tweet,f,ww = True)
+                past = False
+                for tag in ptags:
+                    if re.search(r"^WW\(vd",tag[1]) or re.search(r"^WW\(pv,verl"):
+                        past = True
+                print(past,ptags)
+                if not past:
+                    tweet_weekday=date.weekday()
+                    for w in nud["weekday"]:
+                        num_match = w[1]
+                        ref_weekday=weekdays.index(w[0])
+                        if num_match in [x[1] for x in nud["nweek"]]:
+                            add = 7
                         else:
-                            days_ahead = ref_weekday + (7-tweet_weekday) + add
-                        output.append(date + datetime.timedelta(days=days_ahead))
+                            add = 0
+                        if not ref_weekday == tweet_weekday and not num_match in [x[1] for x in nud["nweek"]]: 
+                            if tweet_weekday < ref_weekday:
+                                days_ahead = ref_weekday - tweet_weekday + add
+                            else:
+                                days_ahead = ref_weekday + (7-tweet_weekday) + add
+                            output.append(date + datetime.timedelta(days=days_ahead))
         if "sday" in nud:
             for s in nud["sday"]:
                 num_match = s[1] 

@@ -21,6 +21,9 @@ class Event_pairs:
         if action != "ngram":
             self.load_commonness(self.tmpdir + "coco",[wikidir + "1_grams.txt",wikidir + "2_grams.txt",
                 wikidir + "3_grams.txt",wikidir + "4_grams.txt",wikidir + "5_grams.txt"])
+        c = "/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg"
+        fo = frog.FrogOptions(parser=False)
+        self.frogger = frog.Frog(fo,c)
 
     def detect_events(self,tweetfile):
         #start from last modeltweets
@@ -75,9 +78,6 @@ class Event_pairs:
             self.tweets.append(tweet)
 
     def select_date_entity_tweets(self,new_tweets,ent,ht,format,pos=False):
-        c = "/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg"
-        fo = frog.FrogOptions(parser=False)
-        frogger = frog.Frog(fo,c)
         print("extracting information from tweets")
         for tweet in new_tweets:
             tokens = tweet.strip().split("\t")
@@ -91,14 +91,14 @@ class Event_pairs:
                         date = time_functions.return_datetime(tokens[2],setting="vs").date()
                     except:
                         print("dateerror",tweet,tokens)
-                dateref_phrase = calculations.extract_date(text,date)
+                dateref_phrase = calculations.extract_date(text,date,self.frogger)
                 if dateref_phrase:
                     if len(dateref_phrase) > 1:
                         chunks = dateref_phrase[0]
                         refdates = dateref_phrase[1:]
                         dtweet = self.Tweet()
                         print(text)
-                        dtweet.set_postags(calculations.return_postags(text,frogger))
+                        dtweet.set_postags(calculations.return_postags(text,self.frogger))
                         print(dtweet.postags)
                         if format == "exp":
                             units = [tokens[1],tokens[2],date,text,refdates,chunks]
