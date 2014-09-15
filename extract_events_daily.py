@@ -95,9 +95,8 @@ for i,day in enumerate(sorted(day_files.keys())):
     tweetinfo = open(basedir + "modeltweets.txt","w",encoding = "utf-8")
     for tweet in ep.tweets:
         info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
-            " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks])]
-        #if tweet.postags:
-        #    info.append(" ".join([",".join(x) for x in tweet.postags]))
+            " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
+            " ".join([",".join(x) for x in tweet.postags]]
         if tweet.e:
             info.append(" | ".join(tweet.entities))
         tweetinfo.write("\t".join(info) + "\n")
