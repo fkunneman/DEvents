@@ -6,11 +6,12 @@ import itertools
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import pynlpl.clients.frogclient
+import numpy
+import frog
 import colibricore
 import time_functions
 import calculations
-import numpy
+
 
 class Event_pairs:
 
@@ -74,6 +75,9 @@ class Event_pairs:
             self.tweets.append(tweet)
 
     def select_date_entity_tweets(self,new_tweets,ent,ht,format,pos=False):
+        c = "/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg"
+        fo = frog.FrogOptions(parser=False)
+        frogger = frog.Frog(fo,c)
         for tweet in new_tweets:
             tokens = tweet.strip().split("\t")
             if (format == "twiqs" or (format == "exp" and tokens[0] == "dutch")) \
@@ -92,6 +96,8 @@ class Event_pairs:
                         chunks = dateref_phrase[0]
                         refdates = dateref_phrase[1:]
                         dtweet = self.Tweet()
+                        dtweet.set_postags(calculations.return_postags(text,frogger))
+                        print(text,dtweet.postags)
                         if format == "exp":
                             units = [tokens[1],tokens[2],date,text,refdates,chunks]
                         else:
@@ -121,14 +127,7 @@ class Event_pairs:
                                 else:
                                     dtweet.set_entities(hashtags)
                         self.tweets.append(dtweet)
-
-    def pos_tweets(self,pos):
-        print("extracting postags")
-        postags = calculations.return_postags(self.tweets,pos)
-        
-        # dtweet.set_postags([(x,postags[x]) for x in postags.keys() if postags[x] in ["V","N","Adj"]])
-        # print(dtweet.postags)
-                        
+                       
     def rank_events(self):
         date_entity_score = []
         date_entity_tweets = defaultdict(lambda : defaultdict(list))
