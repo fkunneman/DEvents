@@ -6,11 +6,12 @@ import itertools
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import pynlpl.clients.frogclient
+import numpy
+import frog
 import colibricore
 import time_functions
 import calculations
-import numpy
+
 
 class Event_pairs:
 
@@ -21,7 +22,7 @@ class Event_pairs:
             self.load_commonness(self.tmpdir + "coco",[wikidir + "1_grams.txt",wikidir + "2_grams.txt",
                 wikidir + "3_grams.txt",wikidir + "4_grams.txt",wikidir + "5_grams.txt"])
 
-    def detect_events(self,tweetfile,outfile):
+    def detect_events(self,tweetfile):
         #start from last modeltweets
         try:
             eventfile = open("tmp/modeltweets.txt","r",encoding = "utf-8")
@@ -44,7 +45,7 @@ class Event_pairs:
         tweetinfo.close()
         #rank events, resolve overlap and enrich events
         self.rank_events()
-        self.resolve_overlap_events(outfile)
+        self.resolve_overlap_events()
         self.enrich_events(add=True)
         #output events
         eventdict = defaultdict(lambda : {})
@@ -74,6 +75,9 @@ class Event_pairs:
             self.tweets.append(tweet)
 
     def select_date_entity_tweets(self,new_tweets,ent,ht,format,pos=False):
+        c = "/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg"
+        fo = frog.FrogOptions(parser=False)
+        frogger = frog.Frog(fo,c)
         for tweet in new_tweets:
             tokens = tweet.strip().split("\t")
             if (format == "twiqs" or (format == "exp" and tokens[0] == "dutch")) \
@@ -92,6 +96,8 @@ class Event_pairs:
                         chunks = dateref_phrase[0]
                         refdates = dateref_phrase[1:]
                         dtweet = self.Tweet()
+                        dtweet.set_postags(calculations.return_postags(text,frogger))
+                        print(text,dtweet.postags)
                         if format == "exp":
                             units = [tokens[1],tokens[2],date,text,refdates,chunks]
                         else:
@@ -121,14 +127,7 @@ class Event_pairs:
                                 else:
                                     dtweet.set_entities(hashtags)
                         self.tweets.append(dtweet)
-
-    def pos_tweets(self,pos):
-        print("extracting postags")
-        postags = calculations.return_postags(self.tweets,pos)
-        
-        # dtweet.set_postags([(x,postags[x]) for x in postags.keys() if postags[x] in ["V","N","Adj"]])
-        # print(dtweet.postags)
-                        
+                       
     def rank_events(self):
         date_entity_score = []
         date_entity_tweets = defaultdict(lambda : defaultdict(list))
@@ -168,8 +167,9 @@ class Event_pairs:
         for x in range(len(top)):
             self.events.append(self.Event(x,top[x]))
 
-    def resolve_overlap_events(self,outfile):
-        outwrite = open(outfile,"w",encoding="utf-8")
+    def resolve_overlap_events(self,outfile = False):
+        if outfile:
+            outwrite = open(outfile,"w",encoding="utf-8")
         documents = [" ".join([y.text for y in x.tweets]) for x in self.events]
         tfidf_vectorizer = TfidfVectorizer()
         tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
@@ -197,12 +197,13 @@ class Event_pairs:
                         if highest_sim[1] == x.ids:
                             event2 = x
                     #to check clustering performance
-                    outwrite.write("\n" + "\t".join([str(event1.date),str(event1.score)]) + "\t" + #for checking 
-                        ", ".join([x[0] for x in event1.entities]) + "\n" + 
-                        "\n".join([x.text for x in event1.tweets]) + "\n" +
-                        "****************\n" + "\t".join([str(event2.date),str(event2.score)]) + 
-                        "\t" + ", ".join([x[0] for x in event2.entities]) + "\n" + 
-                        "\n".join([x.text for x in event2.tweets]) + "\n")
+                    if outfile:
+                        outwrite.write("\n" + "\t".join([str(event1.date),str(event1.score)]) + "\t" + #for checking 
+                            ", ".join([x[0] for x in event1.entities]) + "\n" + 
+                            "\n".join([x.text for x in event1.tweets]) + "\n" +
+                            "****************\n" + "\t".join([str(event2.date),str(event2.score)]) + 
+                            "\t" + ", ".join([x[0] for x in event2.entities]) + "\n" + 
+                            "\n".join([x.text for x in event2.tweets]) + "\n")
                     if event1.score > event2.score: #merge to event with highest score
                         event1.merge(event2)
                         events.remove(event2)
@@ -229,7 +230,8 @@ class Event_pairs:
                     scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True) #resort scores
                     if not len(scores_sorted) > 1:
                         break
-        outwrite.close()
+        if outfile:
+            outwrite.close()
 
     def enrich_events(self,add=False):
         documents = [" ".join([" ".join(x.chunks) for x in y.tweets]) for y in self.events]
