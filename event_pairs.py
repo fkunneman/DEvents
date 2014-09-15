@@ -247,31 +247,38 @@ class Event_pairs:
             if add: #add terms
                 tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
                 tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
-                top_terms = [word_indexes[j[0]] for j in tfidf_sorted[:5]]
-                #term_postag_counts = defaultdict(lambda : defaultdict(int))
-                #term_postag = {}
+                top_terms = [word_indexes[j[0]] for j in tfidf_sorted]
+                top_terms1 = top_terms[:5]
+                top_terms2 = top_terms[:10]
+                term_postag_counts = defaultdict(lambda : defaultdict(int))
                 #acquire most frequent postag for each term (provided postag is a verm, adjective or noun)
-                #for tweet in event.tweets:
-                #    for postag in tweet.postags:
-                #        term_postag_counts[postag[0]][postag[1]] += 1 
-                #for k in term_postag_counts.keys():
-                #    term_postag[k] = sorted(term_poscat_counts[k],key = term_poscat_counts[k].get,reverse=True)[0]
+                for tweet in event.tweets:
+                    for postag in tweet.postags:
+                        term_postag_counts[postag[0]][postag[1]] += 1 
+                # for k in term_postag_counts.keys():
+                #     term_postag[k] = sorted(term_poscat_counts[k],key = term_poscat_counts[k].get,reverse=True)[0]
                 #keep terms that are in the top 10 tfidf
-                #candidates = term_postag.keys()
-                #new_candidates = []
-                #for candidate in candidates:
-                #    if candidate in top_terms:
-                #        new_candidates.append(candidate)                
+                new_candidates = [x for x in term_postag_counts.keys() if x in top_terms]          
                 #remove term that is already in entity set
                 current_entities = [x[0] for x in event.entities]
-                #for term in new_candidates:
-                for term in top_terms:
+                entities1 = []
+                for term in top_terms1:
                     ap = True
                     for entity in current_entities:
                         if re.search(term,entity):
                             ap = False
                     if ap:
                         event.entities.append((term,0))
+                        entities1.append(term)
+                entities2 = []
+                for term in top_terms2:
+                    ap = True
+                    for entity in current_entities:
+                        if re.search(term,entity):
+                            ap = False
+                    if ap:
+                        entities2.append(term)
+                print(entities1,entities2)
             event.order_entities() #order entities by their average position in the tweets
             event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
 
