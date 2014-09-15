@@ -78,6 +78,7 @@ class Event_pairs:
         c = "/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg"
         fo = frog.FrogOptions(parser=False)
         frogger = frog.Frog(fo,c)
+        print("extracting information from tweets")
         for tweet in new_tweets:
             tokens = tweet.strip().split("\t")
             if (format == "twiqs" or (format == "exp" and tokens[0] == "dutch")) \
@@ -96,8 +97,9 @@ class Event_pairs:
                         chunks = dateref_phrase[0]
                         refdates = dateref_phrase[1:]
                         dtweet = self.Tweet()
+                        print(text)
                         dtweet.set_postags(calculations.return_postags(text,frogger))
-                        print(text,dtweet.postags)
+                        print(dtweet.postags)
                         if format == "exp":
                             units = [tokens[1],tokens[2],date,text,refdates,chunks]
                         else:
@@ -127,6 +129,7 @@ class Event_pairs:
                                 else:
                                     dtweet.set_entities(hashtags)
                         self.tweets.append(dtweet)
+        print("done")
                        
     def rank_events(self):
         date_entity_score = []
