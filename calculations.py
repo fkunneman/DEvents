@@ -198,13 +198,11 @@ def extract_date(tweet,date,f):
                         continue
         if "weekday" in nud:
             if not "date" in nud and not "month" in nud and not "timeunit" in nud: # overrule by more specific indication
-                print(tweet)
                 ptags = return_postags(tweet,f,ww = True)
                 past = False
                 for tag in ptags:
-                    if re.search(r"^WW\(vd",tag[1]) or re.search(r"^WW\(pv,verl"):
+                    if re.search(r"^WW\(vd",tag[1]) or re.search(r"^WW\(pv,verl",tag[1]):
                         past = True
-                print(past,ptags)
                 if not past:
                     tweet_weekday=date.weekday()
                     for w in nud["weekday"]:
