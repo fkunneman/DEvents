@@ -96,9 +96,9 @@ class Event_pairs:
                         chunks = dateref_phrase[0]
                         refdates = dateref_phrase[1:]
                         dtweet = self.Tweet()
-                        print(text)
+#                        print(text)
                         dtweet.set_postags(calculations.return_postags(text,self.frogger))
-                        print(dtweet.postags)
+#                        print(dtweet.postags)
                         if format == "exp":
                             units = [tokens[1],tokens[2],date,text,refdates,chunks]
                         else:
