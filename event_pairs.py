@@ -15,10 +15,10 @@ import calculations
 
 class Event_pairs:
 
-    def __init__(self,action,wikidir,tmpdir):
+    def __init__(self,action,wikidir=False,tmpdir=False):
         self.tweets = []
         self.tmpdir = tmpdir
-        if action != "ngrams":
+        if wikidir:
             self.load_commonness(self.tmpdir + "coco",[wikidir + "1_grams.txt",wikidir + "2_grams.txt",
                 wikidir + "3_grams.txt",wikidir + "4_grams.txt",wikidir + "5_grams.txt"])
         c = "/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg"
@@ -41,22 +41,21 @@ class Event_pairs:
         tweetinfo = open("tmp/modeltweets.txt","w",encoding = "utf-8")
         for tweet in self.tweets:
             info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
-                " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks])]
-            if tweet.e:
-                info.append(" | ".join(tweet.entities))
+                " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
+                " | ".join(tweet.entities)," | ".join(",".join(tweet.postags))]
             tweetinfo.write("\t".join(info) + "\n")
         tweetinfo.close()
         #rank events, resolve overlap and enrich events
         self.rank_events()
         self.resolve_overlap_events()
-        self.enrich_events(add=True)
+        self.enrich_events("csx")
         #output events
         eventdict = defaultdict(lambda : {})
         for i,event in enumerate(sorted(self.events,key = lambda x : x.score,reverse=True)):
             event_unit = {"date":event.date,"keyterms":event.entities,"score":event.score,
                 "tweets":[{"id":x.id,"user":x.user,"date":x.date,"text":x.text,
                 "date references":",".join([str(y) for y in x.daterefs]),
-                "entities":",".join(x.entities)} for x in event.tweets]} 
+                "entities":",".join(x.entities),"postags":",".join(x.postags)} for x in event.tweets]} 
             eventdict[i] = event_unit
         self.tweets = []
         self.events = []
@@ -73,10 +72,23 @@ class Event_pairs:
             units = info[:5]
             units.append([x.strip() for x in info[5].split("|")]) #chunks
             tweet.set_meta(units)
-            if len(info) >= 7: 
-                tweet.set_postags([tuple(x.split(",")) for x in info[6].split(" ")])
+            if len(info) >= 7:
+                entities = [x.strip() for x in info[6].split(" | ")]
+                if len(entities) == 1 and entities[0] == "--":
+                    tweet.set_entities([])
+                else:
+                    tweet.set_entities(entities)
                 if len(info) == 8:
-                    tweet.set_entities([x.strip() for x in info[6].split(" | ")])            
+                    postags = [tuple(x.split(",")) for x in info[6].split(" | ")]
+                    if len(postags) == 1 and postags[0][0] == "--":
+                        tweet.set_postags([])
+                    else:
+                        tweet.set_postags(postags)
+                else:
+                    tweet.set_postags([])
+            else:
+                tweet.set_entities([])
+                tweet.set_postags([])
             self.tweets.append(tweet)
 
     def select_date_entity_tweets(self,new_tweets,ent,ht,format,pos=False):
@@ -107,15 +119,15 @@ class Event_pairs:
                             units = [tokens[1],tokens[6],date,text,refdates,chunks]
                         dtweet.set_meta(units)
                         entities = []
-                        if ent == "ngrams":
+                        if self.tmpdir:
                             for chunk in chunks:
-                                entities.extend(calculations.extract_entity(chunk,ht,ent))
+                                entities.extend(calculations.extract_entity(chunk,self.classencoder,self.dmodel))
                         else:
                             for chunk in chunks:
-                                entities.extend(calculations.extract_entity(chunk,ht,ent,self.classencoder,self.dmodel))
+                                entities.extend(calculations.extract_entity(chunk))
                         entities = sorted(entities,key = lambda x: x[1],reverse=True)
                         if len(entities) > 0:
-                                dtweet.set_entities([x[0] for x in entities])
+                            dtweet.set_entities([x[0] for x in entities])
                         #add hashtags to process
                         for chunk in chunks:
                             hashtags = [x for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1]
@@ -347,11 +359,17 @@ class Event_pairs:
             self.chunks = units[5]
 
         def set_entities(self,entities):
-            self.entities = entities
-            self.e = True
+            if len(entities) == 0:
+                self.entities = ["--"]
+            else:
+                self.entities = entities
+                self.e = True
 
         def set_postags(self,tags):
-            self.postags = tags
+            if len(tags) == 0:
+                self.postags = [("--","--")]
+            else:
+                self.postags = tags
 
     class Event:
         """
