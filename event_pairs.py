@@ -81,7 +81,7 @@ class Event_pairs:
         for tweet in new_tweets:
             tokens = tweet.strip().split("\t")
             if (format == "twiqs" or (format == "exp" and tokens[0] == "dutch")) \
-                    and not re.search("^RT ",tokens[-1]):
+                    and not re.search(r"\bRT\b",tokens[-1]):
                 text = tokens[-1].lower()
                 if format == "exp":
                     date = time_functions.return_datetime(tokens[3],setting="vs").date()
@@ -262,23 +262,35 @@ class Event_pairs:
                 #remove term that is already in entity set
                 current_entities = [x[0] for x in event.entities]
                 entities1 = []
+                entities1f = []
                 for term in top_terms1:
                     ap = True
+                    apf = True
                     for entity in current_entities:
-                        if re.search(term,entity):
+                        if re.search(term,entity) or not term in new_candidates:
                             ap = False
+                        if re.search(term,entity):
+                            apf = False
                     if ap:
                         event.entities.append((term,0))
                         entities1.append(term)
+                    if apf:
+                        entities1f.append(term)
                 entities2 = []
+                entities2f = []
                 for term in top_terms2:
                     ap = True
+                    apf = True
                     for entity in current_entities:
-                        if re.search(term,entity):
+                        if re.search(term,entity) or not term in new_candidates:
                             ap = False
+                        if re.search(term,entity):
+                            apf = False
                     if ap:
                         entities2.append(term)
-                print(entities1,entities2)
+                    if apf:
+                        entities2f.append(term)
+                print("stage 2",current_entities,"stage3-5-nopos",entities1f,"stage3-5-pos",entities1,"stage3-10-nopos",entities2f,"stage3-10-pos",entities2)
             event.order_entities() #order entities by their average position in the tweets
             event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
 
