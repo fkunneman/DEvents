@@ -8,6 +8,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy
 import frog
+import ucto
 import colibricore
 import time_functions
 import calculations
@@ -24,6 +25,7 @@ class Event_pairs:
         c = "/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg"
         fo = frog.FrogOptions(parser=False)
         self.frogger = frog.Frog(fo,c)
+        self.ucto_settingsfile = "/vol/customopt/uvt-ru/etc/ucto/tokconfig-nl-twitter"
 
     def detect_events(self,tweetfile):
         #start from last modeltweets
@@ -92,11 +94,13 @@ class Event_pairs:
             self.tweets.append(tweet)
 
     def select_date_entity_tweets(self,new_tweets,format):
+        tokenizer = ucto.Tokenizer(self.ucto_settingsfile)
         for tweet in new_tweets:
             tokens = tweet.strip().split("\t")
             if (format == "twiqs" or (format == "exp" and tokens[0] == "dutch")) \
                     and not re.search(r"\bRT\b",tokens[-1]):
-                text = tokens[-1].lower()
+                tokenizer.process(unicode(tokens[-1]))
+                text = " ".join([x.text.lower() for x in tokenizer])
                 if format == "exp":
                     date = time_functions.return_datetime(tokens[3],setting="vs").date()
                 else:
@@ -125,6 +129,7 @@ class Event_pairs:
                         else:
                             for chunk in chunks:
                                 entities.extend(calculations.extract_entity(chunk))
+                        print(text,entities)
                         entities = sorted(entities,key = lambda x: x[1],reverse=True)
                         if len(entities) > 0:
                             dtweet.set_entities([x[0] for x in entities])

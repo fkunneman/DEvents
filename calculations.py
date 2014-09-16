@@ -7,7 +7,6 @@ import re
 import os
 import datetime
 from collections import defaultdict
-import pynlpl.clients.frogclient
 
 def goodness_of_fit(total,dc,ec,ode):
     g2 = 0
