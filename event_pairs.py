@@ -129,7 +129,6 @@ class Event_pairs:
                         else:
                             for chunk in chunks:
                                 entities.extend(calculations.extract_entity(chunk))
-                        print(text,entities)
                         entities = sorted(entities,key = lambda x: x[1],reverse=True)
                         if len(entities) > 0:
                             dtweet.set_entities([x[0] for x in entities])
