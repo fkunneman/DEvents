@@ -149,7 +149,6 @@ def extract_date(tweet,date,f):
                         y = date.year
                     if date < datetime.date(y,m,d):
                         output.append(datetime.date(y,m,d))
-                        print(tweet,m)
                 except:
                     continue
         if "date" in nud:
