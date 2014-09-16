@@ -42,7 +42,7 @@ class Event_pairs:
         for tweet in self.tweets:
             info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
                 " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-                " | ".join(tweet.entities)," | ".join(",".join(tweet.postags))]
+                " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
             tweetinfo.write("\t".join(info) + "\n")
         tweetinfo.close()
         #rank events, resolve overlap and enrich events
