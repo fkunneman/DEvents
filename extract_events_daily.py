@@ -77,9 +77,9 @@ for i,day in enumerate(sorted(day_files.keys())):
     for infile in day_files[day]:
         tweetfile = open(infile,"r",encoding = "utf-8")
         if args.f == "twiqs":
-            ep.select_date_entity_tweets(tweetfile.readlines()[1:],args.a,args.t,"twiqs")
+            ep.select_date_entity_tweets(tweetfile.readlines()[1:],"twiqs")
         elif args.f == "exp":
-            ep.select_date_entity_tweets(tweetfile.readlines(),args.a,args.t,"exp")
+            ep.select_date_entity_tweets(tweetfile.readlines(),"exp")
         tweetfile.close()
     basedir = args.o + day + "/"
     if not os.path.isdir(basedir):

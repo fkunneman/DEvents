@@ -34,7 +34,7 @@ class Event_pairs:
         except:
             print("no modeltweets")
         #process tweets
-        self.select_date_entity_tweets(tweetfile.split("\n")[1:],"csx",True,format = "twiqs")
+        self.select_date_entity_tweets(tweetfile.split("\n")[1:],format = "twiqs")
         #prune tweets
         self.discard_last_day(30)
         #write modeltweets
@@ -91,7 +91,7 @@ class Event_pairs:
                 tweet.set_postags([])
             self.tweets.append(tweet)
 
-    def select_date_entity_tweets(self,new_tweets,ent,ht,format,pos=False):
+    def select_date_entity_tweets(self,new_tweets,format):
         for tweet in new_tweets:
             tokens = tweet.strip().split("\t")
             if (format == "twiqs" or (format == "exp" and tokens[0] == "dutch")) \
