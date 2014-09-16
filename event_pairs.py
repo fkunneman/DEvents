@@ -128,6 +128,8 @@ class Event_pairs:
                         entities = sorted(entities,key = lambda x: x[1],reverse=True)
                         if len(entities) > 0:
                             dtweet.set_entities([x[0] for x in entities])
+                        else:
+                            dtweet.set_entities([])
                         #add hashtags to process
                         for chunk in chunks:
                             hashtags = [x for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1]
