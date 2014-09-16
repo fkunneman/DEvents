@@ -7,30 +7,24 @@ import datetime
 from event_pairs import Event_pairs
 
 """
-
+Script to similate the daily extraction of time referring tweet and event clustering
 """
-parser = argparse.ArgumentParser(description = "")
+parser = argparse.ArgumentParser(description = "Script to similate the daily extraction of time referring tweet and event clustering")
 parser.add_argument('-i', action = 'store', nargs='+',required = False, 
     help = "the input files")  
 parser.add_argument('-m', action = 'store', required = False, 
-    help = "The file with information on existing pairs")
+    help = "The file with information on existing pairs (modeltweets.txt)")
 parser.add_argument('-w', action = 'store', required = False, 
-    help = "The files with wikiscores per n-gram")
+    help = "The directory hosting the files with wikiscores per n-gram")
 parser.add_argument('-d', action = 'store', required = False, 
-    help = "The tmp dict for pattern indexing")
-parser.add_argument('-a', action = 'store', required = False,
-    help = "Choose to extract entities. \'single\' for only the top entity, \'all\' for all common "
-    "entities, \'ngram\' for all ngrams (baseline)")
-parser.add_argument('-t', action = 'store_true',
-    help = "Choose to include hashtags as entities")
-parser.add_argument('-x', action = 'store_true',
-    help = "Choose to add extra event informative terms to the description")
+    help = "The tmp directory for pattern indexing")
+parser.add_argument('-a', action = 'store', required = True, choices = ["ngrams","cs","csx"], 
+    help = "The type of entity extraction. \'ngram\' for all ngrams (baseline), \'cs\' for entities based on Wikipedia commonness score "
+    "and \'csx\' for cs and extra terms from event clusters")
 parser.add_argument('-f', action = 'store', default = "twiqs", choices = ["exp","twiqs"],
-    help = "Specify the format of the inputted tweet files")
-parser.add_argument('-o', action = 'store', 
+    help = "Specify the format of the inputted tweet files (default = twiqs)")
+parser.add_argument('-o', action = 'store', required = True,
     help = "The directory to write files to")
-parser.add_argument('--pos', action = 'store', 
-    help = "To perform pos-tagging, specify the frog-port")
 parser.add_argument('--window', type = int, action = 'store', default = 7,
     help = "The window in days of tweets on which event extraction is based (default = 7 days)")
 parser.add_argument('--start', action = 'store_true',
@@ -58,7 +52,7 @@ def output_events(d):
     print("ranking events")
     ep.rank_events()
     ep.resolve_overlap_events(d + "clusters.txt")
-    ep.enrich_events(args.x)
+    ep.enrich_events(args.a)
     eventinfo = open(d + "events_fit.txt","w",encoding = "utf-8")
     for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
         if event.tt_ratio > 0.4:
@@ -86,8 +80,6 @@ for i,day in enumerate(sorted(day_files.keys())):
             ep.select_date_entity_tweets(tweetfile.readlines()[1:],args.a,args.t,"twiqs")
         elif args.f == "exp":
             ep.select_date_entity_tweets(tweetfile.readlines(),args.a,args.t,"exp")
-        if args.pos:
-            ep.pos_tweets(args.pos)
         tweetfile.close()
     basedir = args.o + day + "/"
     if not os.path.isdir(basedir):
