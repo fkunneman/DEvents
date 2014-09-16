@@ -96,7 +96,7 @@ for i,day in enumerate(sorted(day_files.keys())):
     for tweet in ep.tweets:
         info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
             " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-            " ".join([",".join(x) for x in tweet.postags]]
+            " ".join([",".join(x) for x in tweet.postags])]
         if tweet.e:
             info.append(" | ".join(tweet.entities))
         tweetinfo.write("\t".join(info) + "\n")
