@@ -243,11 +243,11 @@ def extract_entity(text,no_hashtag,method,classencoder=False,dmodel=False):
             ngrams = zip(c, c[1:])
         elif i == 2:
             ngrams = zip(c, c[1:], c[2:])
-        elif i == 3 and method != "ngram":
+        elif i == 3 and method != "ngrams":
             ngrams = zip(c, c[1:], c[2:], c[3:])
-        elif i == 4 and method != "ngram":
+        elif i == 4 and method != "ngrams":
             ngrams = zip(c, c[1:], c[2:], c[3:], c[4:])
-        if method != "ngram":
+        if method != "ngrams":
             for ngram in ngrams:
                 ngram = " ".join(ngram)
                 pattern = classencoder.buildpattern(ngram)

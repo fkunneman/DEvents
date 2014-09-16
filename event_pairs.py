@@ -18,7 +18,7 @@ class Event_pairs:
     def __init__(self,action,wikidir,tmpdir):
         self.tweets = []
         self.tmpdir = tmpdir
-        if action != "ngram":
+        if action != "ngrams":
             self.load_commonness(self.tmpdir + "coco",[wikidir + "1_grams.txt",wikidir + "2_grams.txt",
                 wikidir + "3_grams.txt",wikidir + "4_grams.txt",wikidir + "5_grams.txt"])
         c = "/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg"
@@ -34,7 +34,7 @@ class Event_pairs:
         except:
             print("no modeltweets")
         #process tweets
-        self.select_date_entity_tweets(tweetfile.split("\n")[1:],"all",True,format = "twiqs")
+        self.select_date_entity_tweets(tweetfile.split("\n")[1:],"csx",True,format = "twiqs")
         #prune tweets
         self.discard_last_day(30)
         #write modeltweets
@@ -65,6 +65,7 @@ class Event_pairs:
     def append_eventtweets(self,eventtweets):
         for et in eventtweets:
             info = et.strip().split("\t")
+            print(et,info,len(info))
             info[2] = time_functions.return_datetime(info[2],setting="vs").date()
             info[4] = [time_functions.return_datetime(x,setting="vs").date() \
                 for x in info[4].split(" ")]
@@ -105,7 +106,7 @@ class Event_pairs:
                             units = [tokens[1],tokens[6],date,text,refdates,chunks]
                         dtweet.set_meta(units)
                         entities = []
-                        if ent == "ngram":
+                        if ent == "ngrams":
                             for chunk in chunks:
                                 entities.extend(calculations.extract_entity(chunk,ht,ent))
                         else:
@@ -113,15 +114,10 @@ class Event_pairs:
                                 entities.extend(calculations.extract_entity(chunk,ht,ent,self.classencoder,self.dmodel))
                         entities = sorted(entities,key = lambda x: x[1],reverse=True)
                         if len(entities) > 0:
-                            if ent == "single":
-                                dtweet.set_entities([entities[0][0]])
-                            elif ent == "all":
                                 dtweet.set_entities([x[0] for x in entities])
-                            elif ent == "ngram":
-                                dtweet.set_entities([x[0] for x in entities])
-                        if ht:
-                            for chunk in chunks:
-                                hashtags = [x for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1]
+                        #add hashtags to process
+                        for chunk in chunks:
+                            hashtags = [x for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1]
                             if len(hashtags) > 0:
                                 if dtweet.e:
                                     dtweet.entities.extend(hashtags)
@@ -234,9 +230,9 @@ class Event_pairs:
         if outfile:
             outwrite.close()
 
-    def enrich_events(self,add=False):
-        documents = [" ".join([" ".join(x.chunks) for x in y.tweets]) for y in self.events]
-        if add:
+    def enrich_events(self,method):
+        if method == "csx":
+            documents = [" ".join([" ".join(x.chunks) for x in y.tweets]) for y in self.events]
             tfidf_vectorizer = TfidfVectorizer()
             tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
             word_indexes = tfidf_vectorizer.get_feature_names()
@@ -244,7 +240,7 @@ class Event_pairs:
         #for each event
         for i,event in enumerate(self.events):
             event.resolve_overlap_entities() #resolve overlap
-            if add: #add terms
+            if method == "csx": #add terms
                 tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
                 tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
                 top_terms = [word_indexes[j[0]] for j in tfidf_sorted]
