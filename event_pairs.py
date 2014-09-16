@@ -99,7 +99,7 @@ class Event_pairs:
             tokens = tweet.strip().split("\t")
             if (format == "twiqs" or (format == "exp" and tokens[0] == "dutch")) \
                     and not re.search(r"\bRT\b",tokens[-1]):
-                tokenizer.process(unicode(tokens[-1]))
+                tokenizer.process(tokens[-1])
                 text = " ".join([x.text.lower() for x in tokenizer])
                 if format == "exp":
                     date = time_functions.return_datetime(tokens[3],setting="vs").date()
