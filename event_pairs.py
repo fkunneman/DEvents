@@ -16,7 +16,7 @@ import calculations
 
 class Event_pairs:
 
-    def __init__(self,action,wikidir=False,tmpdir=False,t=False):
+    def __init__(self,wikidir=False,tmpdir=False,t=False):
         self.tweets = []
         self.tmpdir = tmpdir
         if wikidir:
