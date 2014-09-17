@@ -256,7 +256,7 @@ class Event_pairs:
             word_indexes = tfidf_vectorizer.get_feature_names()
             doc_tfidf = tfidf_matrix.toarray()
         #for each event
-        for i,event in enumerate(self.events[:150]):
+        for i,event in enumerate(self.events):
             event.resolve_overlap_entities() #resolve overlap
             if method == "csx": #add terms
                 tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
@@ -367,7 +367,6 @@ class Event_pairs:
 
         def resolve_overlap_entities(self):
             entities = sorted(self.entities,key = lambda x : x[1],reverse=True)
-            print("resolve before",entities)
             new_entities = []
             i = 0
             while i < len(entities):
@@ -406,7 +405,6 @@ class Event_pairs:
                         if not overlap:
                             new_entities.append(se)
             self.entities = new_entities
-            print("resolve after",self.entities)
 
         def has_overlap(self,s1,s2):
             if set(s1.split(" ")) & set(s2.split(" ")):
@@ -416,19 +414,16 @@ class Event_pairs:
 
         def order_entities(self):
             entity_position = []
-            print("order before",self.entities)
-            for entity in self.entities:   
+            for entity in self.entities:    
+                
                 positions = []
                 for tweet in self.tweets:
                     #print(entity[0],tweet.text)
                     if re.search(re.escape(entity[0]),tweet.text):
                         positions.append(re.search(re.escape(entity[0]),tweet.text).span()[0])
-                        print(tweet.text,entity[0],re.search(re.escape(entity[0]),tweet.text).span()[0])
                 entity_position.append((entity,numpy.mean(positions)))   
             ranked_positions = sorted(entity_position,key = lambda x : x[1])
-            print(ranked_positions)
             self.entities = [x[0] for x in ranked_positions]    
-            print("order after",self.entities)          
 
         def add_ttratio(self):
             tokens = []
