@@ -23,7 +23,7 @@ class Event_pairs:
             self.load_commonness(self.tmpdir + "coco",[wikidir + "1_grams.txt",wikidir + "2_grams.txt",
                 wikidir + "3_grams.txt",wikidir + "4_grams.txt",wikidir + "5_grams.txt"])
         c = "/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg"
-        fo = frog.FrogOptions(parser=False)
+        fo = frog.FrogOptions(parser=False,debug=True)
         self.frogger = frog.Frog(fo,c)
         self.ucto_settingsfile = "/vol/customopt/uvt-ru/etc/ucto/tokconfig-nl-twitter"
 
@@ -100,6 +100,7 @@ class Event_pairs:
                     and not re.search(r"\bRT\b",tokens[-1]):
                 tokenizer.process(tokens[-1])
                 text = " ".join([x.text.lower() for x in tokenizer])
+                print(text)
                 if format == "exp":
                     date = time_functions.return_datetime(tokens[3],setting="vs").date()
                 else:
