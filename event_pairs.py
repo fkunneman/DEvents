@@ -80,7 +80,7 @@ class Event_pairs:
                 else:
                     tweet.set_entities(entities)
                 if len(info) == 8:
-                    postags = [tuple(x.split(",")) for x in info[6].split(" | ")]
+                    postags = [tuple(x.split(",")) for x in info[7].split(" | ")]
                     if len(postags) == 1 and postags[0][0] == "--":
                         tweet.set_postags([])
                     else:
