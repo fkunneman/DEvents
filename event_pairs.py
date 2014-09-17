@@ -262,50 +262,22 @@ class Event_pairs:
             if method == "csx": #add terms
                 tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
                 tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
-                top_terms = [word_indexes[j[0]] for j in tfidf_sorted]
-                top_terms1 = top_terms[:5]
-                top_terms2 = top_terms[:10]
+                top_terms = [word_indexes[j[0]] for j in tfidf_sorted][:5]
                 term_postag_counts = defaultdict(lambda : defaultdict(int))
                 #acquire most frequent postag for each term (provided postag is a verm, adjective or noun)
                 for tweet in event.tweets:
                     for postag in tweet.postags:
                         term_postag_counts[postag[0]][postag[1]] += 1 
-                # for k in term_postag_counts.keys():
-                #     term_postag[k] = sorted(term_poscat_counts[k],key = term_poscat_counts[k].get,reverse=True)[0]
-                #keep terms that are in the top 10 tfidf
                 new_candidates = [x for x in term_postag_counts.keys() if x in top_terms]          
                 #remove term that is already in entity set
                 current_entities = [x[0] for x in event.entities]
-                entities1 = []
-                entities1f = []
-                for term in top_terms1:
+                for term in top_terms:
                     ap = True
-                    apf = True
                     for entity in current_entities:
                         if re.search(term,entity) or not term in new_candidates:
                             ap = False
-                        if re.search(term,entity):
-                            apf = False
                     if ap:
                         event.entities.append((term,0))
-                        entities1.append(term)
-                    if apf:
-                        entities1f.append(term)
-                entities2 = []
-                entities2f = []
-                for term in top_terms2:
-                    ap = True
-                    apf = True
-                    for entity in current_entities:
-                        if re.search(term,entity) or not term in new_candidates:
-                            ap = False
-                        if re.search(term,entity):
-                            apf = False
-                    if ap:
-                        entities2.append(term)
-                    if apf:
-                        entities2f.append(term)
-                print("stage 2",current_entities,"stage3-5-nopos",entities1f,"stage3-5-pos",entities1,"stage3-10-nopos",entities2f,"stage3-10-pos",entities2)
             event.order_entities() #order entities by their average position in the tweets
             event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
 
@@ -396,6 +368,7 @@ class Event_pairs:
 
         def resolve_overlap_entities(self):
             entities = sorted(self.entities,key = lambda x : x[1],reverse=True)
+            print("before",entities)
             new_entities = []
             i = 0
             while i < len(entities):
@@ -434,6 +407,7 @@ class Event_pairs:
                         if not overlap:
                             new_entities.append(se)
             self.entities = new_entities
+            print("after",self.entities)
 
         def has_overlap(self,s1,s2):
             if set(s1.split(" ")) & set(s2.split(" ")):
@@ -443,6 +417,7 @@ class Event_pairs:
 
         def order_entities(self):
             entity_position = []
+            print("before",self.entities)
             for entity in self.entities:   
                 positions = []
                 for tweet in self.tweets:
@@ -451,7 +426,8 @@ class Event_pairs:
                         positions.append(re.search(re.escape(entity[0]),tweet.text).span()[0])
                 entity_position.append((entity,numpy.mean(positions)))   
             ranked_positions = sorted(entity_position,key = lambda x : x[1])
-            self.entities = [x[0] for x in ranked_positions]              
+            self.entities = [x[0] for x in ranked_positions]    
+            print("after",self.entities)          
 
         def add_ttratio(self):
             tokens = []
