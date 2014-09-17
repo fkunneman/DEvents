@@ -68,7 +68,7 @@ if args.m:
     ep.append_eventtweets(eventfile.readlines())
     eventfile.close()
     if args.start:
-        day = args.m.split("/")[-3][:2] + "_" + args.m.split("/")[-2]
+        day = args.m.split("/")[-2]
         basedir = args.o + day + "/"
         output_events(basedir)
 

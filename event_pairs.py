@@ -66,7 +66,6 @@ class Event_pairs:
     def append_eventtweets(self,eventtweets):
         for et in eventtweets:
             info = et.strip().split("\t")
-            print(et,info,len(info))
             info[2] = time_functions.return_datetime(info[2],setting="vs").date()
             info[4] = [time_functions.return_datetime(x,setting="vs").date() \
                 for x in info[4].split(" ")]
