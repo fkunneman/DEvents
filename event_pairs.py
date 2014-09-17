@@ -368,7 +368,7 @@ class Event_pairs:
 
         def resolve_overlap_entities(self):
             entities = sorted(self.entities,key = lambda x : x[1],reverse=True)
-            print("before",entities)
+            print("resolve before",entities)
             new_entities = []
             i = 0
             while i < len(entities):
@@ -407,7 +407,7 @@ class Event_pairs:
                         if not overlap:
                             new_entities.append(se)
             self.entities = new_entities
-            print("after",self.entities)
+            print("resolve after",self.entities)
 
         def has_overlap(self,s1,s2):
             if set(s1.split(" ")) & set(s2.split(" ")):
@@ -417,7 +417,7 @@ class Event_pairs:
 
         def order_entities(self):
             entity_position = []
-            print("before",self.entities)
+            print("order before",self.entities)
             for entity in self.entities:   
                 positions = []
                 for tweet in self.tweets:
@@ -427,7 +427,7 @@ class Event_pairs:
                 entity_position.append((entity,numpy.mean(positions)))   
             ranked_positions = sorted(entity_position,key = lambda x : x[1])
             self.entities = [x[0] for x in ranked_positions]    
-            print("after",self.entities)          
+            print("order after",self.entities)          
 
         def add_ttratio(self):
             tokens = []
