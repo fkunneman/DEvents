@@ -46,7 +46,7 @@ else:
     print("format not included, exiting program")
     quit()
 
-ep = Event_pairs(args.a,args.w,args.d)
+ep = Event_pairs(args.w,args.d)
 
 def output_events(d):
     print("ranking events")
