@@ -177,7 +177,7 @@ class Event_pairs:
                     ode = date_entity[date][entity]
                     g2 = calculations.goodness_of_fit(total,dc,ec,ode)             
                     date_entity_score.append([date,(entity,g2),g2,date_entity_tweets[date][entity]])
-        top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:1000]
+        top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:1500]
         self.events = []
         for x in range(len(top)):
             self.events.append(self.Event(x,top[x]))
@@ -256,7 +256,7 @@ class Event_pairs:
             word_indexes = tfidf_vectorizer.get_feature_names()
             doc_tfidf = tfidf_matrix.toarray()
         #for each event
-        for i,event in enumerate(self.events):
+        for i,event in enumerate(self.events[:150]):
             event.resolve_overlap_entities() #resolve overlap
             if method == "csx": #add terms
                 tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
