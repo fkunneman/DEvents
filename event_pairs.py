@@ -16,14 +16,17 @@ import calculations
 
 class Event_pairs:
 
-    def __init__(self,action,wikidir=False,tmpdir=False):
+    def __init__(self,action,wikidir=False,tmpdir=False,t=False):
         self.tweets = []
         self.tmpdir = tmpdir
         if wikidir:
             self.load_commonness(self.tmpdir + "coco",[wikidir + "1_grams.txt",wikidir + "2_grams.txt",
                 wikidir + "3_grams.txt",wikidir + "4_grams.txt",wikidir + "5_grams.txt"])
         c = "/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg"
-        fo = frog.FrogOptions(parser=False)
+        if t:
+            fo = frog.FrogOptions(threads=t)
+        else:
+            fo = frog.FrogOptions()
         self.frogger = frog.Frog(fo,c)
         self.ucto_settingsfile = "/vol/customopt/uvt-ru/etc/ucto/tokconfig-nl-twitter"
 
