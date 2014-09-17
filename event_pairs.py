@@ -425,6 +425,7 @@ class Event_pairs:
                         positions.append(re.search(re.escape(entity[0]),tweet.text).span()[0])
                 entity_position.append((entity,numpy.mean(positions)))   
             ranked_positions = sorted(entity_position,key = lambda x : x[1])
+            print(ranked_positions,self.tweets)
             self.entities = [x[0] for x in ranked_positions]    
             print("order after",self.entities)          
 
