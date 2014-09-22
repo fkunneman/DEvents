@@ -71,6 +71,8 @@ if args.m:
     if args.start:
         day = args.m.split("/")[-2]
         basedir = args.o + day + "/"
+        if not os.path.isdir(basedir):
+            os.mkdir(basedir)
         output_events(basedir)
 
 for i,day in enumerate(sorted(day_files.keys())):
