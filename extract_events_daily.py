@@ -33,18 +33,19 @@ args = parser.parse_args()
 
 #sort input-files
 day_files = defaultdict(list)
-if args.f == "twiqs":
-    for infile in args.i:
-        day = infile.split("/")[-1][:-6]
-        day_files[day].append(infile)
-elif args.f == "exp":
-    for infile in args.i:
-        parts = infile.split("/")
-        day = parts[-3][:2] + "_" + parts[-2]
-        day_files[day].append(infile)
-else:
-    print("format not included, exiting program")
-    quit()
+if args.i 
+    if args.f == "twiqs":
+        for infile in args.i:
+            day = infile.split("/")[-1][:-6]
+            day_files[day].append(infile)
+    elif args.f == "exp":
+        for infile in args.i:
+            parts = infile.split("/")
+            day = parts[-3][:2] + "_" + parts[-2]
+            day_files[day].append(infile)
+    else:
+        print("format not included, exiting program")
+        quit()
 
 ep = Event_pairs(args.w,args.d)
 
