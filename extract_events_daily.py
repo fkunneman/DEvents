@@ -33,7 +33,7 @@ args = parser.parse_args()
 
 #sort input-files
 day_files = defaultdict(list)
-if args.i 
+if args.i: 
     if args.f == "twiqs":
         for infile in args.i:
             day = infile.split("/")[-1][:-6]
