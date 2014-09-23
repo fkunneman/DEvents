@@ -266,6 +266,7 @@ class Event_pairs:
                 term_postag_counts = defaultdict(lambda : defaultdict(int))
                 #acquire most frequent postag for each term (provided postag is a verm, adjective or noun)
                 for tweet in event.tweets:
+                    print(tweet,xpos)
                     if xpos:
                         tweet.set_postags(calculations.return_postags(tweet.text,self.frogger))
                     for postag in tweet.postags:
