@@ -249,7 +249,7 @@ class Event_pairs:
         if outfile:
             outwrite.close()
 
-    def enrich_events(self,method):
+    def enrich_events(self,method,xpos = False):
         if method == "csx":
             documents = [" ".join([" ".join(x.chunks) for x in y.tweets]) for y in self.events]
             tfidf_vectorizer = TfidfVectorizer()
@@ -266,6 +266,8 @@ class Event_pairs:
                 term_postag_counts = defaultdict(lambda : defaultdict(int))
                 #acquire most frequent postag for each term (provided postag is a verm, adjective or noun)
                 for tweet in event.tweets:
+                    if xpos:
+                        tweet.set_postags(calculations.return_postags(text,self.frogger))
                     for postag in tweet.postags:
                         term_postag_counts[postag[0]][postag[1]] += 1 
                 new_candidates = [x for x in term_postag_counts.keys() if x in top_terms]          

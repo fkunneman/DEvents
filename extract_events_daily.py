@@ -25,6 +25,8 @@ parser.add_argument('-f', action = 'store', default = "twiqs", choices = ["exp",
     help = "Specify the format of the inputted tweet files (default = twiqs)")
 parser.add_argument('-o', action = 'store', required = True,
     help = "The directory to write files to")
+parser.add_argument('-x', action='store_true', 
+    help = "additional postagging during ranking to correct")
 parser.add_argument('--window', type = int, action = 'store', default = 7,
     help = "The window in days of tweets on which event extraction is based (default = 7 days)")
 parser.add_argument('--start', action = 'store_true',
@@ -53,7 +55,7 @@ def output_events(d):
     print("ranking events")
     ep.rank_events()
     ep.resolve_overlap_events(d + "clusters.txt")
-    ep.enrich_events(args.a)
+    ep.enrich_events(args.a,xpos = args.x)
     eventinfo = open(d + "events_fit.txt","w",encoding = "utf-8")
     for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
         if event.tt_ratio > 0.4:

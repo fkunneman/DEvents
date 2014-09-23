@@ -27,7 +27,7 @@ def goodness_of_fit(total,dc,ec,ode):
         g2 += ondne * (math.log(ondne/endne)/math.log(2))
     return g2
 
-def return_postags(text,f,ww=False):
+def return_postags(text,f,wws=False):
     output = []
     adj = re.compile(r"^ADJ\(")
     n = re.compile(r"^N\(")
@@ -37,7 +37,7 @@ def return_postags(text,f,ww=False):
         pos = token["pos"]
         if ww.search(pos):
             output.append((token["text"],token["pos"]))
-        if (adj.search(pos) or n.search(pos)) and not ww:
+        if (adj.search(pos) or n.search(pos)) and not wws:
             output.append((token["text"],token["pos"]))
     return output
 
