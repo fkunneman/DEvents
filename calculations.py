@@ -32,13 +32,14 @@ def return_postags(text,f,wws=False):
     adj = re.compile(r"^ADJ\(")
     n = re.compile(r"^N\(")
     ww = re.compile(r"^WW\(")
+    bw = re.compile(r"^BW\(")
     data = f.process(text)
     for token in data:
         pos = token["pos"]
         print(pos)
         if ww.search(pos):
             output.append((token["text"],token["pos"]))
-        if (adj.search(pos) or n.search(pos)) and not wws:
+        if (adj.search(pos) or n.search(pos) or bw.search(pos)) and not wws:
             output.append((token["text"],token["pos"]))
     return output
 
