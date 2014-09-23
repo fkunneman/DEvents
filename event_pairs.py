@@ -267,7 +267,7 @@ class Event_pairs:
                 #acquire most frequent postag for each term (provided postag is a verm, adjective or noun)
                 for tweet in event.tweets:
                     if xpos:
-                        tweet.set_postags(calculations.return_postags(text,self.frogger))
+                        tweet.set_postags(calculations.return_postags(tweet.text,self.frogger))
                     for postag in tweet.postags:
                         term_postag_counts[postag[0]][postag[1]] += 1 
                 new_candidates = [x for x in term_postag_counts.keys() if x in top_terms]          
