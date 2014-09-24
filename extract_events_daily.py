@@ -56,6 +56,14 @@ def output_events(d):
     ep.rank_events()
     ep.resolve_overlap_events(d + "clusters.txt")
     ep.enrich_events(args.a,xpos = args.x)
+    if args.x:
+        tweetinfo = open(d + "modeltweets.txt","w",encoding = "utf-8")
+        for tweet in ep.tweets:
+            info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
+                " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
+                " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
+            tweetinfo.write("\t".join(info) + "\n")
+        tweetinfo.close()
     eventinfo = open(d + "events_fit.txt","w",encoding = "utf-8")
     for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
         if event.tt_ratio > 0.4:

@@ -281,7 +281,6 @@ class Event_pairs:
                             ap = False
                     if ap:
                         event.entities.append((term,0))
-                print("top terms",top_terms,"postag counts",term_postag_counts,"new candidates",new_candidates,"current entities",current_entities,"new entities",event.entities)
             event.order_entities() #order entities by their average position in the tweets
             event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
             event.rank_tweets()
