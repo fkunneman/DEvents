@@ -250,23 +250,23 @@ class Event_pairs:
             outwrite.close()
 
     def enrich_events(self,method,xpos = False):
-        if method == "csx":
-            documents = [" ".join([" ".join(x.chunks) for x in y.tweets]) for y in self.events]
-            tfidf_vectorizer = TfidfVectorizer()
-            tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
-            word_indexes = tfidf_vectorizer.get_feature_names()
-            doc_tfidf = tfidf_matrix.toarray()
+        documents = [" ".join([" ".join(x.chunks) for x in y.tweets]) for y in self.events]
+        tfidf_vectorizer = TfidfVectorizer()
+        tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
+        word_indexes = tfidf_vectorizer.get_feature_names()
+        doc_tfidf = tfidf_matrix.toarray()
         #for each event
         for i,event in enumerate(self.events):
             event.resolve_overlap_entities() #resolve overlap
             if method == "csx": #add terms
                 tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
                 tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
+                event.add_tfidf(tfidf_sorted)
                 top_terms = [word_indexes[j[0]] for j in tfidf_sorted][:5]
                 term_postag_counts = defaultdict(lambda : defaultdict(int))
                 #acquire most frequent postag for each term (provided postag is a verm, adjective or noun)
                 for tweet in event.tweets:
-                    print(tweet,xpos)
+                    #print(tweet,xpos)
                     if xpos:
                         tweet.set_postags(calculations.return_postags(tweet.text,self.frogger))
                     for postag in tweet.postags:
@@ -284,6 +284,7 @@ class Event_pairs:
                 print("top terms",top_terms,"postag counts",term_postag_counts,"new candidates",new_candidates,"current entities",current_entities,"new entities",event.entities)
             event.order_entities() #order entities by their average position in the tweets
             event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
+            event.rank_tweets()
 
     def discard_last_day(self,window):
         days = sorted(set([x.date for x in self.tweets]))
@@ -435,3 +436,23 @@ class Event_pairs:
             for tweet in self.tweets:
                 tokens.extend(tweet.text.split(" ")) 
             self.tt_ratio = len(list(set(tokens))) / len(tokens)
+
+        def add_tfidf(sorted_tfidf):
+            self.word_tfidf = {}
+            for word_score in sorted_tfidf:
+                self.word_tfidf[word_score[0]] = word_score[1]
+
+        def rank_tweets(self):
+            tweet_score = {}
+            for i,tweet in enumerate(self.tweets):
+                score = 0
+                for word in tweet.text.split():
+                    score += self.word_tfidf[word]
+                tweet_score[i] = score
+            tweet_order = []
+            for x in sorted(tweet_score,key = x.get,reverse=True):
+                tweet_order.append(x)
+            new_tweets = []
+            for ind in tweet_order:
+                new_tweets.append(self.tweets[ind])
+            self.tweets = new_tweets

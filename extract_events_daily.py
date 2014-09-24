@@ -61,7 +61,7 @@ def output_events(d):
         if event.tt_ratio > 0.4:
             outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + \
                 ", ".join([x[0] for x in event.entities]) + "\n" + \
-                "\n".join([x.text for x in event.tweets]) + "\n"
+                "\n".join([x.text for x in event.tweets[:5]]) + "\n"
             eventinfo.write(outstr)
     eventinfo.close()
 

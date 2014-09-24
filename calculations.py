@@ -32,7 +32,6 @@ def return_postags(text,f,wws=False):
     adj = re.compile(r"^ADJ\(")
     n = re.compile(r"^N\(")
     ww = re.compile(r"^WW\(")
-    bw = re.compile(r"^BW\(")
     data = f.process(text)
     for token in data:
         pos = token["pos"]
