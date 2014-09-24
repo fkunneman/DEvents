@@ -436,7 +436,7 @@ class Event_pairs:
                 tokens.extend(tweet.text.split(" ")) 
             self.tt_ratio = len(list(set(tokens))) / len(tokens)
 
-        def add_tfidf(sorted_tfidf):
+        def add_tfidf(self,sorted_tfidf):
             self.word_tfidf = {}
             for word_score in sorted_tfidf:
                 self.word_tfidf[word_score[0]] = word_score[1]
