@@ -261,7 +261,7 @@ class Event_pairs:
             if method == "csx": #add terms
                 tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
                 tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
-                event.add_tfidf(tfidf_sorted)
+                event.add_tfidf(tfidf_sorted,word_indexes)
                 top_terms = [word_indexes[j[0]] for j in tfidf_sorted][:5]
                 term_postag_counts = defaultdict(lambda : defaultdict(int))
                 #acquire most frequent postag for each term (provided postag is a verm, adjective or noun)
@@ -436,8 +436,9 @@ class Event_pairs:
                 tokens.extend(tweet.text.split(" ")) 
             self.tt_ratio = len(list(set(tokens))) / len(tokens)
 
-        def add_tfidf(self,sorted_tfidf):
+        def add_tfidf(self,sorted_tfidf,w_indexes):
             self.word_tfidf = {}
+            sorted_word_tfidf = [(w_indexes[x[0]],x[1]) for x in sorted_tfidf if x[1] > 0]
             for word_score in sorted_tfidf:
                 print(word_score)
                 self.word_tfidf[word_score[0]] = word_score[1]
