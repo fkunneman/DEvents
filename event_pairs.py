@@ -420,7 +420,6 @@ class Event_pairs:
         def order_entities(self):
             entity_position = []
             for entity in self.entities:    
-                
                 positions = []
                 for tweet in self.tweets:
                     #print(entity[0],tweet.text)
@@ -439,7 +438,8 @@ class Event_pairs:
         def add_tfidf(self,sorted_tfidf,w_indexes):
             self.word_tfidf = {}
             sorted_word_tfidf = [(w_indexes[x[0]],x[1]) for x in sorted_tfidf if x[1] > 0]
-            for word_score in sorted_tfidf:
+            print(sorted_word_tfidf)
+            for word_score in sorted_word_tfidf:
                 print(word_score)
                 self.word_tfidf[word_score[0]] = word_score[1]
             print(self.word_tfidf)
