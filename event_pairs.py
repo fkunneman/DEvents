@@ -439,13 +439,16 @@ class Event_pairs:
         def add_tfidf(self,sorted_tfidf):
             self.word_tfidf = {}
             for word_score in sorted_tfidf:
+                print(word_score)
                 self.word_tfidf[word_score[0]] = word_score[1]
+            print(self.word_tfidf)
 
         def rank_tweets(self):
             tweet_score = {}
             for i,tweet in enumerate(self.tweets):
                 score = 0
                 for word in tweet.text.split():
+                    print(word)
                     score += self.word_tfidf[word]
                 tweet_score[i] = score
             tweet_order = []
