@@ -35,7 +35,6 @@ def return_postags(text,f,wws=False):
     data = f.process(text)
     for token in data:
         pos = token["pos"]
-        print(pos)
         if ww.search(pos):
             output.append((token["text"],token["pos"]))
         if (adj.search(pos) or n.search(pos) or bw.search(pos)) and not wws:
