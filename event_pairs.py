@@ -438,7 +438,7 @@ class Event_pairs:
         def add_tfidf(self,sorted_tfidf,w_indexes):
             self.word_tfidf = {}
             sorted_word_tfidf = [(w_indexes[x[0]],x[1]) for x in sorted_tfidf if x[1] > 0]
-            print(sorted_word_tfidf)
+            #print(sorted_word_tfidf)
             for word_score in sorted_word_tfidf:
                 print(word_score)
                 self.word_tfidf[word_score[0]] = word_score[1]
@@ -448,9 +448,12 @@ class Event_pairs:
             tweet_score = {}
             for i,tweet in enumerate(self.tweets):
                 score = 0
-                for word in tweet.text.split():
-                    print(word)
-                    score += self.word_tfidf[word]
+                for chunk in tweet.chunks:
+                    print(chunk)
+                    for word in chunk.split():
+                #for word in tweet.text.split():
+                        print(word)
+                        score += self.word_tfidf[word]
                 tweet_score[i] = score
             tweet_order = []
             for x in sorted(tweet_score,key = x.get,reverse=True):
