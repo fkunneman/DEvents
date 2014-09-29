@@ -27,6 +27,8 @@ parser.add_argument('-o', action = 'store', required = True,
     help = "The directory to write files to")
 parser.add_argument('-x', action='store_true', 
     help = "additional postagging during ranking to correct")
+parser.add_argument('-q', action='store_true', 
+    help = "Choose to output in Qualtrics format")
 parser.add_argument('--window', type = int, action = 'store', default = 7,
     help = "The window in days of tweets on which event extraction is based (default = 7 days)")
 parser.add_argument('--start', action = 'store_true',
@@ -65,11 +67,23 @@ def output_events(d):
             tweetinfo.write("\t".join(info) + "\n")
         tweetinfo.close()
     eventinfo = open(d + "events_fit.txt","w",encoding = "utf-8")
-    print("final",len(ep.events))
-    print(len([x for x in ep.events if x.tt_ratio > 0.25]),len([x for x in ep.events if x.tt_ratio > 0.30]),len([x for x in ep.events if x.tt_ratio > 0.40]))
+    if args.q:
+        eventq = open(d + "events_qualtrics.txt","w",encoding = "utf-8")
+        eventq.write("[[AdvancedFormat]]\n\n[[Block:MC Block]]\n\n")
+    #print("final",len(ep.events))
+    #print(len([x for x in ep.events if x.tt_ratio > 0.25]),len([x for x in ep.events if x.tt_ratio > 0.30]),len([x for x in ep.events if x.tt_ratio > 0.40]))
     for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
         #print(event.tt_ratio,[x.text for x in event.tweets])
-        if event.tt_ratio > 0.40:
+        if event.tt_ratio > 0.30:
+            if args.q:
+                eventq.write("[[Question:MC:SingleAnswer:Vertical]]\nBeschrijven onderstaande tweets een coherente gebeurtenis? <br> <br> <br>\n")
+                for tweet in event.tweets[:5]:
+                    eventq.write("<i>" + tweet.text + "</i> <br> <br>\n")
+                eventq.write("[[choices]]\nJa\nNee\n\n[[Question:MC:SingleAnswer:Vertical]]" +
+                    "Hoe verhouden onderstaande termen zich tot de gebeurtenis? <br> <br>\n")
+                for ent in event.entities:
+                    eventq.write("<b>" + ent + "</b> <br>\n")
+                eventq.write("[[Choices]]\nTe algemene beschrijving\nGoede beschrijving\nTe overvloedige beschrijving\n\n")
             outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + \
                 ", ".join([x[0] for x in event.entities]) + "\n" + \
                 "\n".join([x.text for x in event.tweets[:5]]) + "\n"
