@@ -183,6 +183,7 @@ class Event_pairs:
         self.events = []
         for x in range(len(top)):
             self.events.append(self.Event(x,top[x]))
+        print("rank",len(self.events))
 
     def resolve_overlap_events(self,outfile = False):
         if outfile:
@@ -191,7 +192,7 @@ class Event_pairs:
         tfidf_vectorizer = TfidfVectorizer()
         tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
         cos = cosine_similarity(tfidf_matrix,tfidf_matrix)
-        print("test",tfidf_matrix[0][0],tfidf_matrix[0][1],cosine_similarity(tfidf_matrix[0][0],tfidf_matrix[0][1]))
+#        print("test",tfidf_matrix[0],tfidf_matrix[1],cosine_similarity(tfidf_matrix[0],tfidf_matrix[1]))
         pair_sim = defaultdict(lambda : defaultdict(list))
         #agglomerative clustering
         #order pairs by similarity
@@ -250,6 +251,7 @@ class Event_pairs:
                         break
         if outfile:
             outwrite.close()
+        print("overlap",len(self.events))
 
     def enrich_events(self,method,xpos = False):
         documents = [" ".join([" ".join(x.chunks) for x in y.tweets]) for y in self.events]
@@ -285,7 +287,8 @@ class Event_pairs:
                         event.entities.append((term,0))
             event.order_entities() #order entities by their average position in the tweets
             event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
-            event.rank_tweets()
+#            event.rank_tweets()
+        print("enrich",len(self.events))
 
     def discard_last_day(self,window):
         days = sorted(set([x.date for x in self.tweets]))
@@ -459,7 +462,6 @@ class Event_pairs:
                         try:
                             score += self.word_tfidf[word]
                         except KeyError:
-                            print("KeyError",word)
                             continue
                 tweet_score[i] = score
             tweet_order = []
@@ -468,5 +470,5 @@ class Event_pairs:
             new_tweets = []
             for ind in tweet_order:
                 new_tweets.append(self.tweets[ind])
-            print("before",self.tweets,"after",new_tweets)
+#            print("before",self.tweets,"after",new_tweets)
             self.tweets = new_tweets

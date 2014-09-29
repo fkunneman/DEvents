@@ -65,8 +65,11 @@ def output_events(d):
             tweetinfo.write("\t".join(info) + "\n")
         tweetinfo.close()
     eventinfo = open(d + "events_fit.txt","w",encoding = "utf-8")
+    print("final",len(ep.events))
+    print(len([x for x in ep.events if x.tt_ratio > 0.25]),len([x for x in ep.events if x.tt_ratio > 0.30]),len([x for x in ep.events if x.tt_ratio > 0.40]))
     for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
-        if event.tt_ratio > 0.4:
+        #print(event.tt_ratio,[x.text for x in event.tweets])
+        if event.tt_ratio > 0.40:
             outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + \
                 ", ".join([x[0] for x in event.entities]) + "\n" + \
                 "\n".join([x.text for x in event.tweets[:5]]) + "\n"
