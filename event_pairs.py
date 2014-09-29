@@ -190,6 +190,7 @@ class Event_pairs:
         tfidf_vectorizer = TfidfVectorizer()
         tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
         cos = cosine_similarity(tfidf_matrix,tfidf_matrix)
+        print("test",tfidf_matrix[0][0],tfidf_matrix[0][1],cosine_similarity(tfidf_matrix[0][0],tfidf_matrix[0][1]))
         pair_sim = defaultdict(lambda : defaultdict(list))
         #agglomerative clustering
         #order pairs by similarity
@@ -449,10 +450,10 @@ class Event_pairs:
             for i,tweet in enumerate(self.tweets):
                 score = 0
                 for chunk in tweet.chunks:
-                    print(chunk)
+                    #print(chunk)
                     for word in chunk.split():
                 #for word in tweet.text.split():
-                        print(word)
+                        #print(word)
                         score += self.word_tfidf[word]
                 tweet_score[i] = score
             tweet_order = []
