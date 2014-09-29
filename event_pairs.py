@@ -3,6 +3,7 @@ import re
 import datetime
 from collections import defaultdict
 import itertools
+import string
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -441,25 +442,31 @@ class Event_pairs:
             sorted_word_tfidf = [(w_indexes[x[0]],x[1]) for x in sorted_tfidf if x[1] > 0]
             #print(sorted_word_tfidf)
             for word_score in sorted_word_tfidf:
-                print(word_score)
+#                print(word_score)
                 self.word_tfidf[word_score[0]] = word_score[1]
-            print(self.word_tfidf)
+#            print(self.word_tfidf)
 
         def rank_tweets(self):
             tweet_score = {}
+            exclude = set(string.punctuation)
             for i,tweet in enumerate(self.tweets):
                 score = 0
                 for chunk in tweet.chunks:
-                    #print(chunk)
+                    chunk = chunk.replace('#','').replace('-',' ')
+                    chunk = ''.join(ch for ch in chunk if ch not in exclude)
                     for word in chunk.split():
                 #for word in tweet.text.split():
-                        #print(word)
-                        score += self.word_tfidf[word]
+                        try:
+                            score += self.word_tfidf[word]
+                        except KeyError:
+                            print("KeyError",word)
+                            continue
                 tweet_score[i] = score
             tweet_order = []
-            for x in sorted(tweet_score,key = x.get,reverse=True):
+            for x in sorted(tweet_score,key = tweet_score.get,reverse=True):
                 tweet_order.append(x)
             new_tweets = []
             for ind in tweet_order:
                 new_tweets.append(self.tweets[ind])
+            print("before",self.tweets,"after",new_tweets)
             self.tweets = new_tweets
