@@ -289,7 +289,7 @@ class Event_pairs:
                         event.entities.append((term,0))
             event.order_entities() #order entities by their average position in the tweets
             event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
-            event.rank_tweets(5)
+            event.rank_tweets(self.dimensions,5)
         print("enrich",len(self.events))
 
     def discard_last_day(self,window):
@@ -452,11 +452,11 @@ class Event_pairs:
                 self.word_tfidf[word_score[0]] = word_score[1]
 #            print(self.word_tfidf)
 
-        def rank_tweets(self,n):
+        def rank_tweets(self,dimensions,n):
             tweet_score = {}
             exclude = set(string.punctuation)
             for i,tweet in enumerate(self.tweets):
-                tweetvector = self.dimensions * [0]
+                tweetvector = dimensions * [0]
                 score = 0
                 for chunk in tweet.chunks:
                     chunk = chunk.replace('#','').replace('-',' ')
