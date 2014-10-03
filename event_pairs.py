@@ -476,11 +476,11 @@ class Event_pairs:
             for x in sorted(tweet_score,key = lambda x : x[2],reverse=True):
                 add = True
                 for rt in reptweets:
-                    print(calculations.calculate_cosine_similarity(x[1],rt[1]))
                     if calculations.calculate_cosine_similarity(x[1],rt[1]) > 0.8:              
                         add = False
                 if add:
                     reptweets.append(x)
+                print(len(reptweets))
                 if len(reptweets) == n:
                     break
             self.reptweets = [x[0] for x in reptweets]
