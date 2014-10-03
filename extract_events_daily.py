@@ -79,10 +79,10 @@ def output_events(d):
                 eventq.write("[[Question:MC:SingleAnswer:Vertical]]\nBeschrijven onderstaande tweets een coherente gebeurtenis? <br> <br> <br>\n")
                 for tweet in event.tweets[:5]:
                     eventq.write("<i>" + tweet.text + "</i> <br> <br>\n")
-                eventq.write("[[choices]]\nJa\nNee\n\n[[Question:MC:SingleAnswer:Vertical]]" +
+                eventq.write("[[choices]]\nJa\nNee\n\n[[Question:MC:SingleAnswer:Vertical]]\n" +
                     "Hoe verhouden onderstaande termen zich tot de gebeurtenis? <br> <br>\n")
                 for ent in event.entities:
-                    eventq.write("<b>" + ent + "</b> <br>\n")
+                    eventq.write("<b>" + ent[0] + "</b> <br>\n")
                 eventq.write("[[Choices]]\nTe algemene beschrijving\nGoede beschrijving\nTe overvloedige beschrijving\n\n")
             outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + \
                 ", ".join([x[0] for x in event.entities]) + "\n" + \
