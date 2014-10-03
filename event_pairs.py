@@ -13,8 +13,6 @@ import ucto
 import colibricore
 import time_functions
 import calculations
-import gen_functions
-
 
 class Event_pairs:
 
@@ -477,7 +475,7 @@ class Event_pairs:
             for x in sorted(tweet_score,key = tweet_score.get[2],reverse=True):
                 add = True
                 for rt in reptweets:
-                    if gen_functions.calculate_cosine_similarity(x[1],rt[1]) > 0.8:
+                    if calculations.calculate_cosine_similarity(x[1],rt[1]) > 0.8:
                         add = False
                 if add:
                     reptweets.append(x)
