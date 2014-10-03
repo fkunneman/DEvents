@@ -444,7 +444,7 @@ class Event_pairs:
 
         def add_tfidf(self,sorted_tfidf,w_indexes):
             self.word_tfidf = {}
-            self.word_indexes = w_indexes
+            self.word_indexes = dict((v,k) for k,v in w_indexes.iteritems())
             sorted_word_tfidf = [(w_indexes[x[0]],x[1]) for x in sorted_tfidf if x[1] > 0]
             #print(sorted_word_tfidf)
             for word_score in sorted_word_tfidf:
