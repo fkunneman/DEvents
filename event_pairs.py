@@ -455,7 +455,6 @@ class Event_pairs:
         def rank_tweets(self,n):
             tweet_score = {}
             exclude = set(string.punctuation)
-            vector_length = len(tfidf[0:1].toarray()[0])
             for i,tweet in enumerate(self.tweets):
                 tweetvector = self.dimensions * [0]
                 score = 0
