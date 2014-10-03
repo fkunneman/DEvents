@@ -259,8 +259,9 @@ class Event_pairs:
         tfidf_vectorizer = TfidfVectorizer()
         tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
         word_indexes = tfidf_vectorizer.get_feature_names()
+        word_index = dict((w,i) for i,w in enumerate(word_indexes))
         doc_tfidf = tfidf_matrix.toarray()
-        self.dimensions = len(tfidf_matrix[0:1].toarray()[0])
+        dimensions = len(tfidf_matrix[0:1].toarray()[0])
         #for each event
         for i,event in enumerate(self.events):
             event.resolve_overlap_entities() #resolve overlap
@@ -289,7 +290,7 @@ class Event_pairs:
                         event.entities.append((term,0))
             event.order_entities() #order entities by their average position in the tweets
             event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
-            event.rank_tweets(self.dimensions,5)
+            event.rank_tweets(dimensions,word_index,5)
         print("enrich",len(self.events))
 
     def discard_last_day(self,window):
@@ -444,7 +445,6 @@ class Event_pairs:
 
         def add_tfidf(self,sorted_tfidf,w_indexes):
             self.word_tfidf = {}
-            self.word_indexes = dict((v,k) for k,v in w_indexes.iteritems())
             sorted_word_tfidf = [(w_indexes[x[0]],x[1]) for x in sorted_tfidf if x[1] > 0]
             #print(sorted_word_tfidf)
             for word_score in sorted_word_tfidf:
@@ -452,7 +452,7 @@ class Event_pairs:
                 self.word_tfidf[word_score[0]] = word_score[1]
 #            print(self.word_tfidf)
 
-        def rank_tweets(self,dimensions,n):
+        def rank_tweets(self,dimensions,w_i,n):
             tweet_score = {}
             exclude = set(string.punctuation)
             for i,tweet in enumerate(self.tweets):
@@ -466,7 +466,7 @@ class Event_pairs:
                         try:
                             wordscore = self.word_tfidf[word]
                             score += wordscore
-                            tweetvector[self.word_indexes[word]] = wordscore
+                            tweetvector[w_i[word]] = wordscore
                         except KeyError:
                             continue
                 tweet_score[i] = (tweet.text,tweetvector,score)
