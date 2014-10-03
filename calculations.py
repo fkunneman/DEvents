@@ -254,3 +254,24 @@ def extract_entity(text,classencoder=False,dmodel=False):
             for ngram in ngrams:
                 ngram_score.append((" ".join(ngram),1))
     return ngram_score
+
+def calculate_cosine_similarity(vector1,vector2):
+    if len(vector1) != len(vector2):
+        print str(len(vector1)) + " " + str(len(vector2)) 
+        print "Cosine distance: no equal number of dimensions, terminating process."
+
+    mag1 = 0
+    mag2 = 0
+    dotpr = 0
+    for i,term_1 in enumerate(vector1):
+        term_2 = vector2[i]
+        m1 = int(term_1) * int(term_1)
+        m2 = int(term_2) * int(term_2)
+        dp = int(term_1) * int(term_2)
+        mag1 += m1
+        mag2 += m2
+        dotpr += dp
+
+    cosine_similarity = dotpr / (int(math.sqrt(mag1))*int(math.sqrt(mag2)))
+
+    return cosine_similarity
