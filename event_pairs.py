@@ -13,6 +13,7 @@ import ucto
 import colibricore
 import time_functions
 import calculations
+import gen_functions
 
 
 class Event_pairs:
@@ -177,9 +178,11 @@ class Event_pairs:
                     dc = date_count[date]
                     ec = entity_count[entity]
                     ode = date_entity[date][entity]
-                    g2 = calculations.goodness_of_fit(total,dc,ec,ode)             
-                    date_entity_score.append([date,(entity,g2),g2,date_entity_tweets[date][entity]])
-        top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:1500]
+                    g2 = calculations.goodness_of_fit(total,dc,ec,ode)
+                    users = [x.user for x in date_entity_tweets[date][entity]]
+                    g2_user = (len(list(set(users))) / len(users)) * g2
+                    date_entity_score.append([date,(entity,g2_user),g2_user,date_entity_tweets[date][entity]])
+        top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:100]
         self.events = []
         for x in range(len(top)):
             self.events.append(self.Event(x,top[x]))
@@ -259,6 +262,7 @@ class Event_pairs:
         tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
         word_indexes = tfidf_vectorizer.get_feature_names()
         doc_tfidf = tfidf_matrix.toarray()
+        self.dimensions = len(tfidf_matrix[0:1].toarray()[0])
         #for each event
         for i,event in enumerate(self.events):
             event.resolve_overlap_entities() #resolve overlap
@@ -442,6 +446,7 @@ class Event_pairs:
 
         def add_tfidf(self,sorted_tfidf,w_indexes):
             self.word_tfidf = {}
+            self.word_indexes = w_indexes
             sorted_word_tfidf = [(w_indexes[x[0]],x[1]) for x in sorted_tfidf if x[1] > 0]
             #print(sorted_word_tfidf)
             for word_score in sorted_word_tfidf:
@@ -449,10 +454,12 @@ class Event_pairs:
                 self.word_tfidf[word_score[0]] = word_score[1]
 #            print(self.word_tfidf)
 
-        def rank_tweets(self):
+        def rank_tweets(self,n):
             tweet_score = {}
             exclude = set(string.punctuation)
+            vector_length = len(tfidf[0:1].toarray()[0])
             for i,tweet in enumerate(self.tweets):
+                tweetvector = self.dimensions * [0]
                 score = 0
                 for chunk in tweet.chunks:
                     chunk = chunk.replace('#','').replace('-',' ')
@@ -460,15 +467,25 @@ class Event_pairs:
                     for word in chunk.split():
                 #for word in tweet.text.split():
                         try:
-                            score += self.word_tfidf[word]
+                            wordscore = self.word_tfidf[word]
+                            score += wordscore
+                            tweetvector[self.word_indexes[word]] = wordscore
                         except KeyError:
                             continue
-                tweet_score[i] = score
-            tweet_order = []
-            for x in sorted(tweet_score,key = tweet_score.get,reverse=True):
-                tweet_order.append(x)
-            new_tweets = []
-            for ind in tweet_order:
-                new_tweets.append(self.tweets[ind])
-#            print("before",self.tweets,"after",new_tweets)
-            self.tweets = new_tweets
+                tweet_score[i] = (tweet.text,tweetvector,score)
+            reptweets = []
+            for x in sorted(tweet_score,key = tweet_score.get[2],reverse=True):
+                add = True
+                for rt in reptweets:
+                    if gen_functions.calculate_cosine_similarity(x[1],rt[1]) > 0.8:
+                        add = False
+                if add:
+                    reptweets.append(x)
+                if len(reptweets) == n:
+                    break
+            self.reptweets = [x[0] for x in reptweets]
+#             new_tweets = []
+#             for ind in tweet_order:
+#                 new_tweets.append(self.tweets[ind])
+# #            print("before",self.tweets,"after",new_tweets)
+#             self.tweets = new_tweets
