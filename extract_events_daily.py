@@ -86,7 +86,7 @@ def output_events(d):
                 eventq.write("[[Choices]]\nTe algemene beschrijving\nGoede beschrijving\nTe overvloedige beschrijving\n\n")
             outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + \
                 ", ".join([x[0] for x in event.entities]) + "\n" + \
-                "\n".join([x.text for x in event.tweets[:5]]) + "\n"
+                "\n".join(event.reptweets) + "\n"
             eventinfo.write(outstr)
     eventinfo.close()
 
