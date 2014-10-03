@@ -272,6 +272,8 @@ def calculate_cosine_similarity(vector1,vector2):
         mag2 += m2
         dotpr += dp
 
-    cosine_similarity = dotpr / (int(math.sqrt(mag1))*int(math.sqrt(mag2)))
-
+    try:
+        cosine_similarity = dotpr / (int(math.sqrt(mag1))*int(math.sqrt(mag2)))
+    except:
+        cosine_similarity = 0
     return cosine_similarity

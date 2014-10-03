@@ -470,11 +470,14 @@ class Event_pairs:
                         except KeyError:
                             continue
                 tweet_score.append((tweet.text,tweetvector,score))
+#            print(tweet_score)
+#            print(sorted(tweet_score,key = lambda x : x[0],reverse=True))
             reptweets = []
-            for x in tweet_score.sort(key = lambda x : x[2],reverse=True):
+            for x in sorted(tweet_score,key = lambda x : x[2],reverse=True):
                 add = True
                 for rt in reptweets:
-                    if calculations.calculate_cosine_similarity(x[1],rt[1]) > 0.8:
+                    print(calculations.calculate_cosine_similarity(x[1],rt[1]))
+                    if calculations.calculate_cosine_similarity(x[1],rt[1]) > 0.8:              
                         add = False
                 if add:
                     reptweets.append(x)
