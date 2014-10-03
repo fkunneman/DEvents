@@ -289,7 +289,7 @@ class Event_pairs:
                         event.entities.append((term,0))
             event.order_entities() #order entities by their average position in the tweets
             event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
-            event.rank_tweets()
+            event.rank_tweets(5)
         print("enrich",len(self.events))
 
     def discard_last_day(self,window):
