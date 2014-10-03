@@ -453,9 +453,9 @@ class Event_pairs:
 #            print(self.word_tfidf)
 
         def rank_tweets(self,dimensions,w_i,n):
-            tweet_score = {}
+            tweet_score = []
             exclude = set(string.punctuation)
-            for i,tweet in enumerate(self.tweets):
+            for tweet in self.tweets:
                 tweetvector = dimensions * [0]
                 score = 0
                 for chunk in tweet.chunks:
@@ -469,9 +469,9 @@ class Event_pairs:
                             tweetvector[w_i[word]] = wordscore
                         except KeyError:
                             continue
-                tweet_score[i] = (tweet.text,tweetvector,score)
+                tweet_score.append((tweet.text,tweetvector,score))
             reptweets = []
-            for x in sorted(tweet_score,key = tweet_score.get[2],reverse=True):
+            for x in tweet_score.sort(key = lambda x : x[2],reverse=True):
                 add = True
                 for rt in reptweets:
                     if calculations.calculate_cosine_similarity(x[1],rt[1]) > 0.8:
