@@ -265,15 +265,15 @@ def calculate_cosine_similarity(vector1,vector2):
     dotpr = 0
     for i,term_1 in enumerate(vector1):
         term_2 = vector2[i]
-        m1 = int(term_1) * int(term_1)
-        m2 = int(term_2) * int(term_2)
-        dp = int(term_1) * int(term_2)
+        m1 = term_1) * term_1)
+        m2 = term_2) * term_2)
+        dp = term_1) * term_2)
         mag1 += m1
         mag2 += m2
         dotpr += dp
 
     try:
-        cosine_similarity = dotpr / (int(math.sqrt(mag1))*int(math.sqrt(mag2)))
+        cosine_similarity = dotpr / (math.sqrt(mag1)*math.sqrt(mag2))
     except:
         cosine_similarity = 0
     return cosine_similarity
