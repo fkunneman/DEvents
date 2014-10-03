@@ -257,8 +257,8 @@ def extract_entity(text,classencoder=False,dmodel=False):
 
 def calculate_cosine_similarity(vector1,vector2):
     if len(vector1) != len(vector2):
-        print str(len(vector1)) + " " + str(len(vector2)) 
-        print "Cosine distance: no equal number of dimensions, terminating process."
+        print(str(len(vector1)) + " " + str(len(vector2))) 
+        print("Cosine distance: no equal number of dimensions, terminating process.")
 
     mag1 = 0
     mag2 = 0
