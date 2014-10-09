@@ -180,7 +180,7 @@ class Event_pairs:
                     users = [x.user for x in date_entity_tweets[date][entity]]
                     g2_user = (len(list(set(users))) / len(users)) * g2
                     date_entity_score.append([date,(entity,g2_user),g2_user,date_entity_tweets[date][entity]])
-        top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:100]
+        top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:2500]
         self.events = []
         for x in range(len(top)):
             self.events.append(self.Event(x,top[x]))
@@ -205,10 +205,10 @@ class Event_pairs:
             events = [x for x in self.events if x.date == date]
             indexes = [x.ids[0] for x in events]
             pairs = [x for x in itertools.combinations(indexes,2)]
-            scores = [([x[0]],[x[1]],pair_sim[x[0]][x[1]]) for x in pairs if pair_sim[x[0]][x[1]] > 0.5]
+            scores = [([x[0]],[x[1]],pair_sim[x[0]][x[1]]) for x in pairs if pair_sim[x[0]][x[1]] > 0.7]
             if len(scores) > 0:
                 scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
-                while scores_sorted[0][2] > 0.5: #scores are not static 
+                while scores_sorted[0][2] > 0.7: #scores are not static 
                     highest_sim = scores_sorted[0] #start with top
                     #merge events
                     for x in events: #collect the event that matches the id list
@@ -259,9 +259,9 @@ class Event_pairs:
         tfidf_vectorizer = TfidfVectorizer()
         tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
         word_indexes = tfidf_vectorizer.get_feature_names()
-        word_index = dict((w,i) for i,w in enumerate(word_indexes))
+        self.word_index = dict((w,i) for i,w in enumerate(word_indexes))
         doc_tfidf = tfidf_matrix.toarray()
-        dimensions = len(tfidf_matrix[0:1].toarray()[0])
+        self.dimensions = len(tfidf_matrix[0:1].toarray()[0])
         #for each event
         for i,event in enumerate(self.events):
             event.resolve_overlap_entities() #resolve overlap
@@ -290,7 +290,7 @@ class Event_pairs:
                         event.entities.append((term,0))
             event.order_entities() #order entities by their average position in the tweets
             event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
-            event.rank_tweets(dimensions,word_index,5)
+            #event.rank_tweets(,word_index,5)
         print("enrich",len(self.events))
 
     def discard_last_day(self,window):
@@ -453,6 +453,7 @@ class Event_pairs:
 #            print(self.word_tfidf)
 
         def rank_tweets(self,dimensions,w_i,n):
+            print("rank",self.entities)
             tweet_score = []
             exclude = set(string.punctuation)
             for tweet in self.tweets:
@@ -466,6 +467,7 @@ class Event_pairs:
                         try:
                             wordscore = self.word_tfidf[word]
                             score += wordscore
+                            print(word,w_i[word])
                             tweetvector[w_i[word]] = wordscore
                         except KeyError:
                             continue
@@ -476,11 +478,13 @@ class Event_pairs:
             for x in sorted(tweet_score,key = lambda x : x[2],reverse=True):
                 add = True
                 for rt in reptweets:
+                    print(len(tweet_score),x[0],[(i,y) for i,y in enumerate(x[1]) if y > 0],"\n",rt[0],[(i,y) for i,y in enumerate(rt[1]) if y > 0],"\n",calculations.calculate_cosine_similarity(x[1],rt[1]),len(reptweets))
                     if calculations.calculate_cosine_similarity(x[1],rt[1]) > 0.8:              
                         add = False
+                        break
                 if add:
                     reptweets.append(x)
-                print(len(reptweets))
+                #print(len(reptweets))
                 if len(reptweets) == n:
                     break
             self.reptweets = [x[0] for x in reptweets]

@@ -75,18 +75,19 @@ def output_events(d):
     for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
         #print(event.tt_ratio,[x.text for x in event.tweets])
         if event.tt_ratio > 0.30:
+            event.rank_tweets(ep.dimensions,ep.word_index,5)
             if args.q:
-                eventq.write("[[Question:MC:SingleAnswer:Vertical]]\nBeschrijven onderstaande tweets een coherente gebeurtenis? <br> <br> <br>\n")
-                for tweet in event.tweets[:5]:
-                    eventq.write("<i>" + tweet.text + "</i> <br> <br>\n")
+                eventq.write("[[Question:MC:SingleAnswer:Vertical]]\nVerwijzen alle onderstaande tweets naar dezelfde gebeurtenis? <br> <br> <br>\n")
+                for tweet in event.reptweets:
+                    eventq.write("<i>" + tweet + "</i> <br> <br>\n")
                 eventq.write("[[choices]]\nJa\nNee\n\n[[Question:MC:SingleAnswer:Vertical]]\n" +
                     "Hoe verhouden onderstaande termen zich tot de gebeurtenis? <br> <br>\n")
                 for ent in event.entities:
                     eventq.write("<b>" + ent[0] + "</b> <br>\n")
-                eventq.write("[[Choices]]\nTe algemene beschrijving\nGoede beschrijving\nTe overvloedige beschrijving\n\n")
+                eventq.write("[[Choices]]\nGoed\nMatig\nSlecht\n\n")
             outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + \
                 ", ".join([x[0] for x in event.entities]) + "\n" + \
-                "\n".join(event.reptweets) + "\n"
+                "\n".join([x.text for x in event.tweets]) + "\n"
             eventinfo.write(outstr)
     eventinfo.close()
 
