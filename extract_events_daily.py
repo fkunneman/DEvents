@@ -76,7 +76,8 @@ def output_events(d):
             if args.q:
                 eventq.write("[[Question:MC:SingleAnswer:Vertical]]\nVerwijzen alle onderstaande tweets naar dezelfde gebeurtenis? <br> <br> <br>\n")
                 for tweet in event.reptweets:
-                    eventq.write("<i>" + tweet + "</i> <br> <br>\n")
+                    tweettext = " ".join(tweet)
+                    eventq.write("<i>" + tweettext + "</i> <br> <br>\n")
                 eventq.write("[[choices]]\nJa\nNee\n\n[[Question:MC:SingleAnswer:Vertical]]\n" +
                     "Hoe verhouden onderstaande termen zich tot de gebeurtenis? <br> <br>\n")
                 for ent in event.entities:
