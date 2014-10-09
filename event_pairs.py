@@ -180,7 +180,7 @@ class Event_pairs:
                     users = [x.user for x in date_entity_tweets[date][entity]]
                     g2_user = (len(list(set(users))) / len(users)) * g2
                     date_entity_score.append([date,(entity,g2_user),g2_user,date_entity_tweets[date][entity]])
-        top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:100]
+        top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:2500]
         self.events = []
         for x in range(len(top)):
             self.events.append(self.Event(x,top[x]))
@@ -193,7 +193,6 @@ class Event_pairs:
         tfidf_vectorizer = TfidfVectorizer()
         tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
         cos = cosine_similarity(tfidf_matrix,tfidf_matrix)
-#        print("test",tfidf_matrix[0],tfidf_matrix[1],cosine_similarity(tfidf_matrix[0],tfidf_matrix[1]))
         pair_sim = defaultdict(lambda : defaultdict(list))
         #agglomerative clustering
         #order pairs by similarity
@@ -205,10 +204,10 @@ class Event_pairs:
             events = [x for x in self.events if x.date == date]
             indexes = [x.ids[0] for x in events]
             pairs = [x for x in itertools.combinations(indexes,2)]
-            scores = [([x[0]],[x[1]],pair_sim[x[0]][x[1]]) for x in pairs if pair_sim[x[0]][x[1]] > 0.5]
+            scores = [([x[0]],[x[1]],pair_sim[x[0]][x[1]]) for x in pairs if pair_sim[x[0]][x[1]] > 0.7]
             if len(scores) > 0:
                 scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
-                while scores_sorted[0][2] > 0.5: #scores are not static 
+                while scores_sorted[0][2] > 0.7: #scores are not static 
                     highest_sim = scores_sorted[0] #start with top
                     #merge events
                     for x in events: #collect the event that matches the id list
@@ -259,9 +258,7 @@ class Event_pairs:
         tfidf_vectorizer = TfidfVectorizer()
         tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
         word_indexes = tfidf_vectorizer.get_feature_names()
-        word_index = dict((w,i) for i,w in enumerate(word_indexes))
         doc_tfidf = tfidf_matrix.toarray()
-        dimensions = len(tfidf_matrix[0:1].toarray()[0])
         #for each event
         for i,event in enumerate(self.events):
             event.resolve_overlap_entities() #resolve overlap
@@ -290,7 +287,6 @@ class Event_pairs:
                         event.entities.append((term,0))
             event.order_entities() #order entities by their average position in the tweets
             event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
-            event.rank_tweets(dimensions,word_index,5)
         print("enrich",len(self.events))
 
     def discard_last_day(self,window):
@@ -430,7 +426,6 @@ class Event_pairs:
             for entity in self.entities:    
                 positions = []
                 for tweet in self.tweets:
-                    #print(entity[0],tweet.text)
                     if re.search(re.escape(entity[0]),tweet.text):
                         positions.append(re.search(re.escape(entity[0]),tweet.text).span()[0])
                 entity_position.append((entity,numpy.mean(positions)))   
@@ -446,46 +441,40 @@ class Event_pairs:
         def add_tfidf(self,sorted_tfidf,w_indexes):
             self.word_tfidf = {}
             sorted_word_tfidf = [(w_indexes[x[0]],x[1]) for x in sorted_tfidf if x[1] > 0]
-            #print(sorted_word_tfidf)
             for word_score in sorted_word_tfidf:
-#                print(word_score)
                 self.word_tfidf[word_score[0]] = word_score[1]
-#            print(self.word_tfidf)
 
-        def rank_tweets(self,dimensions,w_i,n):
+        def rank_tweets(self,n):
+            print("rank",self.entities)
             tweet_score = []
             exclude = set(string.punctuation)
             for tweet in self.tweets:
-                tweetvector = dimensions * [0]
                 score = 0
                 for chunk in tweet.chunks:
                     chunk = chunk.replace('#','').replace('-',' ')
                     chunk = ''.join(ch for ch in chunk if ch not in exclude)
                     for word in chunk.split():
-                #for word in tweet.text.split():
                         try:
                             wordscore = self.word_tfidf[word]
                             score += wordscore
-                            tweetvector[w_i[word]] = wordscore
                         except KeyError:
                             continue
-                tweet_score.append((tweet.text,tweetvector,score))
-#            print(tweet_score)
-#            print(sorted(tweet_score,key = lambda x : x[0],reverse=True))
-            reptweets = []
-            for x in sorted(tweet_score,key = lambda x : x[2],reverse=True):
+                tweet_score.append((tweet.text,score))
+            self.reptweets = []
+            ht = re.compile(r"^#")
+            usr = re.compile(r"^@")
+            url = re.compile(r"^http")
+            for x in sorted(tweet_score,key = lambda x : x[1],reverse=True):
                 add = True
+                content = [x for x in x[0].split() if not ht.search(x) or usr.search(x) or url.search(x)]
+                print(x[0],content)
                 for rt in reptweets:
-                    if calculations.calculate_cosine_similarity(x[1],rt[1]) > 0.8:              
+                    overlap = len(set(content) & set(rt)) / max(len(content),len(rt))
+                    print(overlap,content,rt)
+                    if overlap > 0.8:              
                         add = False
+                        break
                 if add:
-                    reptweets.append(x)
-                print(len(reptweets))
+                    reptweets.append(content)
                 if len(reptweets) == n:
                     break
-            self.reptweets = [x[0] for x in reptweets]
-#             new_tweets = []
-#             for ind in tweet_order:
-#                 new_tweets.append(self.tweets[ind])
-# #            print("before",self.tweets,"after",new_tweets)
-#             self.tweets = new_tweets
