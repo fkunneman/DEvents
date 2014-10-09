@@ -466,7 +466,7 @@ class Event_pairs:
             url = re.compile(r"^http")
             for x in sorted(tweet_score,key = lambda x : x[1],reverse=True):
                 add = True
-                content = [x for x in x[0].split() if not ht.search(x) or usr.search(x) or url.search(x)]
+                content = [x for x in x[0].split() if not ht.search(x) and not usr.search(x) and not url.search(x)]
                 print(x[0],content)
                 for rt in self.reptweets:
                     overlap = len(set(content) & set(rt)) / max(len(content),len(rt))
