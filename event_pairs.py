@@ -468,13 +468,13 @@ class Event_pairs:
                 add = True
                 content = [x for x in x[0].split() if not ht.search(x) or usr.search(x) or url.search(x)]
                 print(x[0],content)
-                for rt in reptweets:
+                for rt in self.reptweets:
                     overlap = len(set(content) & set(rt)) / max(len(content),len(rt))
                     print(overlap,content,rt)
                     if overlap > 0.8:              
                         add = False
                         break
                 if add:
-                    reptweets.append(content)
-                if len(reptweets) == n:
+                    self.reptweets.append(content)
+                if len(self.reptweets) == n:
                     break
