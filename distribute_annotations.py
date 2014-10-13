@@ -1,6 +1,12 @@
 
+import sys
 import random
 from collections import defaultdict
+
+outdir = sys.argv[1]
+ngramf = sys.argv[2]
+csf = sys.argv[3]
+csxf = sys.argv[4]
 
 twothird = 19*[8] + 14*[7]
 onethird = 12*[8] + 22*[7]
@@ -29,7 +35,50 @@ def generate_indexlist(r,s):
         asets_f.append(aset)
     return asets_f
 
+def parse_outputfile(filename):
+    outputfile = codecs.open(filename,"r","utf-8")
+    units = []
+    unit = ""
+    for line in outputfile.readlines():
+        unit += line
+        if re.search("Slecht",line):
+            units.append(unit)
+            unit = ""
+    return units
+
+#generate index lists
 asets = generate_indexlist(10,twothird)
 asets += generate_indexlist(5,onethird)
 
-#process 
+#parse outputfiles
+ngram = parse_outputfile(ngramf)
+cs = parse_outputfile(csf)
+csx = parse_outputfile(csxf)
+
+#extract events per annotator
+for i in range(15):
+    outfile = codecs.open(outdir + "annotator_" + str(i) + ".txt","w","utf-8")
+    indexfile = codecs.open(outdir + "indexes_annotator_" + str(i) + ".txt","w","utf-8")
+    j = i
+    print i,"index",j
+    indexes = range(100)
+    index_event = {}
+    ngrami = asets[j]
+    for h in range(len(ngrami)):
+        index_event[h] = ("ngram",ngrami[h],ngram[ngrami[h]])
+    j += 5
+    if j > 15:
+        j = j - 15
+    print i,"index",j
+    csi = asets[j]
+    for k,h in enumerate(range(len(ngrami),len(ngrami) + len(csi))):
+        index_event[h] = ("cs",csi[k],cs[csi[k]])
+    j += 5
+    if j > 15:
+        j = j - 15
+    print i,"index",j
+    csxi =
+    
+    
+
+     

@@ -55,7 +55,7 @@ ep = Event_pairs(args.w,args.d)
 
 def output_events(d):
     print("ranking events")
-    ep.rank_events()
+    ep.rank_events(args.a)
     ep.resolve_overlap_events(d + "clusters.txt")
     ep.enrich_events(args.a,xpos = args.x)
     if args.x:
@@ -70,14 +70,16 @@ def output_events(d):
     if args.q:
         eventq = open(d + "events_qualtrics.txt","w",encoding = "utf-8")
         eventq.write("[[AdvancedFormat]]\n\n[[Block:MC Block]]\n\n")
+    p = 0
     for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
         if event.tt_ratio > 0.30:
+            p += 1
+            print(p)
             event.rank_tweets(5)
             if args.q:
                 eventq.write("[[Question:MC:SingleAnswer:Vertical]]\nVerwijzen alle onderstaande tweets naar dezelfde gebeurtenis? <br> <br> <br>\n")
                 for tweet in event.reptweets:
-                    tweettext = " ".join(tweet)
-                    eventq.write("<i>" + tweettext + "</i> <br> <br>\n")
+                    eventq.write("<i>" + tweet + "</i> <br> <br>\n")
                 eventq.write("[[choices]]\nJa\nNee\n\n[[Question:MC:SingleAnswer:Vertical]]\n" +
                     "Hoe verhouden onderstaande termen zich tot de gebeurtenis? <br> <br>\n")
                 for ent in event.entities:

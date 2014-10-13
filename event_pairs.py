@@ -144,7 +144,7 @@ class Event_pairs:
                                     dtweet.set_entities(hashtags)
                         self.tweets.append(dtweet)
                        
-    def rank_events(self):
+    def rank_events(self,method):
         date_entity_score = []
         date_entity_tweets = defaultdict(lambda : defaultdict(list))
         date_entity_tweets_cleaned = defaultdict(lambda : defaultdict(list))
@@ -180,7 +180,10 @@ class Event_pairs:
                     users = [x.user for x in date_entity_tweets[date][entity]]
                     g2_user = (len(list(set(users))) / len(users)) * g2
                     date_entity_score.append([date,(entity,g2_user),g2_user,date_entity_tweets[date][entity]])
-        top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:2500]
+        if method == "ngrams":
+            top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:7500]    
+        else:
+            top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:2500]    
         self.events = []
         for x in range(len(top)):
             self.events.append(self.Event(x,top[x]))
@@ -262,10 +265,10 @@ class Event_pairs:
         #for each event
         for i,event in enumerate(self.events):
             event.resolve_overlap_entities() #resolve overlap
+            tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
+            tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
+            event.add_tfidf(tfidf_sorted,word_indexes)
             if method == "csx": #add terms
-                tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
-                tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
-                event.add_tfidf(tfidf_sorted,word_indexes)
                 top_terms = [word_indexes[j[0]] for j in tfidf_sorted][:5]
                 term_postag_counts = defaultdict(lambda : defaultdict(int))
                 #acquire most frequent postag for each term (provided postag is a verm, adjective or noun)
@@ -445,7 +448,6 @@ class Event_pairs:
                 self.word_tfidf[word_score[0]] = word_score[1]
 
         def rank_tweets(self,n):
-            print("rank",self.entities)
             tweet_score = []
             exclude = set(string.punctuation)
             for tweet in self.tweets:
@@ -467,14 +469,22 @@ class Event_pairs:
             for x in sorted(tweet_score,key = lambda x : x[1],reverse=True):
                 add = True
                 content = [x for x in x[0].split() if not ht.search(x) and not usr.search(x) and not url.search(x)]
-                print(x[0],content)
                 for rt in self.reptweets:
-                    overlap = len(set(content) & set(rt)) / max(len(content),len(rt))
-                    print(overlap,content,rt)
+                    overlap = len(set(content) & set(rt[1])) / max(len(set(content)),len(set(rt[1])))
                     if overlap > 0.8:              
                         add = False
                         break
                 if add:
-                    self.reptweets.append(content)
+                    self.reptweets.append((x[0],content))
                 if len(self.reptweets) == n:
                     break
+            self.reptweets = [x[0] for x in self.reptweets]
+            nreptweets = []
+            for x in self.reptweets:
+                tweetwords = []
+                for word in x.split():
+                    if usr.search(word):
+                        word = "USER"
+                    tweetwords.append(word)
+                nreptweets.append(" ".join(tweetwords))
+            self.reptweets = nreptweets
