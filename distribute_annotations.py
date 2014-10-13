@@ -44,7 +44,7 @@ def parse_outputfile(filename):
         if re.search("Slecht",line):
             units.append(unit)
             unit = ""
-    return units
+    return units[:250]
 
 #generate index lists
 asets = generate_indexlist(10,twothird)
@@ -71,14 +71,22 @@ for i in range(15):
         j = j - 15
     print i,"index",j
     csi = asets[j]
-    for k,h in enumerate(range(len(ngrami),len(ngrami) + len(csi))):
+    for k,h in enumerate(range(len(index_event.keys()),len(ngrami) + len(csi))):
         index_event[h] = ("cs",csi[k],cs[csi[k]])
     j += 5
     if j > 15:
         j = j - 15
     print i,"index",j
-    csxi =
-    
-    
+    csxi = asets[j]
+    for k,h in enumerate(range(len(index_event.keys()),len(ngrami) + len(csi) + len(csxi))):
+        index_event[h] = ("csx",csxi[k],csx[csxi[k]])
+    print len(index_event.keys()),len(ngrami),len(csi),len(csxi)
+    random.shuffle(indexes)
+    for index in indexes:
+        print index
+        outfile.write(index_event[index][2] + "\n[[PageBreak]]\n")
+        indexfile.write(str(index_event[index][0]) + " " + str(index_event[index][1] + "\n")
+    outfile.close()
+    indexfile.close()
 
      
