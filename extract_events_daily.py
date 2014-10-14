@@ -67,9 +67,6 @@ def output_events(d):
             tweetinfo.write("\t".join(info) + "\n")
         tweetinfo.close()
     eventinfo = open(d + "events_fit.txt","w",encoding = "utf-8")
-    if args.q:
-        eventq = open(d + "events_qualtrics.txt","w",encoding = "utf-8")
-        eventq.write("[[AdvancedFormat]]\n\n[[Block:MC Block]]\n\n")
     p = 0
     for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
         if event.tt_ratio > 0.30:
@@ -77,10 +74,12 @@ def output_events(d):
             print(p)
             event.rank_tweets(5)
             if args.q:
-                eventq.write("[[Question:MC:SingleAnswer:Vertical]]\nVerwijzen alle onderstaande tweets naar dezelfde gebeurtenis? <br> <br> <br>\n")
+                eventq = open(d + "events_qualtrics.txt","w",encoding = "utf-8")
+                eventq.write("[[Question:MC:SingleAnswer:Vertical]]\nVerwijzen deze 5 tweets naar dezelfde gebeurtenis? <br> <br> <br> " +
+                    "\n<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"width: 500px;\">\n\t<tbody>\n")
                 for tweet in event.reptweets:
-                    eventq.write("<i>" + tweet + "</i> <br> <br>\n")
-                eventq.write("[[choices]]\nJa\nNee\n\n[[Question:MC:SingleAnswer:Vertical]]\n" +
+                    eventq.write("\t\t<tr>\n\t\t\t<td><b>" + tweet + "</b></td>\n\t\t</tr>\n")
+                eventq.write("\t</tbody>\n</table>\n[[choices]]\nJa\nNee\n\n[[Question:MC:SingleAnswer:Vertical]]\n" +
                     "Hoe verhouden onderstaande termen zich tot de gebeurtenis? <br> <br>\n")
                 for ent in event.entities:
                     eventq.write("<b>" + ent[0] + "</b> <br>\n")

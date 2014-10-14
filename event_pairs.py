@@ -463,6 +463,7 @@ class Event_pairs:
                             continue
                 tweet_score.append((tweet.text,score))
             self.reptweets = []
+            noadds = []
             ht = re.compile(r"^#")
             usr = re.compile(r"^@")
             url = re.compile(r"^http")
@@ -473,18 +474,24 @@ class Event_pairs:
                     overlap = len(set(content) & set(rt[1])) / max(len(set(content)),len(set(rt[1])))
                     if overlap > 0.8:              
                         add = False
+                        noadds.append(x[0])
                         break
                 if add:
                     self.reptweets.append((x[0],content))
                 if len(self.reptweets) == n:
                     break
             self.reptweets = [x[0] for x in self.reptweets]
+            if len(self.reptweets) < n:
+                for rt in noadds:
+                    self.reptweets.append(rt)
+                    if len(self.reptweets) == n:
+                        break
             nreptweets = []
             for x in self.reptweets:
                 tweetwords = []
                 for word in x.split():
-                    if usr.search(word):
-                        word = "USER"
+                    if url.search(word):
+                        word = "URL"
                     tweetwords.append(word)
                 nreptweets.append(" ".join(tweetwords))
             self.reptweets = nreptweets

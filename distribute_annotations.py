@@ -10,8 +10,8 @@ ngramf = sys.argv[2]
 csf = sys.argv[3]
 csxf = sys.argv[4]
 
-twothird = 19*[8] + 14*[7]
-onethird = 12*[8] + 22*[7]
+twothird = 13*[14] + 4*[17]
+onethird = 14*[16] + 2*[13]
 filled = []
 counts = defaultdict(int)
 asets = []
@@ -64,7 +64,7 @@ for i in range(15):
     outfile.write("[[AdvancedFormat]]\n\n[[Block:MC Block]]\n\n")
     j = i
     print i,"index",j
-    indexes = range(100)
+    indexes = range(50)
     index_event = {}
     ngrami = asets[j]
     for h in range(len(ngrami)):
