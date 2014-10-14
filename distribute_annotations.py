@@ -1,4 +1,6 @@
 
+import re
+import codecs
 import sys
 import random
 from collections import defaultdict
@@ -59,6 +61,7 @@ csx = parse_outputfile(csxf)
 for i in range(15):
     outfile = codecs.open(outdir + "annotator_" + str(i) + ".txt","w","utf-8")
     indexfile = codecs.open(outdir + "indexes_annotator_" + str(i) + ".txt","w","utf-8")
+    outfile.write("[[AdvancedFormat]]\n\n[[Block:MC Block]]\n\n")
     j = i
     print i,"index",j
     indexes = range(100)
@@ -67,14 +70,14 @@ for i in range(15):
     for h in range(len(ngrami)):
         index_event[h] = ("ngram",ngrami[h],ngram[ngrami[h]])
     j += 5
-    if j > 15:
+    if j >= 15:
         j = j - 15
     print i,"index",j
     csi = asets[j]
     for k,h in enumerate(range(len(index_event.keys()),len(ngrami) + len(csi))):
         index_event[h] = ("cs",csi[k],cs[csi[k]])
     j += 5
-    if j > 15:
+    if j >= 15:
         j = j - 15
     print i,"index",j
     csxi = asets[j]
@@ -85,7 +88,7 @@ for i in range(15):
     for index in indexes:
         print index
         outfile.write(index_event[index][2] + "\n[[PageBreak]]\n")
-        indexfile.write(str(index_event[index][0]) + " " + str(index_event[index][1] + "\n")
+        indexfile.write(str(index_event[index][0]) + " " + str(index_event[index][1]) + "\n")
     outfile.close()
     indexfile.close()
 
