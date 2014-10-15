@@ -74,10 +74,10 @@ def output_events(d):
             event.rank_tweets(5)
             if args.q:
                 eventq.write("[[Question:MC:SingleAnswer:Vertical]]\nVerwijzen deze 5 tweets naar dezelfde gebeurtenis? <br> <br> <br> " +
-                    "\n<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"width: 500px;\">\n\t<tbody>\n")
+                    "\n<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"width: 500px;\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td><b>")
                 for tweet in event.reptweets:
-                    eventq.write("\t\t<tr>\n\t\t\t<td><b>" + tweet + "</b></td>\n\t\t</tr>\n")
-                eventq.write("\t</tbody>\n</table>\n[[choices]]\nJa\nNee\n\n[[Question:MC:SingleAnswer:Vertical]]\n" +
+                    eventq.write(tweet + "<br />\n\t\t\t<br />\n\t\t\t")
+                eventq.write("</tr>\n\t</tbody>\n</table>\n[[choices]]\nJa\nNee\n\n[[Question:MC:SingleAnswer:Vertical]]\n" +
                     "Hoe verhouden onderstaande termen zich tot de gebeurtenis? <br> <br>\n")
                 for ent in event.entities:
                     eventq.write("<b>" + ent[0] + "</b> <br>\n")
