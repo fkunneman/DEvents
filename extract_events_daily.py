@@ -67,14 +67,12 @@ def output_events(d):
             tweetinfo.write("\t".join(info) + "\n")
         tweetinfo.close()
     eventinfo = open(d + "events_fit.txt","w",encoding = "utf-8")
-    p = 0
+    if args.q:
+        eventq = open(d + "events_qualtrics.txt","w",encoding = "utf-8")
     for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
         if event.tt_ratio > 0.30:
-            p += 1
-            print(p)
             event.rank_tweets(5)
             if args.q:
-                eventq = open(d + "events_qualtrics.txt","w",encoding = "utf-8")
                 eventq.write("[[Question:MC:SingleAnswer:Vertical]]\nVerwijzen deze 5 tweets naar dezelfde gebeurtenis? <br> <br> <br> " +
                     "\n<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"width: 500px;\">\n\t<tbody>\n")
                 for tweet in event.reptweets:
@@ -89,6 +87,8 @@ def output_events(d):
                 "\n".join([x.text for x in event.tweets]) + "\n"
             eventinfo.write(outstr)
     eventinfo.close()
+    if args.q:
+        eventq.close()
 
 if args.m:
     print("loading event tweets")

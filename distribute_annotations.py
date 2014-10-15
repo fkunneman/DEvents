@@ -42,6 +42,7 @@ def parse_outputfile(filename):
     units = []
     unit = ""
     for line in outputfile.readlines():
+        print line
         unit += line
         if re.search("Slecht",line):
             units.append(unit)
@@ -49,16 +50,18 @@ def parse_outputfile(filename):
     return units[:250]
 
 #generate index lists
-asets = generate_indexlist(10,twothird)
-asets += generate_indexlist(5,onethird)
+asets = generate_indexlist(20,twothird)
+asets += generate_indexlist(10,onethird)
 
 #parse outputfiles
 ngram = parse_outputfile(ngramf)
 cs = parse_outputfile(csf)
 csx = parse_outputfile(csxf)
 
+print ngram,cs,csx
+
 #extract events per annotator
-for i in range(15):
+for i in range(30):
     outfile = codecs.open(outdir + "annotator_" + str(i) + ".txt","w","utf-8")
     indexfile = codecs.open(outdir + "indexes_annotator_" + str(i) + ".txt","w","utf-8")
     outfile.write("[[AdvancedFormat]]\n\n[[Block:MC Block]]\n\n")
@@ -67,18 +70,21 @@ for i in range(15):
     indexes = range(50)
     index_event = {}
     ngrami = asets[j]
+    print ngrami
+    print ngram
     for h in range(len(ngrami)):
+        print h
         index_event[h] = ("ngram",ngrami[h],ngram[ngrami[h]])
-    j += 5
-    if j >= 15:
-        j = j - 15
+    j += 10
+    if j >= 30:
+        j = j - 30
     print i,"index",j
     csi = asets[j]
     for k,h in enumerate(range(len(index_event.keys()),len(ngrami) + len(csi))):
         index_event[h] = ("cs",csi[k],cs[csi[k]])
-    j += 5
-    if j >= 15:
-        j = j - 15
+    j += 10
+    if j >= 30:
+        j = j - 30
     print i,"index",j
     csxi = asets[j]
     for k,h in enumerate(range(len(index_event.keys()),len(ngrami) + len(csi) + len(csxi))):
