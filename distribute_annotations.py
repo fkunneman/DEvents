@@ -42,7 +42,7 @@ def parse_outputfile(filename):
     units = []
     unit = ""
     for line in outputfile.readlines():
-        print line
+#        print line
         unit += line
         if re.search("Slecht",line):
             units.append(unit)
@@ -58,22 +58,43 @@ ngram = parse_outputfile(ngramf)
 cs = parse_outputfile(csf)
 csx = parse_outputfile(csxf)
 
-print ngram,cs,csx
+#print ngram,cs,csx
 
 #extract events per annotator
 for i in range(30):
     outfile = codecs.open(outdir + "annotator_" + str(i) + ".txt","w","utf-8")
     indexfile = codecs.open(outdir + "indexes_annotator_" + str(i) + ".txt","w","utf-8")
     outfile.write("[[AdvancedFormat]]\n\n[[Block:MC Block]]\n\n")
+    outfile.write("<div>Lama Events detecteert volledig automatisch gebeurtenissen in de grote stroom van Nederlandse tweets.&nbsp;Je gaat de output van dit systeem testen, en wordt daarbij wellicht verrast door interessante gebeurtenissen waar je geen weet van had. In totaal krijg je 50 gebeurtenissen ter beoordeling te zien.&nbsp;De duur is ongeveer 20 minuten. Je voortgang wordt bijgehouden, dus je kunt deze survey op ieder moment afsluiten en later weer de link aanklikken om verder te gaan. Lees om te beginnen de instructies hieronder goed door.&nbsp;&nbsp;</div>
+
+<div>&nbsp;</div>
+
+<div>Je krijgt steeds 5 tweets te zien en wordt gevraagd aan te geven&nbsp;of ze alle 5 naar dezelfde gebeurtenis verwijzen. Voor het identificeren van een gebeurtenis kun je de volgende definitie hanteren:</div>
+
+<div>&nbsp;</div>
+
+<div><em>Een gebeurtenis vindt plaats op een specifiek tijdstip en is van belang voor een grotere groep mensen.&nbsp;</em></div>
+
+<div>&nbsp;</div>
+
+<div>Sportwedstrijden en wetsveranderingen zijn in deze definitie een gebeurtenis, terwijl een vakantie naar Turkije te persoonlijk is om een gebeurtenis te zijn.<br />
+<br />
+Verder is het belangrijk dat de 5 tweets naar dezelfde gebeurtenis verwijzen. Soms worden er meerdere gebeurtenissen in een tweet beschreven, zoals een supportersactie tijdens een voetbalwedstrijd. Als alle 5 de tweets op deze manier zijdelings naar dezelfde voetbalwedstrijd verwijzen is dit toch goed. Echter, als ze alle vijf een verschillende&nbsp;gebeurtenis in Amsterdam beschrijven is het niet goed. Deze gebeurtenissen worden dan niet door een gezamenlijke gebeurtenis overkoepeld.&nbsp;<br />
+<br />
+Events worden soms met hashtags aangeduid, zoals #tvoh voor &#39;The Voice of Holland&#39;, of #ajafey voor &#39;Ajax-Feyenoord&#39;. Ook dit wordt gezien als een correcte verwijzing.&nbsp;<br />
+<br />
+Als je de eerste vraag bevestigend beantwoord volgt nog een tweede vraag.&nbsp;In het geval van een positief antwoord verschijnt nog een tweede vraag. Je krijgt dan&nbsp;&eacute;&eacute;n of meerdere termen te zien die de gebeurtenis beschrijven, met de vraag of ze zich goed, matig of slecht tot de gebeurtenis verhouden. Gegeven wat je over de gebeurtenis weet op basis van de 5 tweets, in welke mate&nbsp;geven de termen dan relevante en afdoende informatie over wat voor gebeurtenis het is?<br />
+<br />
+Veel succes!</div>")
     j = i
     print i,"index",j
     indexes = range(50)
     index_event = {}
     ngrami = asets[j]
-    print ngrami
-    print ngram
+#    print ngrami
+#    print ngram
     for h in range(len(ngrami)):
-        print h
+#        print h
         index_event[h] = ("ngram",ngrami[h],ngram[ngrami[h]])
     j += 10
     if j >= 30:
