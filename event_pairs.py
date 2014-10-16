@@ -51,7 +51,7 @@ class Event_pairs:
             tweetinfo.write("\t".join(info) + "\n")
         tweetinfo.close()
         #rank events, resolve overlap and enrich events
-        self.rank_events()
+        self.rank_events("csx")
         self.resolve_overlap_events()
         self.enrich_events("csx")
         #output events
@@ -447,7 +447,7 @@ class Event_pairs:
             for word_score in sorted_word_tfidf:
                 self.word_tfidf[word_score[0]] = word_score[1]
 
-        def rank_tweets(self,n):
+        def rank_tweets(self,rep = False):
             tweet_score = []
             exclude = set(string.punctuation)
             for tweet in self.tweets:
@@ -462,36 +462,37 @@ class Event_pairs:
                         except KeyError:
                             continue
                 tweet_score.append((tweet.text,score))
-            self.reptweets = []
-            noadds = []
-            ht = re.compile(r"^#")
-            usr = re.compile(r"^@")
-            url = re.compile(r"^http")
-            for x in sorted(tweet_score,key = lambda x : x[1],reverse=True):
-                add = True
-                content = [x for x in x[0].split() if not ht.search(x) and not usr.search(x) and not url.search(x)]
-                for rt in self.reptweets:
-                    overlap = len(set(content) & set(rt[1])) / max(len(set(content)),len(set(rt[1])))
-                    if overlap > 0.8:              
-                        add = False
-                        noadds.append(x[0])
+            if rep:
+                self.reptweets = []
+                noadds = []
+                ht = re.compile(r"^#")
+                usr = re.compile(r"^@")
+                url = re.compile(r"^http")
+                for x in sorted(tweet_score,key = lambda x : x[1],reverse=True):
+                    add = True
+                    content = [x for x in x[0].split() if not ht.search(x) and not usr.search(x) and not url.search(x)]
+                    for rt in self.reptweets:
+                        overlap = len(set(content) & set(rt[1])) / max(len(set(content)),len(set(rt[1])))
+                        if overlap > 0.8:              
+                            add = False
+                            noadds.append(x[0])
+                            break
+                    if add:
+                        self.reptweets.append((x[0],content))
+                    if len(self.reptweets) == 5:
                         break
-                if add:
-                    self.reptweets.append((x[0],content))
-                if len(self.reptweets) == n:
-                    break
-            self.reptweets = [x[0] for x in self.reptweets]
-            if len(self.reptweets) < n:
-                for rt in noadds:
-                    self.reptweets.append(rt)
-                    if len(self.reptweets) == n:
-                        break
-            nreptweets = []
-            for x in self.reptweets:
-                tweetwords = []
-                for word in x.split():
-                    if url.search(word):
-                        word = "URL"
-                    tweetwords.append(word)
-                nreptweets.append(" ".join(tweetwords))
-            self.reptweets = nreptweets
+                self.reptweets = [x[0] for x in self.reptweets]
+                if len(self.reptweets) < 5:
+                    for rt in noadds:
+                        self.reptweets.append(rt)
+                        if len(self.reptweets) == 5:
+                            break
+                nreptweets = []
+                for x in self.reptweets:
+                    tweetwords = []
+                    for word in x.split():
+                        if url.search(word):
+                            word = "URL"
+                        tweetwords.append(word)
+                    nreptweets.append(" ".join(tweetwords))
+                self.reptweets = nreptweets
