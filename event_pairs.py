@@ -60,7 +60,7 @@ class Event_pairs:
             event_unit = {"date":event.date,"keyterms":event.entities,"score":event.score,
                 "tweets":[{"id":x.id,"user":x.user,"date":x.date,"text":x.text,
                 "date references":",".join([str(y) for y in x.daterefs]),
-                "entities":",".join(x.entities),"postags":",".join(x.postags)} for x in event.tweets]} 
+                "entities":",".join(x.entities),"postags":" | ".join(",".join(x) for x in tweet.postags)} for x in event.tweets]} 
             eventdict[i] = event_unit
         self.tweets = []
         self.events = []

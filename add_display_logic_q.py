@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 
+from __future__ import unicode_literals
 import sys
 import codecs
 import json
 import re
 
-infile = codecs.open(sys.argv[1],"r","utf-8")
+infile = open(sys.argv[1])
 outfile = codecs.open(sys.argv[2],"w","utf-8")
 
 
 qidm = re.compile(r"QID(\d+)")
 
 try:
-    decoded = json.loads(infile.read())
+    decoded = json.loads(infile.read()).replace("\u00e2\u0080\"","-").replace("\u00f0\u009f'\u0096","").replace("& amp ;","&").replace("caf\u00e9","").replace("& gt ;",">").replace("\u00c3\u00ab \u00e2\u0080\"","e").replace("\u00c3\u00ab",u"e").replace("\u00e2\u0080\u009c","").replace("& amp ; #39 ;","\'"))
  
     # pretty printing of json-formatted string
     print decoded.keys()
@@ -47,8 +48,8 @@ try:
                         entry["Payload"]["InPageDisplayLogic"]["inPage"] = True
                         entry["Payload"]["Choices"] = {1:{"Display":"Goed"},2:{"Display":"Matig"},3:{"Display":"Slecht"}}
                         print entry["Payload"].keys()
-    json.dump(decoded, outfile)
+    json.dump(decoded, outfile, ensure_ascii=False)
  
-except (ValueError, KeyError, TypeError):
+except (ValueError, KeyError, TypeError): 
     print "JSON format error",entry
 
