@@ -38,11 +38,18 @@ def generate_indexlist(r,s):
     return asets_f
 
 def parse_outputfile(filename):
-    outputfile = codecs.open(filename,"r","utf-8")
+    outputfile = codecs.open(filename,"r","iso-8859-2")
+    #outputfile = codecs.open(filename,"r","utf-8")
     units = []
     unit = ""
     for line in outputfile.readlines():
+        line = unicode(line)
 #        print line
+        line = line.replace("width: 500px","width: 750px")
+#        try:
+#            line = line.encode("iso-8859-2")
+#        except:
+#            print "encode error"
         unit += line
         if re.search("Slecht",line):
             units.append(unit)
@@ -62,7 +69,8 @@ csx = parse_outputfile(csxf)
 
 #extract events per annotator
 for i in range(30):
-    outfile = codecs.open(outdir + "annotator_" + str(i) + ".txt","w","utf-8")
+    outfile = codecs.open(outdir + "annotator_" + str(i) + ".txt","w","iso-8859-2")
+    #outfile = open(outdir + "annotator_" + str(i) + ".txt","w")
     indexfile = codecs.open(outdir + "indexes_annotator_" + str(i) + ".txt","w","utf-8")
     outfile.write("[[AdvancedFormat]]\n\n[[Block:MC Block]]\n\n")
     #outfile.write(r"<div>Lama Events detecteert volledig automatisch gebeurtenissen in de grote " + \
@@ -89,7 +97,7 @@ for i in range(30):
     #    "gebeurtenis weet op basis van de 5 tweets, in welke mate&nbsp;geven de termen dan relevante en " + \
     #    "afdoende informatie over wat voor gebeurtenis het is?<br /><br />Wees vooral kritisch en onbevooroordeeld in je beoordeling, het gaat erom dat we een indruk krijgen van de kwaliteit van het systeem. Veel succes!</div>\n[[PageBreak]]\n")
     j = i
-    print i,"index",j
+#    print i,"index",j
     indexes = range(50)
     index_event = {}
     ngrami = asets[j]
@@ -101,22 +109,22 @@ for i in range(30):
     j += 10
     if j >= 30:
         j = j - 30
-    print i,"index",j
+#    print i,"index",j
     csi = asets[j]
     for k,h in enumerate(range(len(index_event.keys()),len(ngrami) + len(csi))):
         index_event[h] = ("cs",csi[k],cs[csi[k]])
     j += 10
     if j >= 30:
         j = j - 30
-    print i,"index",j
+#    print i,"index",j
     csxi = asets[j]
     for k,h in enumerate(range(len(index_event.keys()),len(ngrami) + len(csi) + len(csxi))):
         index_event[h] = ("csx",csxi[k],csx[csxi[k]])
-    print len(index_event.keys()),len(ngrami),len(csi),len(csxi)
+#    print len(index_event.keys()),len(ngrami),len(csi),len(csxi)
     random.shuffle(indexes)
     for index in indexes:
-        print index
-        outfile.write(index_event[index][2] + "\n[[PageBreak]]\n")
+#        print index
+        outfile.write(index_event[index][2] + unicode("\n[[PageBreak]]\n"))
         indexfile.write(str(index_event[index][0]) + " " + str(index_event[index][1]) + "\n")
     outfile.close()
     indexfile.close()
