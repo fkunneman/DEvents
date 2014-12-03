@@ -273,7 +273,7 @@ class Event_pairs:
             if method == "csx": #add terms
                 top_terms = [word_indexes[j[0]] for j in tfidf_sorted][:5]
                 term_postag_counts = defaultdict(lambda : defaultdict(int))
-                #acquire most frequent postag for each term (provided postag is a verm, adjective or noun)
+                #acquire most frequent postag for each term (provided postag is a verb, adjective or noun)
                 for tweet in event.tweets:
                     #print(tweet,xpos)
                     if xpos:
