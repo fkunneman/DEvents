@@ -41,7 +41,7 @@ class Event_pairs:
         #process tweets
         self.select_date_entity_tweets(tweetfile.split("\n")[1:],format = "twiqs")
         #prune tweets
-        self.discard_last_day(30)
+        self.discard_last_day(40)
         #write modeltweets
         tweetinfo = open("tmp/modeltweets.txt","w",encoding = "utf-8")
         for tweet in self.tweets:
@@ -57,11 +57,13 @@ class Event_pairs:
         #output events
         eventdict = defaultdict(lambda : {})
         for i,event in enumerate(sorted(self.events,key = lambda x : x.score,reverse=True)):
-            event_unit = {"date":event.date,"keyterms":event.entities,"score":event.score,
-                "tweets":[{"id":x.id,"user":x.user,"date":x.date,"text":x.text,
-                "date references":",".join([str(y) for y in x.daterefs]),
-                "entities":",".join(x.entities),"postags":" | ".join(",".join(x) for x in tweet.postags)} for x in event.tweets]} 
-            eventdict[i] = event_unit
+            if event.tt_ratio > 0.30:
+                event.rank_tweets(rep=True)
+                event_unit = {"date":event.date,"keyterms":event.entities,"score":event.score,
+                    "tweets":[{"id":x.id,"user":x.user,"date":x.date,"text":x.text,
+                    "date references":",".join([str(y) for y in x.daterefs]),
+                    "entities":",".join(x.entities),"postags":" | ".join(",".join(x) for x in tweet.postags)} for x in event.tweets]} 
+                eventdict[i] = event_unit
         self.tweets = []
         self.events = []
         return eventdict
