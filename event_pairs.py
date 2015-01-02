@@ -44,6 +44,7 @@ class Event_pairs:
         self.discard_last_day(40)
         #write modeltweets
         tweetinfo = open("tmp/modeltweets.txt","w",encoding = "utf-8")
+        print("date",self.tweets[0].date)
         for tweet in self.tweets:
             info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
                 " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
@@ -99,7 +100,7 @@ class Event_pairs:
 
     def select_date_entity_tweets(self,new_tweets,format):
         tokenizer = ucto.Tokenizer(self.ucto_settingsfile)
-        for tweet in new_tweets:
+        for q,tweet in enumerate(new_tweets):
             tokens = tweet.strip().split("\t")
             if (format == "twiqs" or (format == "exp" and tokens[0] == "dutch")) \
                     and not re.search(r"\bRT\b",tokens[-1]):
