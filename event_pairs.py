@@ -98,7 +98,7 @@ class Event_pairs:
             self.tweets.append(tweet)
 
     def select_date_entity_tweets(self,new_tweets,format):
-        tokenizer = ucto.Tokenizer(self.ucto_settingsfile)
+            
         for tweet in new_tweets:
             tokens = tweet.strip().split("\t")
             if (format == "twiqs" or (format == "exp" and tokens[0] == "dutch")) \
