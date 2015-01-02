@@ -100,7 +100,7 @@ class Event_pairs:
 
     def select_date_entity_tweets(self,new_tweets,format):
         tokenizer = ucto.Tokenizer(self.ucto_settingsfile)
-        for q,tweet in enumerate(new_tweets):
+        for tweet in new_tweets:
             tokens = tweet.strip().split("\t")
             if (format == "twiqs" or (format == "exp" and tokens[0] == "dutch")) \
                     and not re.search(r"\bRT\b",tokens[-1]):
