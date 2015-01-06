@@ -17,9 +17,22 @@ for i,line in enumerate(lines):
 for line in lines[start:]:
     if re.search("<",line) and re.search(">",line):
         tokens = line.strip().split("\t")
+        if re.match(r"</TimeML>",tokens[0]):
+            break
         tweet_id = tokens[0]
         text = tokens[1]
         textparts = text.split("<")
-        timetags = [x.split(">")[0] for x in textparts]
-        print timetags
+        texs = []
+        for timetag in range(1,len(textparts),2):
+            parts = textparts[timetag].split(">")
+            tex = parts[1]
+            tag = parts[0]
+#            if re.search("DATE",tag):
+#                print "datevalue",tag.split("value=")[1],"tex",tex
+#            if re.search("type=\"TIME\"",tag):
+#                print "timevalue",tag.split("value=")[1],"tex",tex
+            if re.search("type=\"SET\"",tag):
+                print "timevalue",tag.split("value=")[1],"tex",tex
+#        timetags = [x.split(">")[0] for x in textparts]
+ #       print textparts
 
