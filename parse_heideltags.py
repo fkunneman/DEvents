@@ -49,7 +49,9 @@ for line in lines[start:]:
                 if timevalue1.search(value):
                     texs.append((tex,value))
             elif re.search("type=\"SET\"",tag):
-                if setvalue1.search(value) or setvalue2.search(value):
+                if (setvalue1.search(value) and not re.search("quant",tag)) or setvalue2.search(value):
                     texs.append((tex,value))
-        print text,texs
+        if len(texs) > 0:
+            outfile.write(tweet_id + "\t" + " ".join([",".join(list(x)) for x in texs]) + "\n")
+
 
