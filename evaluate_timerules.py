@@ -66,5 +66,5 @@ print("heidelfile")
 for d in unique_heidel:
     unique_heidelout.write(heideldict[d] + "\n")
 print("rulefile")
-for d in unique_heidel:
+for d in unique_ruleds:
     unique_ruleout.write(ruledict[d] + "\n")
