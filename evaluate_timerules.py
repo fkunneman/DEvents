@@ -62,7 +62,9 @@ for d in intersect:
 for tweet in intersect_tweets:
     intersectout.write("\t".join(tweet) + "\n")
 
-print("heidelfile") 
-unique_heidelout.write("\n".join([x[1] for x in heidelinfo if x[0] in unique_heidel]))
+print("heidelfile")
+for d in unique_heidel:
+    unique_heidelout.write(heideldict[d] + "\n")
 print("rulefile")
-unique_ruleout.write("\n".join([x[1] for x in ruleinfo if x[0] in unique_ruleds]))
+for d in unique_heidel:
+    unique_ruleout.write(ruledict[d] + "\n")
