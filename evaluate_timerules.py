@@ -39,12 +39,15 @@ unique_heidel = list(set(heidelds) - set(ruleds))
 unique_ruleds = list(set(ruleds) - set(heidelds))
 union = intersect + unique_heidel + unique_ruleds
 
+print("heidelds",len(heidelds),"ruleds",len(ruleds),"intersect",len(intersect),"unique heidel",len(unique_heidel),"unique_rules",len(unique_ruleds),"union",len(union))
+
 print("calculation statistics")
 #calculate statistics
 statfile.write("num timetweets heidel: " + str(len(heidelds)) + " (" + str((len(heidelds) / total_amount_tweets) * 100) + "%)\n")
 statfile.write("num timetweets rules: " + str(len(ruleds)) + " (" + str((len(ruleds) / total_amount_tweets) * 100) + "%)\n")
 statfile.write("num timetweets intersect: " + str(len(intersect)) + " (" + str((len(intersect) / total_amount_tweets) * 100) + "%)\n")
 statfile.write("num timetweets union: " + str(len(union)) + " (" + str((len(union) / total_amount_tweets) * 100) + "%)\n")
+statfile.close()
 
 print("writing tweetfiles")
 #write_files
