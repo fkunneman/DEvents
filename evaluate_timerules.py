@@ -11,6 +11,7 @@ intersectout = codecs.open(sys.argv[5],"w","utf-8")
 unique_heidelout = codecs.open(sys.argv[6],"w","utf-8")
 unique_ruleout = codecs.open(sys.argv[7],"w","utf-8")
 
+print("extracting ids heidel")
 #extract id-info list heideltagging
 heidelds = []
 heidelinfo = []
@@ -21,6 +22,7 @@ for line in heideltagging.readlines():
     heidelds.append(tokens[0])
 heideltagging.close()
 
+print("extracting ids rules")
 #extract id-info list ruletagging
 ruleds = []
 ruleinfo = []
@@ -30,24 +32,30 @@ for line in ruletagging.readlines():
     ruleds.append(tokens[0])
 ruletagging.close()
 
+print("making intersection, unique and union lists")
 #generate intersect and 2 unique lists
 intersect = list(set(heidelds).intersection(ruleds))
 unique_heidel = list(set(heidelds) - set(ruleds))
 unique_ruleds = list(set(ruleds) - set(heidelds))
 union = intersect + unique_heidel + unique_ruleds
 
+print("calculation statistics")
 #calculate statistics
 statfile.write("num timetweets heidel: " + str(len(heidelds)) + " (" + str((len(heidelds) / total_amount_tweets) * 100) + "%)\n")
 statfile.write("num timetweets rules: " + str(len(ruleds)) + " (" + str((len(ruleds) / total_amount_tweets) * 100) + "%)\n")
 statfile.write("num timetweets intersect: " + str(len(intersect)) + " (" + str((len(intersect) / total_amount_tweets) * 100) + "%)\n")
 statfile.write("num timetweets union: " + str(len(union)) + " (" + str((len(union) / total_amount_tweets) * 100) + "%)\n")
 
+print("writing tweetfiles")
 #write_files
+print("intersect file")
 intersect_tweets = []
 for d in intersect:
     intersect_tweets.append(([x[1] for x in heidelinfo if x[0] == d][0],[x[1] for x in ruleinfo if x[0] == d]))
 for tweet in intersect_tweets:
     intersectout.write("\t".join(tweet) + "\n")
 
+print("heidelfile") 
 unique_heidelout.write("\n".join([x[1] for x in heidelinfo if x[0] in unique_heidel]))
+print("rulefile")
 unique_ruleout.write("\n".join([x[1] for x in ruleinfo if x[0] in unique_ruleds]))
