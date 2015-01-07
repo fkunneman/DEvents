@@ -37,9 +37,10 @@ for line in ruletagging.readlines():
 ruletagging.close()
 
 print("making intersection, unique and union lists")
+print("len set heidelds",len(list(set(heidelds))),"len set ruleds",len(list(set(ruleds))))
 #generate intersect and 2 unique lists
-intersect = list(set(heidelds).intersection(ruleds))
 unique_heidel = list(set(heidelds) - set(ruleds))
+intersect = list(set(heidelds) & set(ruleds))
 unique_ruleds = list(set(ruleds) - set(heidelds))
 union = intersect + unique_heidel + unique_ruleds
 

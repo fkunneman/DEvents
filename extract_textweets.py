@@ -39,12 +39,13 @@ def extract_date(tweet,date):
         "krap |(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + (nums) + " " + (timeunits) + 
         r"( nog)? te gaan",r"(\b|^)" + (nums) + " " + (months) + r"( |$)" + r"(\d{4})?",
         r"(\b|^)(\d{1,2}-\d{1,2})(-\d{2,4})?(\b|$)",r"(\b|^)(\d{1,4}/\d{1,2})(/\d{1,4})?(\b|$)",
-        r"(\b|$)(volgende week|aankomende|deze) (maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)"
+	r"(\b|$)(volgende week|komende|aankomende|deze) (maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)"
         r" ?(avond|nacht|ochtend|middag)?( |$)",r"(\b|$)(overmorgen) ?(avond|nacht|ochtend|middag)?( |$)"])
 
     date_eu = re.compile(r"(\d{1,2})-(\d{1,2})-?(\d{2,4})?")
-    date_vs = re.compile(r"(\d{2,4})?/?(\d{1,2})/(\d{1,2})")
+    date_vs = re.compile(r"(\d{1,4})/(\d{1,2})/(\d{1,4})")
     date_vs2 = re.compile(r"(\d{1,2})/(\d{1,2})/(\d{2,4})")
+    date_vs3 = re.compile(r"(\d{1,2})/(\d{1,2})")
     ns = convert_nums.keys()
     timeus = convert_timeunit.keys()
     ms = convert_month.keys()
@@ -56,6 +57,7 @@ def extract_date(tweet,date):
         for i,units in enumerate(matches):
             timephrases.append(" ".join([x for x in units if len(x) > 0 and not x == " "]))
             for unit in units:
+#                print(unit)
                 if unit in ns:
                     nud["num"].append((convert_nums[unit],i))
                 elif unit in timeus:
@@ -123,6 +125,7 @@ def extract_date(tweet,date):
                 if re.search("-",da[0]):
                     if "year" in nud:
                         if num_match in [x[1] for x in nud["year"]]:
+#                            print("da0",da[0],"nudyear",nud["year"],"nylist",[x for x in nud["year"]])
                             ds = date_eu.search(da[0] + [x[0] for x in nud["year"] if x[1] == \
                                 num_match][0]).groups()
                         else:
@@ -145,22 +148,23 @@ def extract_date(tweet,date):
                 elif re.search("/",da[0]):
                     if "year" in nud:
                         if num_match in [x[1] for x in nud["year"]]:
+#                            print("da0",da[0],"nudyear",nud["year"],"nylist",[x for x in nud["year"]])
                             ds = date_vs.search(da[0] + [x[0] for x in nud["year"] if x[1] == \
                                 num_match][0]).groups()
                         else:
                             ds = date_vs.search(da[0]).groups()
                     else:
-                        ds = date_vs.search(da[0]).groups()
+                        ds = date_vs3.search(da[0]).groups()
                     dsi = [int(x) for x in ds if x != None]
                     try:
                         if dsi[0] in range(1,32) and dsi[1] in range(1,13): #30/03/2015
                             outdate = False
                             if len(dsi) == 3:
-                                if len(dsi[2]) == 4:
+                                if len(str(dsi[2])) == 4:
                                     outdate = datetime.date(dsi[2],dsi[1],dsi[0])
-                                elif len(dsi[2]) == 2:
+                                elif len(str(dsi[2])) == 2:
                                     if dsi[2] in range(10,21):
-                                        outdate = datetime.date(dsi[2]+2000,dsi[1],dsi[0])
+                                        outdate = datetime.date((dsi[2]+2000),dsi[1],dsi[0])
                             else:
                                 outdate = datetime.date(date.year,dsi[1],dsi[0])
                             if outdate:
@@ -177,26 +181,26 @@ def extract_date(tweet,date):
                         continue
         if "weekday" in nud:
             if not "date" in nud and not "month" in nud and not "timeunit" in nud: # overrule by more specific indication
-                ptags = return_postags(tweet,f,wws = True)
-                past = False
-                for tag in ptags:
-                    if re.search(r"^WW\(vd",tag[1]) or re.search(r"^WW\(pv,verl",tag[1]):
-                        past = True
-                if not past:
-                    tweet_weekday=date.weekday()
-                    for w in nud["weekday"]:
-                        num_match = w[1]
-                        ref_weekday=weekdays.index(w[0])
-                        if num_match in [x[1] for x in nud["nweek"]]:
-                            add = 7
+#                ptags = return_postags(tweet,f,wws = True)
+#                past = False
+#                for tag in ptags:
+#                    if re.search(r"^WW\(vd",tag[1]) or re.search(r"^WW\(pv,verl",tag[1]):
+#                        past = True
+#                if not past:
+                tweet_weekday=date.weekday()
+                for w in nud["weekday"]:
+                    num_match = w[1]
+                    ref_weekday=weekdays.index(w[0])
+                    if num_match in [x[1] for x in nud["nweek"]]:
+                        add = 7
+                    else:
+                        add = 0
+                    if not ref_weekday == tweet_weekday and not num_match in [x[1] for x in nud["nweek"]]: 
+                        if tweet_weekday < ref_weekday:
+                            days_ahead = ref_weekday - tweet_weekday + add
                         else:
-                            add = 0
-                        if not ref_weekday == tweet_weekday and not num_match in [x[1] for x in nud["nweek"]]: 
-                            if tweet_weekday < ref_weekday:
-                                days_ahead = ref_weekday - tweet_weekday + add
-                            else:
-                                days_ahead = ref_weekday + (7-tweet_weekday) + add
-                            output.append(date + datetime.timedelta(days=days_ahead))
+                            days_ahead = ref_weekday + (7-tweet_weekday) + add
+                        output.append(date + datetime.timedelta(days=days_ahead))
         if "sday" in nud:
             for s in nud["sday"]:
                 num_match = s[1] 
@@ -210,11 +214,12 @@ def extract_date(tweet,date):
             return output
 
 
-tweets = ["ik kom op 2014/12/10","dan kom ik op 10-12-2014","en ik op 10/12/2014","waarom niet op 10/12?","of overmorgen?"]
+tweets = ["ik kom op 2014/12/10","dan kom ik op 10-12-2014","en ik op 10/12/2014","het gebeurt allemaal komende woensdag","waarom niet op 10/12?","of overmorgen?"]
 tokenizer = ucto.Tokenizer("/vol/customopt/uvt-ru/etc/ucto/tokconfig-nl-twitter")
 for tweet in tweets:
     tokenizer.process(tweet)
     text = " ".join([x.text.lower() for x in tokenizer])
+    print(text)
     out = extract_date(text,datetime.date(2014,8,8))
     print(tweet,out)
 
