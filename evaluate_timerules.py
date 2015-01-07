@@ -45,7 +45,7 @@ statfile.write("num timetweets union: " + str(len(union)) + " (" + str((len(unio
 #write_files
 intersect_tweets = []
 for d in intersect:
-    intersect_tweets.append(([x[1] for x in heidelinfo if x[0] == d][0],[x[1] for x in ruleinfo if x[0] == d]))=
+    intersect_tweets.append(([x[1] for x in heidelinfo if x[0] == d][0],[x[1] for x in ruleinfo if x[0] == d]))
 for tweet in intersect_tweets:
     intersectout.write("\t".join(tweet) + "\n")
 
