@@ -15,21 +15,25 @@ print("extracting ids heidel")
 #extract id-info list heideltagging
 heidelds = []
 heidelinfo = []
+heideldict = {}
 for line in heideltagging.readlines():
     tokens = line.strip().split("\t")
     tex = tokens[1].split(",")[0]
     heidelinfo.append((tokens[0],tex))
     heidelds.append(tokens[0])
+    heideldict[tokens[0]] = tex
 heideltagging.close()
 
 print("extracting ids rules")
 #extract id-info list ruletagging
 ruleds = []
 ruleinfo = []
+ruledict = {}
 for line in ruletagging.readlines():
     tokens = line.strip().split("\t")
     ruleinfo.append((tokens[0],tokens[3] + ", " + tokens[4])) 
     ruleds.append(tokens[0])
+    ruledict[tokens[0]] = tokens[3] + ", " + tokens[4]
 ruletagging.close()
 
 print("making intersection, unique and union lists")
@@ -51,7 +55,7 @@ print("writing tweetfiles")
 print("intersect file")
 intersect_tweets = []
 for d in intersect:
-    intersect_tweets.append(([x[1] for x in heidelinfo if x[0] == d][0],[x[1] for x in ruleinfo if x[0] == d]))
+    intersect_tweets.append((heideldict[d],ruledict[d]))
 for tweet in intersect_tweets:
     intersectout.write("\t".join(tweet) + "\n")
 
