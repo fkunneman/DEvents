@@ -90,7 +90,7 @@ def extract_date(tweet,date):
                     nud["nweek"].append((unit,i))
             timephrases[i] = timephrases[i].replace("  "," ")
         regexPattern = '|'.join(map(re.escape, timephrases))
-        output = [re.split(regexPattern, tweet)]
+        output = [regexPattern]
         if "timeunit" in nud:
             if not "month" in nud and not "date" in nud: #overrule by more specific time indication
                 for t in nud["timeunit"]: 
@@ -213,13 +213,40 @@ def extract_date(tweet,date):
         else:
             return output
 
-
-tweets = ["ik kom op 2014/12/10","dan kom ik op 10-12-2014","en ik op 10/12/2014","het gebeurt allemaal komende woensdag","waarom niet op 10/12?","of overmorgen?"]
+infile = open(sys.argv[1],encoding="utf-8")
+tweets = infile.readlines()
+infile.close()
 tokenizer = ucto.Tokenizer("/vol/customopt/uvt-ru/etc/ucto/tokconfig-nl-twitter")
-for tweet in tweets:
-    tokenizer.process(tweet)
-    text = " ".join([x.text.lower() for x in tokenizer])
-    print(text)
-    out = extract_date(text,datetime.date(2014,8,8))
-    print(tweet,out)
+for tweet in tweets[1:]:
+    tokens = tweet.strip().split("\t")
+    if not re.search(r"\bRT\b",tokens[-1]):
+        tokenizer.process(tokens[-1])
+        text = " ".join([x.text.lower() for x in tokenizer])
+        try:
+            date = time_functions.return_datetime(tokens[2],setting="vs").date()
+        except:
+            print("dateerror",tweet,tokens)
+        dateref_phrase = extract_date(text,date)
+        if dateref_phrase:
+            print(text,dateref_phrase)
+            # if len(dateref_phrase) > 1:
+            #     chunks = dateref_phrase[0]
+            #     datephrase = 
+            #     refdates = dateref_phrase[1:]
+                
+            #     dtweet.set_postags(calculations.return_postags(text,self.frogger))
+            #     if format == "exp":
+            #         units = [tokens[1],tokens[2],date,text,refdates,chunks]
+            #     else:
+            #         units = [tokens[1],tokens[6],date,text,refdates,chunks]
+            #     dtweet.set_meta(units)
+
+#tweets = ["ik kom op 2014/12/10","dan kom ik op 10-12-2014","en ik op 10/12/2014","het gebeurt allemaal komende woensdag","waarom niet op 10/12?","of overmorgen?"]
+
+# for tweet in tweets:
+#     tokenizer.process(tweet)
+#     text = " ".join([x.text.lower() for x in tokenizer])
+#     print(text)
+#     out = extract_date(text,datetime.date(2014,8,8))
+#     print(tweet,out)
 
