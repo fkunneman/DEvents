@@ -167,8 +167,21 @@ def extract_date(tweet,date,f):
                         dsi[0] in range(1,32):
                         try:
                             if ds[2] == None:
-                                if date < datetime.date(date.year,dsi[1],dsi[0]):
-                                        output.append(datetime.date(date.year,dsi[1],dsi[0]))
+                                #make sure the most sensible year is chosen
+                                #difference in days if current year is chosen
+                                difc = (date-datetime.date(date.year,dsi[1],dsi[0])).days
+                                if difc < 0:
+                                    difc = difc*-1
+                                #difference in days if next year is chosen
+                                difn = (date-datetime.date(date.year+1,dsi[1],dsi[0])).days
+                                if difn < 0:
+                                    difn = difn*-1
+                                if difc > difn:
+                                    edate = datetime.date(date.year,dsi[1],dsi[0])
+                                else:
+                                    edate = datetime.date(date.year+1,dsi[1],dsi[0])
+                                if date < edate:
+                                        output.append(edate)
                             else:
                                 if dsi[2] in range(2010,2020):
                                     if date < datetime.date(dsi[2],dsi[1],dsi[0]):
@@ -187,8 +200,21 @@ def extract_date(tweet,date,f):
                     dsi = [int(x) for x in ds if x != None]
                     try:
                         if dsi[0] in range(1,13) and dsi[1] in range(1,32):
-                            if date < datetime.date(date.year,dsi[0],dsi[1]):
-                                output.append(datetime.date(date.year,dsi[0],dsi[1]))
+                                #make sure the most sensible year is chosen
+                                #difference in days if current year is chosen
+                                difc = (date-datetime.date(date.year,dsi[0],dsi[1])).days
+                                if difc < 0:
+                                    difc = difc*-1
+                                #difference in days if next year is chosen
+                                difn = (date-datetime.date(date.year+1,dsi[0],dsi[1])).days
+                                if difn < 0:
+                                    difn = difn*-1
+                                if difc > difn:
+                                    edate = datetime.date(date.year,dsi[0],dsi[1])
+                                else:
+                                    edate = datetime.date(date.year+1,dsi[0],dsi[1])
+                                if date < edate:
+                                        output.append(edate)                            
                         elif dsi[0] in range(2010,2020):
                             if dsi[1] in range(1,13) and dsi[2] in range(1,32):
                                 if date < datetime.date(dsi[0],dsi[1],dsi[2]):
