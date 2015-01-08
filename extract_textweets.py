@@ -6,6 +6,8 @@ import os
 import datetime
 from collections import defaultdict
 import ucto
+import sys
+import time_functions
 
 def extract_date(tweet,date):
     convert_nums = {"een":1, "twee":2, "drie":3, "vier":4,"vijf":5, "zes":6, "zeven":7, "acht":8, 
@@ -90,7 +92,8 @@ def extract_date(tweet,date):
                     nud["nweek"].append((unit,i))
             timephrases[i] = timephrases[i].replace("  "," ")
         regexPattern = '|'.join(map(re.escape, timephrases))
-        output = [regexPattern]
+        tp = ', '.join(timephrases)
+        output = [re.split(regexPattern, tweet),tp]
         if "timeunit" in nud:
             if not "month" in nud and not "date" in nud: #overrule by more specific time indication
                 for t in nud["timeunit"]: 
@@ -170,7 +173,7 @@ def extract_date(tweet,date):
                             if outdate:
                                 if date < outdate:
                                     output.append(outdate)
-                        elif dsi[0] in range(1,13) and dsi[1] in range(1,32): #03/30
+                        elif dsi[0] in range(1,13) and dsi[1] in range(1,32): #30/03
                             if date < datetime.date(date.year,dsi[0],dsi[1]):
                                 output.append(datetime.date(date.year,dsi[0],dsi[1]))
                         elif dsi[0] in range(2010,2020): #2015/03/30
@@ -228,25 +231,26 @@ for tweet in tweets[1:]:
             print("dateerror",tweet,tokens)
         dateref_phrase = extract_date(text,date)
         if dateref_phrase:
-            print(text,dateref_phrase)
-            # if len(dateref_phrase) > 1:
-            #     chunks = dateref_phrase[0]
-            #     datephrase = 
-            #     refdates = dateref_phrase[1:]
-                
+            #print(dateref_phrase)
+            if len(dateref_phrase) > 2:
+                chunks = dateref_phrase[0]
+                datephrase = dateref_phrase[1] 
+                refdates = dateref_phrase[2:]
+             
             #     dtweet.set_postags(calculations.return_postags(text,self.frogger))
             #     if format == "exp":
             #         units = [tokens[1],tokens[2],date,text,refdates,chunks]
             #     else:
-            #         units = [tokens[1],tokens[6],date,text,refdates,chunks]
+                units = [tokens[1],tokens[6],date,text,refdates,chunks,datephrase]
+                print(units)
             #     dtweet.set_meta(units)
 
 #tweets = ["ik kom op 2014/12/10","dan kom ik op 10-12-2014","en ik op 10/12/2014","het gebeurt allemaal komende woensdag","waarom niet op 10/12?","of overmorgen?"]
 
-# for tweet in tweets:
-#     tokenizer.process(tweet)
-#     text = " ".join([x.text.lower() for x in tokenizer])
-#     print(text)
-#     out = extract_date(text,datetime.date(2014,8,8))
-#     print(tweet,out)
+#for tweet in tweets:
+#    tokenizer.process(tweet)
+#    text = " ".join([x.text.lower() for x in tokenizer])
+#    print(text)
+#    out = extract_date(text,datetime.date(2014,8,8))
+#    print(tweet,out)
 
