@@ -154,7 +154,7 @@ def extract_date(tweet,date):
                             ds = date_vs.search(da[0] + [x[0] for x in nud["year"] if x[1] == \
                                 num_match][0]).groups()
                         else:
-                            ds = date_vs.search(da[0]).groups()
+                            ds = date_vs3.search(da[0]).groups()
                     else:
                         ds = date_vs3.search(da[0]).groups()
                     dsi = [int(x) for x in ds if x != None]
