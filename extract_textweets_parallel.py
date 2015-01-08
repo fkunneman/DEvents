@@ -236,11 +236,11 @@ def tweets2textweets(ts,q):
                     units = [tokens[1],tokens[6],str(date),text," ".join([str(x) for x in refdates]),"|".join([x for x in chunks]),datephrase]
                     q.put(units)
                 else:
-                    q.put(False)
+                    q.put([])
             else:
-                q.put(False)
+                q.put([])
         else:
-            q.put(False)
+            q.put([])
 
 print(sys.argv[1])
 print(datetime.datetime.now())
@@ -261,7 +261,7 @@ lt = len(tweets)
 while True:
     l = queue.get()
     nq += 1
-    if l:
+    if len(l) > 0:
         outfile.write("\t".join(l) + "\n")
     if nq == lt:
         break
