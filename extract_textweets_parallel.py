@@ -4,7 +4,9 @@ import datetime
 from collections import defaultdict
 import ucto
 import sys
+import multiprocessing
 import time_functions
+import gen_functions
 
 def extract_date(tweet,date):
     convert_nums = {"een":1, "twee":2, "drie":3, "vier":4,"vijf":5, "zes":6, "zeven":7, "acht":8, 
@@ -38,7 +40,7 @@ def extract_date(tweet,date):
         "krap |(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + (nums) + " " + (timeunits) + 
         r"( nog)? te gaan",r"(\b|^)" + (nums) + " " + (months) + r"( |$)" + r"(\d{4})?",
         r"(\b|^)(\d{1,2}-\d{1,2})(-\d{2,4})?(\b|$)",r"(\b|^)(\d{1,4}/\d{1,2})(/\d{1,4})?(\b|$)",
-	r"(\b|$)(volgende week|komende|aankomende|deze) (maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)"
+    r"(\b|$)(volgende week|komende|aankomende|deze) (maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)"
         r" ?(avond|nacht|ochtend|middag)?( |$)",r"(\b|$)(overmorgen) ?(avond|nacht|ochtend|middag)?( |$)"])
 
     date_eu = re.compile(r"(\d{1,2})-(\d{1,2})-?(\d{2,4})?")
@@ -152,7 +154,7 @@ def extract_date(tweet,date):
                             ds = date_vs.search(da[0] + [x[0] for x in nud["year"] if x[1] == \
                                 num_match][0]).groups()
                         else:
-                            ds = date_vs3.search(da[0]).groups()
+                            ds = date_vs.search(da[0]).groups()
                     else:
                         ds = date_vs3.search(da[0]).groups()
                     dsi = [int(x) for x in ds if x != None]
@@ -213,48 +215,58 @@ def extract_date(tweet,date):
         else:
             return output
 
-print(sys.argv[1])
-print(datetime.datetime.now())
+def tweets2textweets(ts,q):
+    tokenizer = ucto.Tokenizer("/vol/customopt/uvt-ru/etc/ucto/tokconfig-nl-twitter")
+    for tweet in ts:
+        tokens = tweet.strip().split("\t")
+        if not re.search(r"\bRT\b",tokens[-1]):
+            tokenizer.process(tokens[-1])
+            text = " ".join([x.text.lower() for x in tokenizer])
+            try:
+                date = time_functions.return_datetime(tokens[2],setting="vs").date()
+            except:
+                print("dateerror",tweet,tokens)
+                quit()
+            dateref_phrase = extract_date(text,date)
+            if dateref_phrase:
+                if len(dateref_phrase) > 2:
+                    chunks = dateref_phrase[0]
+                    datephrase = dateref_phrase[1] 
+                    refdates = dateref_phrase[2:]
+                 
+                #     dtweet.set_postags(calculations.return_postags(text,self.frogger))
+                #     if format == "exp":
+                #         units = [tokens[1],tokens[2],date,text,refdates,chunks]
+                #     else:
+                    units = [tokens[1],tokens[6],str(date),text," ".join([str(x) for x in refdates]),"|".join([x for x in chunks]),datephrase]
+                    q.put(units)
+                    #outfile.write("\t".join(units))
+                    #print(units)
+                #     dtweet.set_meta(units)
+                else:
+                    q.put([])
+            else:
+                q.put([])
 
 infile = open(sys.argv[1],encoding="utf-8")
-tweets = infile.readlines()
+tweets = infile.readlines()[1:]
 infile.close()
+
+queue = multiprocessing.Queue()
+tweets_chunks = gen_functions.make_chunks(tweets,nc=int(sys.argv[3]))
+
+for i in range(len(tweets_chunks)):
+    p = multiprocessing.Process(target=tweets2textweets,args=[tweets_chunks[i],queue])
+    p.start()
+
 outfile = open(sys.argv[2],"a",encoding="utf-8")
-tokenizer = ucto.Tokenizer("/vol/customopt/uvt-ru/etc/ucto/tokconfig-nl-twitter")
-for tweet in tweets[1:]:
-    tokens = tweet.strip().split("\t")
-    if not re.search(r"\bRT\b",tokens[-1]):
-        tokenizer.process(tokens[-1])
-        text = " ".join([x.text.lower() for x in tokenizer])
-        try:
-            date = time_functions.return_datetime(tokens[2],setting="vs").date()
-        except:
-            print("dateerror",tweet,tokens)
-        dateref_phrase = extract_date(text,date)
-        if dateref_phrase:
-            #print(dateref_phrase)
-            if len(dateref_phrase) > 2:
-                chunks = dateref_phrase[0]
-                datephrase = dateref_phrase[1] 
-                refdates = dateref_phrase[2:]
-             
-            #     dtweet.set_postags(calculations.return_postags(text,self.frogger))
-            #     if format == "exp":
-            #         units = [tokens[1],tokens[2],date,text,refdates,chunks]
-            #     else:
-                units = [tokens[1],tokens[6],str(date),text," ".join([str(x) for x in refdates]),"|".join([x for x in chunks]),datephrase]
-                outfile.write("\t".join(units) + "\n")
-                #print(units)
-            #     dtweet.set_meta(units)
-
-print(datetime.datetime.now())
-
-#tweets = ["ik kom op 2014/12/10","dan kom ik op 10-12-2014","en ik op 10/12/2014","het gebeurt allemaal komende woensdag","waarom niet op 10/12?","of overmorgen?"]
-
-#for tweet in tweets:
-#    tokenizer.process(tweet)
-#    text = " ".join([x.text.lower() for x in tokenizer])
-#    print(text)
-#    out = extract_date(text,datetime.date(2014,8,8))
-#    print(tweet,out)
-
+nq = 0
+lt = len(tweets)
+while True:
+    l = queue.get()
+    nq += 1
+    if len(l) > 0:
+        outfile.write(l)
+    if nq == lt:
+        break
+outfile.close()
