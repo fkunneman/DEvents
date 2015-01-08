@@ -219,6 +219,7 @@ def extract_date(tweet,date):
 infile = open(sys.argv[1],encoding="utf-8")
 tweets = infile.readlines()
 infile.close()
+outfile = open(sys.argv[2],"a",encoding="utf-8")
 tokenizer = ucto.Tokenizer("/vol/customopt/uvt-ru/etc/ucto/tokconfig-nl-twitter")
 for tweet in tweets[1:]:
     tokens = tweet.strip().split("\t")
@@ -241,8 +242,9 @@ for tweet in tweets[1:]:
             #     if format == "exp":
             #         units = [tokens[1],tokens[2],date,text,refdates,chunks]
             #     else:
-                units = [tokens[1],tokens[6],date,text,refdates,chunks,datephrase]
-                print(units)
+                units = [tokens[1],tokens[6],str(date),text," ".join([str(x) for x in refdates]),"|".join([x for x in chunks]),datephrase]
+                outfile.write("\t".join(units))
+                #print(units)
             #     dtweet.set_meta(units)
 
 #tweets = ["ik kom op 2014/12/10","dan kom ik op 10-12-2014","en ik op 10/12/2014","het gebeurt allemaal komende woensdag","waarom niet op 10/12?","of overmorgen?"]
