@@ -247,7 +247,11 @@ def tweets2textweets(ts,q):
                     q.put([])
             else:
                 q.put([])
+        else:
+            q.put([])
 
+print(sys.argv[1])
+print(datetime.datetime.now())
 infile = open(sys.argv[1],encoding="utf-8")
 tweets = infile.readlines()[1:]
 infile.close()
@@ -266,7 +270,8 @@ while True:
     l = queue.get()
     nq += 1
     if len(l) > 0:
-        outfile.write(l)
+        outfile.write("\t".join(l) + "\n")
     if nq == lt:
         break
 outfile.close()
+print(datetime.datetime.now())
