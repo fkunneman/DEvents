@@ -233,22 +233,14 @@ def tweets2textweets(ts,q):
                     chunks = dateref_phrase[0]
                     datephrase = dateref_phrase[1] 
                     refdates = dateref_phrase[2:]
-                 
-                #     dtweet.set_postags(calculations.return_postags(text,self.frogger))
-                #     if format == "exp":
-                #         units = [tokens[1],tokens[2],date,text,refdates,chunks]
-                #     else:
                     units = [tokens[1],tokens[6],str(date),text," ".join([str(x) for x in refdates]),"|".join([x for x in chunks]),datephrase]
                     q.put(units)
-                    #outfile.write("\t".join(units))
-                    #print(units)
-                #     dtweet.set_meta(units)
                 else:
-                    q.put([])
+                    q.put(False)
             else:
-                q.put([])
+                q.put(False)
         else:
-            q.put([])
+            q.put(False)
 
 print(sys.argv[1])
 print(datetime.datetime.now())
@@ -269,7 +261,7 @@ lt = len(tweets)
 while True:
     l = queue.get()
     nq += 1
-    if len(l) > 0:
+    if l:
         outfile.write("\t".join(l) + "\n")
     if nq == lt:
         break
