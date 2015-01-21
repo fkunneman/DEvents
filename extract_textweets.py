@@ -230,31 +230,15 @@ for tweet in tweets[1:]:
             date = time_functions.return_datetime(tokens[2],setting="vs").date()
         except:
             print("dateerror",tweet,tokens)
+            quit()
         dateref_phrase = extract_date(text,date)
         if dateref_phrase:
-            #print(dateref_phrase)
             if len(dateref_phrase) > 2:
                 chunks = dateref_phrase[0]
                 datephrase = dateref_phrase[1] 
                 refdates = dateref_phrase[2:]
-             
-            #     dtweet.set_postags(calculations.return_postags(text,self.frogger))
-            #     if format == "exp":
-            #         units = [tokens[1],tokens[2],date,text,refdates,chunks]
-            #     else:
                 units = [tokens[1],tokens[6],str(date),text," ".join([str(x) for x in refdates]),"|".join([x for x in chunks]),datephrase]
                 outfile.write("\t".join(units) + "\n")
-                #print(units)
-            #     dtweet.set_meta(units)
 
 print(datetime.datetime.now())
-
-#tweets = ["ik kom op 2014/12/10","dan kom ik op 10-12-2014","en ik op 10/12/2014","het gebeurt allemaal komende woensdag","waarom niet op 10/12?","of overmorgen?"]
-
-#for tweet in tweets:
-#    tokenizer.process(tweet)
-#    text = " ".join([x.text.lower() for x in tokenizer])
-#    print(text)
-#    out = extract_date(text,datetime.date(2014,8,8))
-#    print(tweet,out)
 
