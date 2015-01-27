@@ -16,12 +16,19 @@ import calculations
 
 class Event_pairs:
 
-    def __init__(self,wikidir=False,tmpdir=False,t=False):
+    def __init__(self,wikidir=False,tmpdir=False,cities=False,t=False):
         self.tweets = []
         self.tmpdir = tmpdir
         if wikidir:
             self.load_commonness(self.tmpdir + "coco",[wikidir + "1_grams.txt",wikidir + "2_grams.txt",
                 wikidir + "3_grams.txt",wikidir + "4_grams.txt",wikidir + "5_grams.txt"])
+        if cities:
+            cityfile = open(cities,"r",encoding = "utf-8")
+            cts = cityfile.read().split("\n")
+            cityfile.close()
+            li = sorted(cts, key=len, reverse=True)
+            li = [tx.replace('.','\.').replace('*','\*') for tx in li] # not to match anything with . (dot) or *
+            self.cities = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
         c = "/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg"
         if t:
             fo = frog.FrogOptions(threads=t)
@@ -117,7 +124,25 @@ class Event_pairs:
                 if dateref_phrase:
                     if len(dateref_phrase) > 2:
                         chunks = dateref_phrase[0]
-                        refdates = dateref_phrase[1:]
+                        #remove city names from chunks
+                        if self.cities:
+                            remove_chunk = []
+                            new_chunks = []
+                            for i,chunk in enumerate(chunks):
+                                pt = [x.replace(" ","_") for x in re.findall(self.cities,chunk)]
+                                cts = [x for x in features if not x == ""]
+                                if len(cts) > 0:
+                                    regexPattern = '|'.join(map(re.escape, cts))
+                                    new_chunks.extend(re.split(regexPattern,chunk))
+                                    remove_chunk.append(i)
+                                    print(cts,regexPattern,new_chunks)
+                            if len(remove_chunk) > 0:
+                                print("BEFORE",chunks)
+                                for j,e in remove_chunk:
+                                    del chunks[e-j]
+                                chunks.extend(new_chunks)
+                                print("AFTER",chunks)
+                        refdates = dateref_phrase[2:]
                         dtweet = self.Tweet()
                         #dtweet.set_postags(calculations.return_postags(text,self.frogger))
                         if format == "exp":

@@ -33,6 +33,8 @@ parser.add_argument('--window', type = int, action = 'store', default = 7,
     help = "The window in days of tweets on which event extraction is based (default = 7 days)")
 parser.add_argument('--start', action = 'store_true',
     help = "Choose to rank events from the existing pairs (only applies when \'-m\' is included")
+parser.add_argument('--cities', action = 'store',
+    help = "To exclude city names from entity extraction, specify a file met city names")
 args = parser.parse_args() 
 
 #sort input-files
@@ -51,7 +53,7 @@ if args.i:
         print("format not included, exiting program")
         quit()
 
-ep = Event_pairs(args.w,args.d)
+ep = Event_pairs(args.w,args.d,cities = args.cities)
 
 def output_events(d):
     print("ranking events")
@@ -61,9 +63,14 @@ def output_events(d):
     if args.x:
         tweetinfo = open(d + "modeltweets.txt","w",encoding = "utf-8")
         for tweet in ep.tweets:
-            info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
+            if tweet.postags:
+                info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
+                    " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
+                    " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
+            else:
+                info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
                 " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-                " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
+                " | ".join(tweet.entities)]
             tweetinfo.write("\t".join(info) + "\n")
         tweetinfo.close()
     eventinfo = open(d + "events_fit.txt","w",encoding = "utf-8")
