@@ -178,10 +178,8 @@ def extract_date(tweet,date):
                     continue
         if "date" in nud:
             for da in nud["date"]:
-                print(da,tweet)
                 num_match = da[1]
                 if re.search("-",da[0]):
-                    print("-")
                     if "year" in nud:
                         print("year")
                         if num_match in [x[1] for x in nud["year"]]:
@@ -193,7 +191,6 @@ def extract_date(tweet,date):
                         ds = date_eu.search(da[0]).groups()
                     dsi = [int(x) for x in ds if x != None]
                     dsis = [x for x in ds if x != None]
-                    print(dsis)
                     try:
                         if dsi[1] in range(1,13) and \
                             dsi[0] in range(1,32):
@@ -202,22 +199,18 @@ def extract_date(tweet,date):
                                     y = decide_year(date,dsi[1],dsi[0])
                                     if date < datetime.date(y,dsi[1],dsi[0]):
                                         output.append(datetime.date(y,dsi[1],dsi[0]))
-                                        print(output)
                             else:
                                 if dsi[2] in range(2010,2020):
                                     if date < datetime.date(dsi[2],dsi[1],dsi[0]):
                                         output.append(datetime.date(dsi[2],dsi[1],dsi[0]))
-                                        print(output) 
                         elif dsi[0] in range(2010,2020): #2015/03/30
                             if dsi[1] in range(1,13) and dsi[2] in range(1,32):
                                 if not (len(dsis[1]) == 1 and len(dsis[2]) == 1): #avoid patterns like 1/2
                                     if date < datetime.date(dsi[0],dsi[1],dsi[2]):
                                         output.append(datetime.date(dsi[0],dsi[1],dsi[2]))
-                                        print(output)
                     except:
                         continue
                 elif re.search("/",da[0]):
-                    print("/")
                     if "year" in nud:
                         if num_match in [x[1] for x in nud["year"]]:
                             ds = date_vs.search(da[0] + [x[0] for x in nud["year"] if x[1] == \
@@ -228,7 +221,6 @@ def extract_date(tweet,date):
                         ds = date_vs3.search(da[0]).groups()
                     dsi = [int(x) for x in ds if x != None]
                     dsis = [x for x in ds if x != None]
-                    print(dsis)
                     try:
                         if dsi[0] in range(1,13) and dsi[1] in range(1,32): #30/03/2015
                             outdate = False
@@ -245,19 +237,16 @@ def extract_date(tweet,date):
                             if outdate:
                                 if date < outdate:
                                     output.append(outdate)
-                                    print(output)
                         elif dsi[0] in range(1,13) and dsi[1] in range(1,32): #30/03
                             if not (len(dsis[0]) == 1 and len(dsis[1]) == 1): #avoid patterns like 1/2
                                 y = decide_year(date,dsi[0],dsi[1])
                                 if date < datetime.date(y,dsi[0],dsi[1]):
                                     output.append(datetime.date(date.year,dsi[0],dsi[1]))
-                                    print(output)
                         elif dsi[0] in range(2010,2020): #2015/03/30
                             if dsi[1] in range(1,13) and dsi[2] in range(1,32):
                                 if not (len(dsis[1]) == 1 and len(dsis[2]) == 1): #avoid patterns like 1/2
                                     if date < datetime.date(dsi[0],dsi[1],dsi[2]):
                                         output.append(datetime.date(dsi[0],dsi[1],dsi[2]))
-                                        print(output)
                     except:
                         continue
         if "weekday" in nud:
