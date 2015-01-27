@@ -115,11 +115,11 @@ class Event_pairs:
                         print("dateerror",tweet,tokens)
                 dateref_phrase = calculations.extract_date(text,date)
                 if dateref_phrase:
-                    if len(dateref_phrase) > 1:
+                    if len(dateref_phrase) > 2:
                         chunks = dateref_phrase[0]
                         refdates = dateref_phrase[1:]
                         dtweet = self.Tweet()
-                        dtweet.set_postags(calculations.return_postags(text,self.frogger))
+                        #dtweet.set_postags(calculations.return_postags(text,self.frogger))
                         if format == "exp":
                             units = [tokens[1],tokens[2],date,text,refdates,chunks]
                         else:
