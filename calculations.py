@@ -61,7 +61,7 @@ def decide_year(tdate,month,day):
     else:
         return d3.year
 
-def extract_date(tweet,date,f):
+def extract_date(tweet,date):
     convert_nums = {"een":1, "twee":2, "drie":3, "vier":4,"vijf":5, "zes":6, "zeven":7, "acht":8, 
         "negen":9, "tien":10, "elf":11, "twaalf":12, "dertien":13,"veertien":14, "vijftien":15,
         "zestien":16, "zeventien":17,"achtien":18, "negentien":19, "twintig":20,"eenentwintig":21,
