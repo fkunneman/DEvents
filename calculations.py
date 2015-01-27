@@ -41,6 +41,26 @@ def return_postags(text,f,wws=False):
             output.append((token["text"],token["pos"]))
     return output
 
+def decide_year(tdate,month,day):
+    d1 = datetime.date(tdate.year,month,day)
+    d2 = datetime.date(tdate.year+1,month,day)
+    d3 = datetime.date(tdate.year-1,month,day)
+    dif1 = (tdate-d1).days
+    if dif1 < 0:
+        dif1 = (dif1 * -1)
+    dif2 = (tdate-d2).days
+    if dif2<0:
+        dif2 = dif2*-1
+    dif3 = (tdate-d3).days
+    if dif3<0:
+        dif3 = dif3*-1
+    if dif1 < dif2 and dif1 < dif3:
+        return d1.year
+    elif dif2 < dif3:
+        return d2.year
+    else:
+        return d3.year
+
 def extract_date(tweet,date,f):
     convert_nums = {"een":1, "twee":2, "drie":3, "vier":4,"vijf":5, "zes":6, "zeven":7, "acht":8, 
         "negen":9, "tien":10, "elf":11, "twaalf":12, "dertien":13,"veertien":14, "vijftien":15,
@@ -55,7 +75,7 @@ def extract_date(tweet,date,f):
         "nachtje":1,"weken":7,"weekjes":7,"week":7,"weekje":7,"maanden":30,"maandjes":30,"maand": 30,
         "maandje":30}
     weekdays=["maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag","zondag"]
-    spec_days=["morgen","overmorgen"]
+    spec_days=["overmorgen"]
 
     nums = (r"(\d+|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|"
         "vijftien|zestien|zeventien|achtien|negentien|twintig|eenentwintig|tweeentwintig|"
@@ -73,16 +93,18 @@ def extract_date(tweet,date,f):
         "krap |(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + (nums) + " " + (timeunits) + 
         r"( nog)? te gaan",r"(\b|^)" + (nums) + " " + (months) + r"( |$)" + r"(\d{4})?",
         r"(\b|^)(\d{1,2}-\d{1,2})(-\d{2,4})?(\b|$)",
-        r"(\b|$)(volgende week)? ?(maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag|"
-        "overmorgen) ?(avond|nacht|ochtend|middag)?( |$)"])
+        r"(\b|^)(\d{1,4}/\d{1,2})(/\d{1,4})?(\b|$)",
+        r"(volgende week|komende|aankomende|deze) (maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)"
+        r" ?(avond|nacht|ochtend|middag)?", r"(overmorgen) ?(avond|nacht|ochtend|middag)?"])
 
     date_eu = re.compile(r"(\d{1,2})-(\d{1,2})-?(\d{2,4})?")
-    date_vs = re.compile(r"(\d{2,4})?/?(\d{1,2})/(\d{1,2})")
+    date_vs = re.compile(r"(\d{1,4})/(\d{1,2})/(\d{1,4})")
+    date_vs2 = re.compile(r"(\d{1,2})/(\d{1,2})/(\d{2,4})")
+    date_vs3 = re.compile(r"(\d{1,2})/(\d{1,2})")
     ns = convert_nums.keys()
     timeus = convert_timeunit.keys()
     ms = convert_month.keys()
     if re.findall('|'.join(list_patterns), tweet):
-        #print tweet,re.findall('|'.join(list_patterns), tweet)
         timephrases = []
         matches = re.findall('|'.join(list_patterns), tweet)
         nud = defaultdict(list)
@@ -121,7 +143,8 @@ def extract_date(tweet,date,f):
                     nud["nweek"].append((unit,i))
             timephrases[i] = timephrases[i].replace("  "," ")
         regexPattern = '|'.join(map(re.escape, timephrases))
-        output = [re.split(regexPattern, tweet)]
+        tp = ', '.join(timephrases)
+        output = [re.split(regexPattern, tweet),tp]
         if "timeunit" in nud:
             if not "month" in nud and not "date" in nud: #overrule by more specific time indication
                 for t in nud["timeunit"]: 
@@ -143,9 +166,9 @@ def extract_date(tweet,date,f):
                         if num_match in [x[1] for x in nud["year"]]:
                             y = [x[0] for x in nud["year"] if x[1] == num_match][0]
                         else:
-                            y = date.year
+                            y = decide_year(date,m,d)
                     else:
-                        y = date.year
+                        y = decide_year(date,m,d)
                     if date < datetime.date(y,m,d):
                         output.append(datetime.date(y,m,d))
                 except:
@@ -163,25 +186,15 @@ def extract_date(tweet,date,f):
                     else:
                         ds = date_eu.search(da[0]).groups()
                     dsi = [int(x) for x in ds if x != None]
+                    dsis = [x for x in ds if x != None]
                     if dsi[1] in range(1,13) and \
                         dsi[0] in range(1,32):
                         try:
                             if ds[2] == None:
-                                #make sure the most sensible year is chosen
-                                #difference in days if current year is chosen
-                                difc = (date-datetime.date(date.year,dsi[1],dsi[0])).days
-                                if difc < 0:
-                                    difc = difc*-1
-                                #difference in days if next year is chosen
-                                difn = (date-datetime.date(date.year+1,dsi[1],dsi[0])).days
-                                if difn < 0:
-                                    difn = difn*-1
-                                if difc > difn:
-                                    edate = datetime.date(date.year,dsi[1],dsi[0])
-                                else:
-                                    edate = datetime.date(date.year+1,dsi[1],dsi[0])
-                                if date < edate:
-                                        output.append(edate)
+                                if not (len(dsis[0]) == 1 and len(dsis[1]) == 1): #avoid patterns like 1-2
+                                    y = decide_year(date,dsi[1],dsi[0])
+                                    if date < datetime.date(y,dsi[1],dsi[0]):
+                                        output.append(datetime.date(y,dsi[1],dsi[0]))
                             else:
                                 if dsi[2] in range(2010,2020):
                                     if date < datetime.date(dsi[2],dsi[1],dsi[0]):
@@ -194,55 +207,55 @@ def extract_date(tweet,date,f):
                             ds = date_vs.search(da[0] + [x[0] for x in nud["year"] if x[1] == \
                                 num_match][0]).groups()
                         else:
-                            ds = date_vs.search(da[0]).groups()
+                            ds = date_vs3.search(da[0]).groups()
                     else:
-                        ds = date_vs.search(da[0]).groups()
+                        ds = date_vs3.search(da[0]).groups()
                     dsi = [int(x) for x in ds if x != None]
+                    dsis = [x for x in ds if x != None]
                     try:
-                        if dsi[0] in range(1,13) and dsi[1] in range(1,32):
-                                #make sure the most sensible year is chosen
-                                #difference in days if current year is chosen
-                                difc = (date-datetime.date(date.year,dsi[0],dsi[1])).days
-                                if difc < 0:
-                                    difc = difc*-1
-                                #difference in days if next year is chosen
-                                difn = (date-datetime.date(date.year+1,dsi[0],dsi[1])).days
-                                if difn < 0:
-                                    difn = difn*-1
-                                if difc > difn:
-                                    edate = datetime.date(date.year,dsi[0],dsi[1])
-                                else:
-                                    edate = datetime.date(date.year+1,dsi[0],dsi[1])
-                                if date < edate:
-                                        output.append(edate)                            
-                        elif dsi[0] in range(2010,2020):
+                        if dsi[0] in range(1,13) and dsi[1] in range(1,32): #30/03/2015
+                            outdate = False
+                            if len(dsi) == 3:
+                                if len(dsis[2]) == 4:
+                                    outdate = datetime.date(dsi[2],dsi[1],dsi[0])
+                                elif len(dsis[2]) == 2:
+                                    if dsi[2] in range(10,21):
+                                        outdate = datetime.date((dsi[2]+2000),dsi[1],dsi[0])
+                            else:
+                                if not (len(dsis[0]) == 1 and len(dsis[1]) == 1): #avoid patterns like 1/2
+                                    y = decide_year(date,dsi[1],dsi[0])
+                                    outdate = datetime.date(y,dsi[1],dsi[0])
+                            if outdate:
+                                if date < outdate:
+                                    output.append(outdate)
+                        elif dsi[0] in range(1,13) and dsi[1] in range(1,32): #30/03
+                            if not (len(dsis[0]) == 1 and len(dsis[1]) == 1): #avoid patterns like 1/2
+                                y = decide_year(date,dsi[0],dsi[1])
+                                if date < datetime.date(y,dsi[0],dsi[1]):
+                                    output.append(datetime.date(date.year,dsi[0],dsi[1]))
+                        elif dsi[0] in range(2010,2020): #2015/03/30
                             if dsi[1] in range(1,13) and dsi[2] in range(1,32):
-                                if date < datetime.date(dsi[0],dsi[1],dsi[2]):
-                                    output.append(datetime.date(dsi[0],dsi[1],dsi[2]))
+                                if not (len(dsis[1]) == 1 and len(dsis[2]) == 1): #avoid patterns like 1/2
+                                    if date < datetime.date(dsi[0],dsi[1],dsi[2]):
+                                        output.append(datetime.date(dsi[0],dsi[1],dsi[2]))
                     except:
                         continue
         if "weekday" in nud:
             if not "date" in nud and not "month" in nud and not "timeunit" in nud: # overrule by more specific indication
-                ptags = return_postags(tweet,f,wws = True)
-                past = False
-                for tag in ptags:
-                    if re.search(r"^WW\(vd",tag[1]) or re.search(r"^WW\(pv,verl",tag[1]):
-                        past = True
-                if not past:
-                    tweet_weekday=date.weekday()
-                    for w in nud["weekday"]:
-                        num_match = w[1]
-                        ref_weekday=weekdays.index(w[0])
-                        if num_match in [x[1] for x in nud["nweek"]]:
-                            add = 7
+                tweet_weekday=date.weekday()
+                for w in nud["weekday"]:
+                    num_match = w[1]
+                    ref_weekday=weekdays.index(w[0])
+                    if num_match in [x[1] for x in nud["nweek"]]:
+                        add = 7
+                    else:
+                        add = 0
+                    if not ref_weekday == tweet_weekday and not num_match in [x[1] for x in nud["nweek"]]: 
+                        if tweet_weekday < ref_weekday:
+                            days_ahead = ref_weekday - tweet_weekday + add
                         else:
-                            add = 0
-                        if not ref_weekday == tweet_weekday and not num_match in [x[1] for x in nud["nweek"]]: 
-                            if tweet_weekday < ref_weekday:
-                                days_ahead = ref_weekday - tweet_weekday + add
-                            else:
-                                days_ahead = ref_weekday + (7-tweet_weekday) + add
-                            output.append(date + datetime.timedelta(days=days_ahead))
+                            days_ahead = ref_weekday + (7-tweet_weekday) + add
+                        output.append(date + datetime.timedelta(days=days_ahead))
         if "sday" in nud:
             for s in nud["sday"]:
                 num_match = s[1] 
