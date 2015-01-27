@@ -71,7 +71,11 @@ def output_events(d):
         eventq = open(d + "events_qualtrics.txt","w",encoding = "utf-8")
     for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
         if event.tt_ratio > 0.30:
+            if "linkshandigen" in [x[0] for x in event.entities] or "flikken" in [x[0] for x in event.entities] or "maastricht" in [x[0] for x in event.entities] or "flikkendag" in [x[0] for x in event.entities] or "de sims 4" in [x[0] for x in event.entities]:
+                print("BEFORE tweet rank",[x.text for x in event.tweets]) 
             event.rank_tweets(rep = True)
+            if "linkshandigen" in [x[0] for x in event.entities] or "flikken" in [x[0] for x in event.entities] or "maastricht" in [x[0] for x in event.entities] or "flikkendag" in [x[0] for x in event.entities] or "de sims 4" in [x[0] for x in event.entities]:
+                print("AFTER tweet rank",event.reptweets) 
             if args.q:
                 eventq.write("[[Question:MC:SingleAnswer:Vertical]]\nVerwijzen deze 5 tweets naar dezelfde gebeurtenis? <br> <br> <br> " +
                     "\n<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"width: 500px;\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td><b>")

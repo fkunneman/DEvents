@@ -271,6 +271,8 @@ class Event_pairs:
             tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
             tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
             event.add_tfidf(tfidf_sorted,word_indexes)
+            if "linkshandigen" in [x[0] for x in event.entities] or "flikken" in [x[0] for x in event.entities] or "maastricht" in [x[0] for x in event.entities] or "flikkendag" in [x[0] for x in event.entities] or "de sims 4" in [x[0] for x in event.entities]:
+                print("BEFORE add",event.entities)
             if method == "csx": #add terms
                 top_terms = [word_indexes[j[0]] for j in tfidf_sorted][:5]
                 term_postag_counts = defaultdict(lambda : defaultdict(int))
@@ -291,7 +293,11 @@ class Event_pairs:
                             ap = False
                     if ap:
                         event.entities.append((term,0))
+            if "linkshandigen" in [x[0] for x in event.entities] or "flikken" in [x[0] for x in event.entities] or "maastricht" in [x[0] for x in event.entities] or "flikkendag" in [x[0] for x in event.entities] or "de sims 4" in [x[0] for x in event.entities]:
+                print("BEFORE order",event.entities)
             event.order_entities() #order entities by their average position in the tweets
+            if "linkshandigen" in [x[0] for x in event.entities] or "flikken" in [x[0] for x in event.entities] or "maastricht" in [x[0] for x in event.entities] or "flikkendag" in [x[0] for x in event.entities] or "de sims 4" in [x[0] for x in event.entities]:
+                print("AFTER order",event.entities)
             event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
         print("enrich",len(self.events))
 
