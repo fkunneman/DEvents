@@ -92,12 +92,13 @@ def extract_date(tweet,date):
         r"met( nog)? (minimaal |maximaal |tenminste |bijna |ongeveer |maar |slechts |pakweg |ruim |"
         "krap |(maar )?een kleine |(maar )?iets (meer|minder) dan )?" + (nums) + " " + (timeunits) + 
         r"( nog)? te gaan",r"(\b|^)" + (nums) + " " + (months) + r"( |$)" + r"(\d{4})?",
-        r"(\b|^)(\d{1,2}-\d{1,2})(-\d{2,4})?(\b|$)",
+        r"(\b|^)(\d{1,4}-\d{1,2})(-\d{2,4})?(\b|$)",
         r"(\b|^)(\d{1,4}/\d{1,2})(/\d{1,4})?(\b|$)",
         r"(volgende week|komende|aankomende|deze) (maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)"
         r" ?(avond|nacht|ochtend|middag)?", r"(overmorgen) ?(avond|nacht|ochtend|middag)?"])
 
     date_eu = re.compile(r"(\d{1,2})-(\d{1,2})-?(\d{2,4})?")
+    date_eu2 = re.compile(r"(\d{1,4})-(\d{1,2})-(\d{1,2})")
     date_vs = re.compile(r"(\d{1,4})/(\d{1,2})/(\d{1,4})")
     date_vs2 = re.compile(r"(\d{1,2})/(\d{1,2})/(\d{2,4})")
     date_vs3 = re.compile(r"(\d{1,2})/(\d{1,2})")
@@ -122,7 +123,7 @@ def extract_date(tweet,date):
                     re.search(r"\d{1,2}/\d{1,2}",unit):
                     nud["date"].append((unit,i))
                     timephrases[i] = "".join([x for x in units if len(x) > 0 and not x == " "])
-                elif re.search(r"-\d{2,4}",unit) or re.search(r"\d{2,4}/",unit):
+                elif re.search(r"-\d{2,4}",unit) or re.search(r"\d{2,4}/",unit) or re.search(r"/\d{2,4}",unit):
                     nud["year"].append((unit,i))
                 elif re.match(r"\d+",unit):
                     if int(unit) in range(2010,2020):
@@ -144,7 +145,6 @@ def extract_date(tweet,date):
             timephrases[i] = timephrases[i].replace("  "," ")
         regexPattern = '|'.join(map(re.escape, timephrases))
         tp = ', '.join(timephrases)
-        print(timephrases,regexPattern)
         output = [re.split(regexPattern, tweet),tp]
         if "timeunit" in nud:
             if not "month" in nud and not "date" in nud: #overrule by more specific time indication
@@ -185,17 +185,14 @@ def extract_date(tweet,date):
                         else:
                             ds = date_eu.search(da[0]).groups()
                     else:
-                        ds = date_eu.search(da[0]).groups()
+                        ds = date_eu2.search(da[0]).groups()
                     dsi = [int(x) for x in ds if x != None]
                     dsis = [x for x in ds if x != None]
-                    print(dsis,output,nud.keys())
-                    if dsi[1] in range(1,13) and \
-                        dsi[0] in range(1,32):
-                        try:
+                    try:
+                        if dsi[1] in range(1,13) and \
+                            dsi[0] in range(1,32):
                             if ds[2] == None:
-                                print("test",tweet,len(dsis[0]),len(dsis[1]))
                                 if not (len(dsis[0]) == 1 and len(dsis[1]) == 1): #avoid patterns like 1-2
-                                    print("no filter")
                                     y = decide_year(date,dsi[1],dsi[0])
                                     if date < datetime.date(y,dsi[1],dsi[0]):
                                         output.append(datetime.date(y,dsi[1],dsi[0]))
@@ -203,8 +200,11 @@ def extract_date(tweet,date):
                                 if dsi[2] in range(2010,2020):
                                     if date < datetime.date(dsi[2],dsi[1],dsi[0]):
                                         output.append(datetime.date(dsi[2],dsi[1],dsi[0])) 
-                        except:
-                            continue
+                        elif dsi[0] in range(2010,2020): #2015/03/30
+                            if dsi[1] in range(1,13) and dsi[2] in range(1,32):
+                                if not (len(dsis[1]) == 1 and len(dsis[2]) == 1): #avoid patterns like 1/2
+                                    if date < datetime.date(dsi[0],dsi[1],dsi[2]):
+                                        output.append(datetime.date(dsi[0],dsi[1],dsi[2]))
                 elif re.search("/",da[0]):
                     if "year" in nud:
                         if num_match in [x[1] for x in nud["year"]]:
