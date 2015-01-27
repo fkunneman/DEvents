@@ -144,6 +144,7 @@ def extract_date(tweet,date):
             timephrases[i] = timephrases[i].replace("  "," ")
         regexPattern = '|'.join(map(re.escape, timephrases))
         tp = ', '.join(timephrases)
+        print(timephrases,regexPattern)
         output = [re.split(regexPattern, tweet),tp]
         if "timeunit" in nud:
             if not "month" in nud and not "date" in nud: #overrule by more specific time indication
@@ -187,11 +188,14 @@ def extract_date(tweet,date):
                         ds = date_eu.search(da[0]).groups()
                     dsi = [int(x) for x in ds if x != None]
                     dsis = [x for x in ds if x != None]
+                    print(dsis,output,nud.keys())
                     if dsi[1] in range(1,13) and \
                         dsi[0] in range(1,32):
                         try:
                             if ds[2] == None:
+                                print("test",tweet,len(dsis[0]),len(dsis[1]))
                                 if not (len(dsis[0]) == 1 and len(dsis[1]) == 1): #avoid patterns like 1-2
+                                    print("no filter")
                                     y = decide_year(date,dsi[1],dsi[0])
                                     if date < datetime.date(y,dsi[1],dsi[0]):
                                         output.append(datetime.date(y,dsi[1],dsi[0]))
