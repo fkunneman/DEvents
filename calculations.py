@@ -205,6 +205,8 @@ def extract_date(tweet,date):
                                 if not (len(dsis[1]) == 1 and len(dsis[2]) == 1): #avoid patterns like 1/2
                                     if date < datetime.date(dsi[0],dsi[1],dsi[2]):
                                         output.append(datetime.date(dsi[0],dsi[1],dsi[2]))
+                    except:
+                        continue
                 elif re.search("/",da[0]):
                     if "year" in nud:
                         if num_match in [x[1] for x in nud["year"]]:
