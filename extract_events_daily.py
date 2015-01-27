@@ -127,9 +127,14 @@ for i,day in enumerate(sorted(day_files.keys())):
         os.mkdir(basedir)
     tweetinfo = open(basedir + "modeltweets.txt","w",encoding = "utf-8")
     for tweet in ep.tweets:
-        info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
+        if tweet.postags:
+            info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
+                " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
+                " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
+        else:
+            info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
             " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-            " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
+            " | ".join(tweet.entities)]
         tweetinfo.write("\t".join(info) + "\n")
     tweetinfo.close()
     ep.discard_last_day(args.window)
