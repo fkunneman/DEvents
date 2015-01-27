@@ -23,7 +23,7 @@ class Event_pairs:
             self.load_commonness(self.tmpdir + "coco",[wikidir + "1_grams.txt",wikidir + "2_grams.txt",
                 wikidir + "3_grams.txt",wikidir + "4_grams.txt",wikidir + "5_grams.txt"])
         if cities:
-            cityfile = open(cities,"r",encoding = "utf-8")
+            cityfile = open(cities,"r",encoding='iso-8859-1')
             cts = cityfile.read().split("\n")
             cityfile.close()
             li = sorted(cts, key=len, reverse=True)
@@ -130,7 +130,7 @@ class Event_pairs:
                             new_chunks = []
                             for i,chunk in enumerate(chunks):
                                 pt = [x.replace(" ","_") for x in re.findall(self.cities,chunk)]
-                                cts = [x for x in features if not x == ""]
+                                cts = [x for x in pt if not x == ""]
                                 if len(cts) > 0:
                                     regexPattern = '|'.join(map(re.escape, cts))
                                     new_chunks.extend(re.split(regexPattern,chunk))

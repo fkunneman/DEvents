@@ -181,7 +181,6 @@ def extract_date(tweet,date):
                 num_match = da[1]
                 if re.search("-",da[0]):
                     if "year" in nud:
-                        print("year")
                         if num_match in [x[1] for x in nud["year"]]:
                             ds = date_eu.search(da[0] + [x[0] for x in nud["year"] if x[1] == \
                                 num_match][0]).groups()
