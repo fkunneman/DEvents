@@ -178,6 +178,7 @@ def extract_date(tweet,date):
             for da in nud["date"]:
                 num_match = da[1]
                 if re.search("-",da[0]):
+                    print(da)
                     if "year" in nud:
                         if num_match in [x[1] for x in nud["year"]]:
                             ds = date_eu.search(da[0] + [x[0] for x in nud["year"] if x[1] == \
@@ -185,9 +186,10 @@ def extract_date(tweet,date):
                         else:
                             ds = date_eu.search(da[0]).groups()
                     else:
-                        ds = date_eu2.search(da[0]).groups()
+                        ds = date_eu.search(da[0]).groups()
                     dsi = [int(x) for x in ds if x != None]
                     dsis = [x for x in ds if x != None]
+                    print(dsis)
                     try:
                         if dsi[1] in range(1,13) and \
                             dsi[0] in range(1,32):
@@ -272,6 +274,7 @@ def extract_date(tweet,date):
         if len(nud.keys()) == 0:
             return False
         else:
+            print(output)
             return output
 
 def extract_entity(text,classencoder=False,dmodel=False):
