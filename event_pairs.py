@@ -48,12 +48,12 @@ class Event_pairs:
         #process tweets
         self.select_date_entity_tweets(tweetfile.split("\n")[1:],format = "twiqs")
         #prune tweets
-        self.discard_last_day(40)
+        self.discard_last_day(31)
         #write modeltweets
         tweetinfo = open("tmp/modeltweets.txt","w",encoding = "utf-8")
         print("date",self.tweets[0].date)
         for tweet in self.tweets:
-            info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
+            info = [tweet.id,tweet.user,str(tweet.date),tweet.text,tweet.phrase,
                 " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
                 " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
             tweetinfo.write("\t".join(info) + "\n")
@@ -65,7 +65,7 @@ class Event_pairs:
         #output events
         eventdict = defaultdict(lambda : {})
         for i,event in enumerate(sorted(self.events,key = lambda x : x.score,reverse=True)):
-            if event.tt_ratio > 0.30:
+            #if event.tt_ratio > 0.30:
                 event.rank_tweets(rep=True)
                 event_unit = {"date":event.date,"keyterms":event.entities,"score":event.score,
                     "tweets":[{"id":x.id,"user":x.user,"date":x.date,"text":x.text,
@@ -80,30 +80,56 @@ class Event_pairs:
         for et in eventtweets:
             info = et.strip().split("\t")
             info[2] = time_functions.return_datetime(info[2],setting="vs").date()
-            info[4] = [time_functions.return_datetime(x,setting="vs").date() \
-                for x in info[4].split(" ")]
-            tweet = self.Tweet()
-            units = info[:5]
-            units.append([x.strip() for x in info[5].split("|")]) #chunks
-            tweet.set_meta(units)
-            if len(info) >= 7:
-                entities = [x.strip() for x in info[6].split(" | ")]
-                if len(entities) == 1 and entities[0] == "--":
-                    tweet.set_entities([])
-                else:
-                    tweet.set_entities(entities)
-                if len(info) == 8:
-                    postags = [tuple(x.split(",")) for x in info[7].split(" | ")]
-                    if len(postags) == 1 and postags[0][0] == "--":
-                        tweet.set_postags([])
+            try:
+                info[5] = [time_functions.return_datetime(x,setting="vs").date() \
+                    for x in info[5].split(" ")]
+                tweet = self.Tweet()
+                units = info[:6]
+                units.append([x.strip() for x in info[6].split("|")]) #chunks
+                tweet.set_meta(units)
+                if len(info) >= 8:
+                    entities = [x.strip() for x in info[7].split(" | ")]
+                    if len(entities) == 1 and entities[0] == "--":
+                        tweet.set_entities([])
                     else:
-                        tweet.set_postags(postags)
+                        tweet.set_entities(entities)
+                    if len(info) == 9:
+                        postags = [tuple(x.split(",")) for x in info[8].split(" | ")]
+                        if len(postags) == 1 and postags[0][0] == "--":
+                            tweet.set_postags([])
+                        else:
+                            tweet.set_postags(postags)
+                    else:
+                        tweet.set_postags([])
                 else:
+                    tweet.set_entities([])
                     tweet.set_postags([])
-            else:
-                tweet.set_entities([])
-                tweet.set_postags([])
-            self.tweets.append(tweet)
+                self.tweets.append(tweet)
+            except:
+                info[4] = [time_functions.return_datetime(x,setting="vs").date() \
+                    for x in info[4].split(" ")]
+                tweet = self.Tweet()
+                units = info[:5]
+                units.append([x.strip() for x in info[5].split("|")]) #chunks
+                tweet.set_meta(units)
+                if len(info) >= 7:
+                    entities = [x.strip() for x in info[6].split(" | ")]
+                    if len(entities) == 1 and entities[0] == "--":
+                        tweet.set_entities([])
+                    else:
+                        tweet.set_entities(entities)
+                    if len(info) == 8:
+                        postags = [tuple(x.split(",")) for x in info[7].split(" | ")]
+                        if len(postags) == 1 and postags[0][0] == "--":
+                            tweet.set_postags([])
+                        else:
+                            tweet.set_postags(postags)
+                    else:
+                        tweet.set_postags([])
+                else:
+                    tweet.set_entities([])
+                    tweet.set_postags([])
+                self.tweets.append(tweet)
 
     def select_date_entity_tweets(self,new_tweets,format):
         tokenizer = ucto.Tokenizer(self.ucto_settingsfile)
@@ -123,35 +149,26 @@ class Event_pairs:
                 dateref_phrase = calculations.extract_date(text,date)
                 if dateref_phrase:
                     if len(dateref_phrase) > 2:
-#                        print(dateref_phrase[1])
                         chunks = dateref_phrase[0]
-                        #remove city names from chunks
                         if self.cities:
                             remove_chunk = []
                             new_chunks = []
                             for i,chunk in enumerate(chunks):
-#                                print(chunks,chunk)
-                                print(re.findall(self.cities,chunk))
                                 pt = [x.replace(" ","_") for x in re.findall(self.cities,chunk)]
                                 cts = [x for x in pt if not x == ""]
                                 if len(cts) > 0:
                                     regexPattern = '|'.join(map(re.escape, cts))
                                     new_chunks.extend(re.split(regexPattern,chunk))
                                     remove_chunk.append(i)
-                                    print(cts,regexPattern,new_chunks)
                             if len(remove_chunk) > 0:
-                                print("BEFORE",chunks,remove_chunk)
                                 for i,e in enumerate(remove_chunk):
                                     del chunks[e-i]
                                 chunks.extend(new_chunks)
-                                print("AFTER",chunks)
+                        phrase = dateref_phrase[1]
                         refdates = dateref_phrase[2:]
                         dtweet = self.Tweet()
                         #dtweet.set_postags(calculations.return_postags(text,self.frogger))
-                        if format == "exp":
-                            units = [tokens[1],tokens[2],date,text,refdates,chunks]
-                        else:
-                            units = [tokens[1],tokens[6],date,text,refdates,chunks]
+                        units = [tokens[1],tokens[6],date,text,phrase,refdates,chunks]
                         dtweet.set_meta(units)
                         entities = []
                         if self.tmpdir:
@@ -381,8 +398,9 @@ class Event_pairs:
             self.user = units[1]
             self.date = units[2]
             self.text = units[3]
-            self.daterefs = units[4]
-            self.chunks = units[5]
+            self.phrase = units[4]
+            self.daterefs = units[5]
+            self.chunks = units[6]
 
         def set_entities(self,entities):
             if len(entities) == 0:
@@ -462,15 +480,40 @@ class Event_pairs:
                 return False
 
         def order_entities(self):
-            entity_position = []
-            for entity in self.entities:    
-                positions = []
+            rankings = {}
+            for i,x in enumerate([e[0] for e in self.entities])]:
+                rankings[x] = (i,self.entities[i])
+            print("BEFORE",self.entities)
+            for entity_pair in itertools.combinations(self.entities):
+                pl0 = 0
+                pl1 = 0
+                e0 = entity_pair[0]
+                e1 = entity_pair[1]
                 for tweet in self.tweets:
-                    if re.search(re.escape(entity[0]),tweet.text):
-                        positions.append(re.search(re.escape(entity[0]),tweet.text).span()[0])
-                entity_position.append((entity,numpy.mean(positions)))   
-            ranked_positions = sorted(entity_position,key = lambda x : x[1])
-            self.entities = [x[0] for x in ranked_positions]    
+                    text = tweet.text
+                    if re.search(re.escape(e0[0]),text) and re.search(re.escape(e1[0]),text):
+                        p0 = re.search(re.escape(e0[0]),text).span()[0]
+                        p1 = re.search(re.escape(e1[0]),text).span()[0]
+                        if p0 < p1:
+                            pl0 += 1
+                        else:
+                            pl1 += 1
+                if pl0 < pl1 and rankings[e0][0] > rankings[e1][0]:
+                    print("BEFORE rankings",rankings)
+                    rankings[e0][0] = rankings[e1][0]
+                    lowers = [x for x in rankings.keys() if rankings[x][0] => rankings[e1]]
+                    rankings[e1][0] += 1
+                elif pl1 < pl0 and rankings[e1][0] > rankings[e0][0]:
+                    print("BEFORE rankings",rankings)
+                    rankings[e1][0] = rankings[e0][0]
+                    lowers = [x for x in rankings.keys() if rankings[x][0] => rankings[e0]]
+                    rankings[e0][0] += 1
+                print("AFTER rankings"
+            new_entities = []
+            for rank in range(len(self.entities)):
+                new_entities.append([e[1] for e in rankings if e[0] == rank][0]) 
+            print("AFTER",self.entities)
+            self.entities = new_entities
 
         def add_ttratio(self):
             tokens = []
@@ -488,16 +531,17 @@ class Event_pairs:
             tweet_score = []
             exclude = set(string.punctuation)
             for tweet in self.tweets:
-                score = 0
+                scores = []
                 for chunk in tweet.chunks:
                     chunk = chunk.replace('#','').replace('-',' ')
                     chunk = ''.join(ch for ch in chunk if ch not in exclude)
                     for word in chunk.split():
                         try:
                             wordscore = self.word_tfidf[word]
-                            score += wordscore
+                            scores.append(wordscore)
                         except KeyError:
                             continue
+                score = numpy.mean(scores)
                 tweet_score.append((tweet.text,score))
             if rep:
                 self.reptweets = []
