@@ -212,8 +212,12 @@ def extract_date(tweet,date):
                 elif re.search("/",da[0]):
                     if "year" in nud:
                         if num_match in [x[1] for x in nud["year"]]:
-                            ds = date_vs.search(da[0] + [x[0] for x in nud["year"] if x[1] == \
-                                num_match][0]).groups()
+                            if [x[0] for x in nud["year"] if x[1] == num_match][0][-1] == "/":
+                                ds = date_vs.search([x[0] for x in nud["year"] if x[1] == \
+                                    num_match][0] + da[0]).groups()
+                            else:
+                                ds = date_vs.search(da[0] + [x[0] for x in nud["year"] if x[1] == \
+                                    num_match][0]).groups()
                         else:
                             ds = date_vs3.search(da[0]).groups()
                     else:

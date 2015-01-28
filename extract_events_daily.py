@@ -63,7 +63,7 @@ def output_events(d):
     if args.x:
         tweetinfo = open(d + "modeltweets.txt","w",encoding = "utf-8")
         for tweet in ep.tweets:
-            if tweet.postags:
+            if hasattr(tweet, 'postags'):
                 info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
                     " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
                     " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
@@ -127,7 +127,7 @@ for i,day in enumerate(sorted(day_files.keys())):
         os.mkdir(basedir)
     tweetinfo = open(basedir + "modeltweets.txt","w",encoding = "utf-8")
     for tweet in ep.tweets:
-        if tweet.postags:
+        if hasattr(tweet, 'postags'):
             info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
                 " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
                 " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]

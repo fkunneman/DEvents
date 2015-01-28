@@ -24,11 +24,11 @@ class Event_pairs:
                 wikidir + "3_grams.txt",wikidir + "4_grams.txt",wikidir + "5_grams.txt"])
         if cities:
             cityfile = open(cities,"r",encoding='iso-8859-1')
-            cts = cityfile.read().split("\n")
+            cts = [x.strip().lower() for x in cityfile.read().split("\n")]
             cityfile.close()
             li = sorted(cts, key=len, reverse=True)
             li = [tx.replace('.','\.').replace('*','\*') for tx in li] # not to match anything with . (dot) or *
-            self.cities = re.compile('\\b'+'\\b|\\b'.join(li)+'\\b')
+            self.cities = re.compile('\\b' + '\\b|\\b'.join(li) + '\\b')
         c = "/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg"
         if t:
             fo = frog.FrogOptions(threads=t)
@@ -123,12 +123,15 @@ class Event_pairs:
                 dateref_phrase = calculations.extract_date(text,date)
                 if dateref_phrase:
                     if len(dateref_phrase) > 2:
+#                        print(dateref_phrase[1])
                         chunks = dateref_phrase[0]
                         #remove city names from chunks
                         if self.cities:
                             remove_chunk = []
                             new_chunks = []
                             for i,chunk in enumerate(chunks):
+#                                print(chunks,chunk)
+                                print(re.findall(self.cities,chunk))
                                 pt = [x.replace(" ","_") for x in re.findall(self.cities,chunk)]
                                 cts = [x for x in pt if not x == ""]
                                 if len(cts) > 0:
@@ -137,9 +140,9 @@ class Event_pairs:
                                     remove_chunk.append(i)
                                     print(cts,regexPattern,new_chunks)
                             if len(remove_chunk) > 0:
-                                print("BEFORE",chunks)
-                                for j,e in remove_chunk:
-                                    del chunks[e-j]
+                                print("BEFORE",chunks,remove_chunk)
+                                for i,e in enumerate(remove_chunk):
+                                    del chunks[e-i]
                                 chunks.extend(new_chunks)
                                 print("AFTER",chunks)
                         refdates = dateref_phrase[2:]
