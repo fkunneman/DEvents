@@ -123,7 +123,7 @@ class Event_pairs:
                 dateref_phrase = calculations.extract_date(text,date)
                 if dateref_phrase:
                     if len(dateref_phrase) > 2:
-#                        print(dateref_phrase[1])
+                        print(dateref_phrase[1])
                         chunks = dateref_phrase[0]
                         #remove city names from chunks
                         if self.cities:
@@ -131,20 +131,20 @@ class Event_pairs:
                             new_chunks = []
                             for i,chunk in enumerate(chunks):
 #                                print(chunks,chunk)
-                                print(re.findall(self.cities,chunk))
+#                                print(re.findall(self.cities,chunk))
                                 pt = [x.replace(" ","_") for x in re.findall(self.cities,chunk)]
                                 cts = [x for x in pt if not x == ""]
                                 if len(cts) > 0:
                                     regexPattern = '|'.join(map(re.escape, cts))
                                     new_chunks.extend(re.split(regexPattern,chunk))
                                     remove_chunk.append(i)
-                                    print(cts,regexPattern,new_chunks)
+#                                    print(cts,regexPattern,new_chunks)
                             if len(remove_chunk) > 0:
-                                print("BEFORE",chunks,remove_chunk)
+#                                print("BEFORE",chunks,remove_chunk)
                                 for i,e in enumerate(remove_chunk):
                                     del chunks[e-i]
                                 chunks.extend(new_chunks)
-                                print("AFTER",chunks)
+#                                print("AFTER",chunks)
                         refdates = dateref_phrase[2:]
                         dtweet = self.Tweet()
                         #dtweet.set_postags(calculations.return_postags(text,self.frogger))
