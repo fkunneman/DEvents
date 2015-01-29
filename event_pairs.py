@@ -507,7 +507,7 @@ class Event_pairs:
                         for j,e1 in enumerate(entities):
                             if re.search(re.escape(e1),text):
                                 p1 = re.search(re.escape(e1),text).span()[0]
-                                print("b",scores,p0,p1)
+                                print("b",scores,p0,p1,j,scores[j])
                                 if p0 < p1:
                                     scores[j][0] += 1
                                     #pl0 += 1
