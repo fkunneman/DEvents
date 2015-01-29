@@ -511,8 +511,8 @@ class Event_pairs:
                     for k in sorted(rankings, key=rankings.get):
                         clearrankings.append((k,rankings[k][0]))
                     print("BEFORE rankings",clearrankings)
-                    rankings[e0][0] = rankings[e1][0]
                     lowers = [x for x in rankings.keys() if rankings[x][0] > rankings[e1][0] and rankings[x][0] < rankings[e0][0]]
+                    rankings[e0][0] = rankings[e1][0]
                     rankings[e1][0] += 1
                     for l in lowers:
                         rankings[l][0] += 1
@@ -521,8 +521,8 @@ class Event_pairs:
                     for k in sorted(rankings, key=rankings.get):
                         clearrankings.append((k,rankings[k][0]))
                     print("BEFORE rankings",clearrankings)
-                    rankings[e1][0] = rankings[e0][0]
                     lowers = [x for x in rankings.keys() if rankings[x][0] > rankings[e0][0] and rankings[x][0] < rankings[e1][0]]
+                    rankings[e1][0] = rankings[e0][0]
                     rankings[e0][0] += 1
                     for l in lowers:
                         rankings[l][0] += 1
