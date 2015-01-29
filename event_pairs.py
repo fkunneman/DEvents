@@ -507,29 +507,17 @@ class Event_pairs:
                         else:
                             pl1 += 1
                 if pl0 > pl1 and rankings[e0][0] > rankings[e1][0]:
-                    clearrankings = []
-                    for k in sorted(rankings, key=rankings.get):
-                        clearrankings.append((k,rankings[k][0]))
-                    print("BEFORE rankings",clearrankings)
                     lowers = [x for x in rankings.keys() if rankings[x][0] > rankings[e1][0] and rankings[x][0] < rankings[e0][0]]
                     rankings[e0][0] = rankings[e1][0]
                     rankings[e1][0] += 1
                     for l in lowers:
                         rankings[l][0] += 1
                 elif pl1 > pl0 and rankings[e1][0] > rankings[e0][0]:
-                    clearrankings = []
-                    for k in sorted(rankings, key=rankings.get):
-                        clearrankings.append((k,rankings[k][0]))
-                    print("BEFORE rankings",clearrankings)
                     lowers = [x for x in rankings.keys() if rankings[x][0] > rankings[e0][0] and rankings[x][0] < rankings[e1][0]]
                     rankings[e1][0] = rankings[e0][0]
                     rankings[e0][0] += 1
                     for l in lowers:
                         rankings[l][0] += 1
-                clearrankings = []
-                for k in sorted(rankings, key=rankings.get):
-                    clearrankings.append((k,rankings[k][0]))
-                print("AFTER rankings",clearrankings)
             new_entities = []
             for rank in range(len(self.entities)):
                 new_entities.append([e[1] for e in rankings.values() if e[0] == rank][0]) 
