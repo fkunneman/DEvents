@@ -491,7 +491,7 @@ class Event_pairs:
             rankings = {}
             for i,x in enumerate([e[0] for e in self.entities]):
                 rankings[x] = [i,self.entities[i]]
-            print("BEFORE",self.entities)
+            print("BEFORE",[x[0] for x in self.entities])
             for entity_pair in itertools.combinations(self.entities,2):
                 pl0 = 0
                 pl1 = 0
@@ -506,21 +506,30 @@ class Event_pairs:
                             pl0 += 1
                         else:
                             pl1 += 1
-                if pl0 < pl1 and rankings[e0][0] > rankings[e1][0]:
-                    print("BEFORE rankings",rankings)
+                if pl0 > pl1 and rankings[e0][0] > rankings[e1][0]:
+                    clearrankigns = []
+                    for k in sorted(rankings, key=rankings.get):
+                        clearrankings.append(k,rankings[k][0])
+                    print("BEFORE rankings",clearrankings)
                     rankings[e0][0] = rankings[e1][0]
                     lowers = [x for x in rankings.keys() if rankings[x][0] > rankings[e1][0] and rankings[x][0] < rankings[e0][0]]
                     rankings[e1][0] += 1
                     for l in lowers:
                         rankings[l][0] += 1
-                elif pl1 < pl0 and rankings[e1][0] > rankings[e0][0]:
-                    print("BEFORE rankings",rankings)
+                elif pl1 > pl0 and rankings[e1][0] > rankings[e0][0]:
+                    clearrankigns = []
+                    for k in sorted(rankings, key=rankings.get):
+                        clearrankings.append(k,rankings[k][0])
+                    print("BEFORE rankings",clearrankings)
                     rankings[e1][0] = rankings[e0][0]
                     lowers = [x for x in rankings.keys() if rankings[x][0] > rankings[e0][0] and rankings[x][0] < rankings[e1][0]]
                     rankings[e0][0] += 1
                     for l in lowers:
                         rankings[l][0] += 1
-                print("AFTER rankings",rankings)
+                clearrankings = []
+                for k in sorted(rankings, key=rankings.get):
+                    clearrankings.append(k,rankings[k][0])
+                print("AFTER rankings",clearrankings)
             new_entities = []
             for rank in range(len(self.entities)):
                 new_entities.append([e[1] for e in rankings.values() if e[0] == rank][0]) 
