@@ -507,7 +507,7 @@ class Event_pairs:
                         else:
                             pl1 += 1
                 if pl0 > pl1 and rankings[e0][0] > rankings[e1][0]:
-                    clearrankigns = []
+                    clearrankings = []
                     for k in sorted(rankings, key=rankings.get):
                         clearrankings.append(k,rankings[k][0])
                     print("BEFORE rankings",clearrankings)
@@ -517,7 +517,7 @@ class Event_pairs:
                     for l in lowers:
                         rankings[l][0] += 1
                 elif pl1 > pl0 and rankings[e1][0] > rankings[e0][0]:
-                    clearrankigns = []
+                    clearrankings = []
                     for k in sorted(rankings, key=rankings.get):
                         clearrankings.append(k,rankings[k][0])
                     print("BEFORE rankings",clearrankings)
