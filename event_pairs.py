@@ -347,7 +347,7 @@ class Event_pairs:
             event.order_entities() #order entities by their average position in the tweets
 #            if "linkshandigen" in [x[0] for x in event.entities] or "flikken" in [x[0] for x in event.entities] or "maastricht" in [x[0] for x in event.entities] or "flikkendag" in [x[0] for x in event.entities] or "de sims 4" in [x[0] for x in event.entities]:
 #                print("AFTER order",event.entities)
-            event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
+            #event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
         print("enrich",len(self.events))
 
     def discard_last_day(self,window):
@@ -492,7 +492,7 @@ class Event_pairs:
             for i,x in enumerate([e[0] for e in self.entities]):
                 rankings[x] = [i,self.entities[i]]
             print("BEFORE",[x[0] for x in self.entities])
-            for i,e0 in enumerate([x[0] for x in self.entities]):
+            for i,e0 in enumerate([x[0] for x in self.entities[:-1]]):
                 scores = [[0,0]] * (len(self.entities) - (i+1))
                 entities = [x[0] for x in self.entities[i+1:]]
                 print(i,scores,entities)
