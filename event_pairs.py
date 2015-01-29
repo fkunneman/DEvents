@@ -495,7 +495,6 @@ class Event_pairs:
             for i,e0 in enumerate([x[0] for x in self.entities[:-1]]):
                 scores = [[0,0]] * (len(self.entities) - (i+1))
                 entities = [x[0] for x in self.entities[i+1:]]
-                print(i,scores,entities)
             # entity_pair in itertools.combinations(self.entities,2):
             #     e0 = entity_pair[0][0]
             #     e1 = entity_pair[1][0]
@@ -508,11 +507,13 @@ class Event_pairs:
                         for j,e1 in enumerate(entities):
                             if re.search(re.escape(e1),text):
                                 p1 = re.search(re.escape(e1),text).span()[0]
+                                print("b",scores,p0,p1)
                                 if p0 < p1:
                                     scores[j][0] += 1
                                     #pl0 += 1
                                 else:
                                     scores[j][1] += 1
+                                print("a",scores)
                 for j,e1 in enumerate(entities):
                     score = scores[j]
                     if score[0] > score[1] and rankings[e0][0] > rankings[e1][0]:
