@@ -105,7 +105,7 @@ class Event_pairs:
                     tweet.set_entities([])
                     tweet.set_postags([])
                 self.tweets.append(tweet)
-            except:
+            except(IndexError, AttributeError):
                 info[4] = [time_functions.return_datetime(x,setting="vs").date() \
                     for x in info[4].split(" ")]
                 tweet = self.Tweet()
@@ -315,13 +315,13 @@ class Event_pairs:
         word_indexes = tfidf_vectorizer.get_feature_names()
         doc_tfidf = tfidf_matrix.toarray()
         #for each event
-        for i,event in enumerate(self.events):
+        for i,event in enumerate(self.events[:10]):
             event.resolve_overlap_entities() #resolve overlap
             tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
             tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
             event.add_tfidf(tfidf_sorted,word_indexes)
-            if "linkshandigen" in [x[0] for x in event.entities] or "flikken" in [x[0] for x in event.entities] or "maastricht" in [x[0] for x in event.entities] or "flikkendag" in [x[0] for x in event.entities] or "de sims 4" in [x[0] for x in event.entities]:
-                print("BEFORE add",event.entities)
+#            if "linkshandigen" in [x[0] for x in event.entities] or "flikken" in [x[0] for x in event.entities] or "maastricht" in [x[0] for x in event.entities] or "flikkendag" in [x[0] for x in event.entities] or "de sims 4" in [x[0] for x in event.entities]:
+#                print("BEFORE add",event.entities)
             if method == "csx": #add terms
                 top_terms = [word_indexes[j[0]] for j in tfidf_sorted][:5]
                 term_postag_counts = defaultdict(lambda : defaultdict(int))
@@ -342,11 +342,11 @@ class Event_pairs:
                             ap = False
                     if ap:
                         event.entities.append((term,0))
-            if "linkshandigen" in [x[0] for x in event.entities] or "flikken" in [x[0] for x in event.entities] or "maastricht" in [x[0] for x in event.entities] or "flikkendag" in [x[0] for x in event.entities] or "de sims 4" in [x[0] for x in event.entities]:
-                print("BEFORE order",event.entities)
+#            if "linkshandigen" in [x[0] for x in event.entities] or "flikken" in [x[0] for x in event.entities] or "maastricht" in [x[0] for x in event.entities] or "flikkendag" in [x[0] for x in event.entities] or "de sims 4" in [x[0] for x in event.entities]:
+#                print("BEFORE order",event.entities)
             event.order_entities() #order entities by their average position in the tweets
-            if "linkshandigen" in [x[0] for x in event.entities] or "flikken" in [x[0] for x in event.entities] or "maastricht" in [x[0] for x in event.entities] or "flikkendag" in [x[0] for x in event.entities] or "de sims 4" in [x[0] for x in event.entities]:
-                print("AFTER order",event.entities)
+#            if "linkshandigen" in [x[0] for x in event.entities] or "flikken" in [x[0] for x in event.entities] or "maastricht" in [x[0] for x in event.entities] or "flikkendag" in [x[0] for x in event.entities] or "de sims 4" in [x[0] for x in event.entities]:
+#                print("AFTER order",event.entities)
             event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
         print("enrich",len(self.events))
 
@@ -402,9 +402,13 @@ class Event_pairs:
             self.user = units[1]
             self.date = units[2]
             self.text = units[3]
-            self.phrase = units[4]
-            self.daterefs = units[5]
-            self.chunks = units[6]
+            if len(units) == 7:
+                self.phrase = units[4]
+                self.daterefs = units[5]
+                self.chunks = units[6]
+            else:
+                self.daterefs = units[4]
+                self.chunks = units[5]
 
         def set_entities(self,entities):
             if len(entities) == 0:
@@ -485,19 +489,19 @@ class Event_pairs:
 
         def order_entities(self):
             rankings = {}
-            for i,x in enumerate([e[0] for e in self.entities])]:
-                rankings[x] = (i,self.entities[i])
+            for i,x in enumerate([e[0] for e in self.entities]):
+                rankings[x] = [i,self.entities[i]]
             print("BEFORE",self.entities)
-            for entity_pair in itertools.combinations(self.entities):
+            for entity_pair in itertools.combinations(self.entities,2):
                 pl0 = 0
                 pl1 = 0
-                e0 = entity_pair[0]
-                e1 = entity_pair[1]
+                e0 = entity_pair[0][0]
+                e1 = entity_pair[1][0]
                 for tweet in self.tweets:
                     text = tweet.text
-                    if re.search(re.escape(e0[0]),text) and re.search(re.escape(e1[0]),text):
-                        p0 = re.search(re.escape(e0[0]),text).span()[0]
-                        p1 = re.search(re.escape(e1[0]),text).span()[0]
+                    if re.search(re.escape(e0),text) and re.search(re.escape(e1),text):
+                        p0 = re.search(re.escape(e0),text).span()[0]
+                        p1 = re.search(re.escape(e1),text).span()[0]
                         if p0 < p1:
                             pl0 += 1
                         else:
@@ -505,18 +509,22 @@ class Event_pairs:
                 if pl0 < pl1 and rankings[e0][0] > rankings[e1][0]:
                     print("BEFORE rankings",rankings)
                     rankings[e0][0] = rankings[e1][0]
-                    lowers = [x for x in rankings.keys() if rankings[x][0] => rankings[e1]]
+                    lowers = [x for x in rankings.keys() if rankings[x][0] > rankings[e1][0] and rankings[x][0] < rankings[e0][0]]
                     rankings[e1][0] += 1
+                    for l in lowers:
+                        rankings[l][0] += 1
                 elif pl1 < pl0 and rankings[e1][0] > rankings[e0][0]:
                     print("BEFORE rankings",rankings)
                     rankings[e1][0] = rankings[e0][0]
-                    lowers = [x for x in rankings.keys() if rankings[x][0] => rankings[e0]]
+                    lowers = [x for x in rankings.keys() if rankings[x][0] > rankings[e0][0] and rankings[x][0] < rankings[e1][0]]
                     rankings[e0][0] += 1
-                print("AFTER rankings"
+                    for l in lowers:
+                        rankings[l][0] += 1
+                print("AFTER rankings",rankings)
             new_entities = []
             for rank in range(len(self.entities)):
-                new_entities.append([e[1] for e in rankings if e[0] == rank][0]) 
-            print("AFTER",self.entities)
+                new_entities.append([e[1] for e in rankings.values() if e[0] == rank][0]) 
+            print("AFTER",new_entities)
             self.entities = new_entities
 
         def add_ttratio(self):
