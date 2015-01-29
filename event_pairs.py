@@ -315,7 +315,7 @@ class Event_pairs:
         word_indexes = tfidf_vectorizer.get_feature_names()
         doc_tfidf = tfidf_matrix.toarray()
         #for each event
-        for i,event in enumerate(self.events[:10]):
+        for i,event in enumerate(self.events):
             event.resolve_overlap_entities() #resolve overlap
             tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
             tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
@@ -492,32 +492,41 @@ class Event_pairs:
             for i,x in enumerate([e[0] for e in self.entities]):
                 rankings[x] = [i,self.entities[i]]
             print("BEFORE",[x[0] for x in self.entities])
-            for entity_pair in itertools.combinations(self.entities,2):
-                pl0 = 0
-                pl1 = 0
-                e0 = entity_pair[0][0]
-                e1 = entity_pair[1][0]
+            for i,e0 in enumerate([x[0] for x in self.entities]):
+                scores = [0,0] * (len(self.entities) - (i+1))
+                entities = [x[0] for x in self.entities[i+1:]]
+                print(i,scores,entities)
+            # entity_pair in itertools.combinations(self.entities,2):
+            #     e0 = entity_pair[0][0]
+            #     e1 = entity_pair[1][0]
+                    # pl0 = 0
+                    # pl1 = 0
                 for tweet in self.tweets:
                     text = tweet.text
-                    if re.search(re.escape(e0),text) and re.search(re.escape(e1),text):
-                        p0 = re.search(re.escape(e0),text).span()[0]
-                        p1 = re.search(re.escape(e1),text).span()[0]
-                        if p0 < p1:
-                            pl0 += 1
-                        else:
-                            pl1 += 1
-                if pl0 > pl1 and rankings[e0][0] > rankings[e1][0]:
-                    lowers = [x for x in rankings.keys() if rankings[x][0] > rankings[e1][0] and rankings[x][0] < rankings[e0][0]]
-                    rankings[e0][0] = rankings[e1][0]
-                    rankings[e1][0] += 1
-                    for l in lowers:
-                        rankings[l][0] += 1
-                elif pl1 > pl0 and rankings[e1][0] > rankings[e0][0]:
-                    lowers = [x for x in rankings.keys() if rankings[x][0] > rankings[e0][0] and rankings[x][0] < rankings[e1][0]]
-                    rankings[e1][0] = rankings[e0][0]
-                    rankings[e0][0] += 1
-                    for l in lowers:
-                        rankings[l][0] += 1
+                    if re.search(re.escape(e0),text):
+                        p0 = re.search(re.escape(e0),text).span()[0]           
+                        for j,e1 in enumerate(entities):
+                            if re.search(re.escape(e1),text):
+                                p1 = re.search(re.escape(e1),text).span()[0]
+                                if p0 < p1:
+                                    scores[j][0] += 1
+                                    #pl0 += 1
+                                else:
+                                    scores[j][1] += 1
+                for j,e1 in enumerate(entities):
+                    score = scores[j]
+                    if score[0] > score[1] and rankings[e0][0] > rankings[e1][0]:
+                        lowers = [x for x in rankings.keys() if rankings[x][0] > rankings[e1][0] and rankings[x][0] < rankings[e0][0]]
+                        rankings[e0][0] = rankings[e1][0]
+                        rankings[e1][0] += 1
+                        for l in lowers:
+                            rankings[l][0] += 1
+                    elif score[1] > score[0] and rankings[e1][0] > rankings[e0][0]:
+                        lowers = [x for x in rankings.keys() if rankings[x][0] > rankings[e0][0] and rankings[x][0] < rankings[e1][0]]
+                        rankings[e1][0] = rankings[e0][0]
+                        rankings[e0][0] += 1
+                        for l in lowers:
+                            rankings[l][0] += 1
             new_entities = []
             for rank in range(len(self.entities)):
                 new_entities.append([e[1] for e in rankings.values() if e[0] == rank][0]) 
