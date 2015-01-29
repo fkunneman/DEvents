@@ -493,7 +493,7 @@ class Event_pairs:
                 rankings[x] = [i,self.entities[i]]
             print("BEFORE",[x[0] for x in self.entities])
             for i,e0 in enumerate([x[0] for x in self.entities]):
-                scores = [0,0] * (len(self.entities) - (i+1))
+                scores = [[0,0]] * (len(self.entities) - (i+1))
                 entities = [x[0] for x in self.entities[i+1:]]
                 print(i,scores,entities)
             # entity_pair in itertools.combinations(self.entities,2):
