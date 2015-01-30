@@ -53,10 +53,28 @@ class Event_pairs:
         tweetinfo = open("tmp/modeltweets.txt","w",encoding = "utf-8")
         print("date",self.tweets[0].date)
         for tweet in self.tweets:
-            info = [tweet.id,tweet.user,str(tweet.date),tweet.text,tweet.phrase,
-                " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-                " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
+            if hasattr(tweet, 'postags') and hasattr(tweet, 'phrase'):
+                info = [tweet.id,tweet.user,str(tweet.date),tweet.text,tweet.phrase,
+                    " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
+                    " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
+            else:
+                if hasattr(tweet, 'postags'):
+                    info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
+                        " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
+                        " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
+                elif hasattr(tweet, 'phrase'):
+                    info = [tweet.id,tweet.user,str(tweet.date),tweet.text,tweet.phrase,
+                        " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
+                        " | ".join(tweet.entities)]
+                else:
+                    info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
+                    " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
+                    " | ".join(tweet.entities)]
             tweetinfo.write("\t".join(info) + "\n")
+            # info = [tweet.id,tweet.user,str(tweet.date),tweet.text,tweet.phrase,
+            #     " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
+            #     " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
+            # tweetinfo.write("\t".join(info) + "\n")
         tweetinfo.close()
         #rank events, resolve overlap and enrich events
         self.rank_events("csx")
