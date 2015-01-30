@@ -40,18 +40,9 @@ args = parser.parse_args()
 #sort input-files
 day_files = defaultdict(list)
 if args.i: 
-    if args.f == "twiqs":
-        for infile in args.i:
-            day = infile.split("/")[-1][:-6]
-            day_files[day].append(infile)
-    elif args.f == "exp":
-        for infile in args.i:
-            parts = infile.split("/")
-            day = parts[-3][:2] + "_" + parts[-2]
-            day_files[day].append(infile)
-    else:
-        print("format not included, exiting program")
-        quit()
+    for infile in args.i:
+        day = infile.split("/")[-1][:-6]
+        day_files[day].append(infile)
 
 ep = Event_pairs(args.w,args.d,cities = args.cities)
 
@@ -126,10 +117,7 @@ for i,day in enumerate(sorted(day_files.keys())):
     print("extracting tweets with a time reference posted on",day)
     for infile in day_files[day]:
         tweetfile = open(infile,"r",encoding = "utf-8")
-        if args.f == "twiqs":
-            ep.select_date_entity_tweets(tweetfile.readlines()[1:],"twiqs")
-        elif args.f == "exp":
-            ep.select_date_entity_tweets(tweetfile.readlines(),"exp")
+        ep.select_date_entity_tweets(tweetfile.readlines()[1:])
         tweetfile.close()
     basedir = args.o + day + "/"
     if not os.path.isdir(basedir):

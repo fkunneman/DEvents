@@ -46,7 +46,7 @@ class Event_pairs:
         #except:
         #    print("no modeltweets")
         #process tweets
-        self.select_date_entity_tweets(tweetfile.split("\n")[1:],format = "twiqs")
+        self.select_date_entity_tweets(tweetfile.split("\n")[1:])
         #prune tweets
         self.discard_last_day(31)
         #write modeltweets
@@ -94,7 +94,7 @@ class Event_pairs:
             self.events = []
             return eventdict
 
-    def append_eventtweets(self,eventtweets):
+    def append_eventtweets(self,eventtweets,entities = False):
         for et in eventtweets:
             info = et.strip().split("\t")
             try:
@@ -110,7 +110,6 @@ class Event_pairs:
                     tweet.set_meta(units)
                     tweet.set_entities([])
                     tweet.set_postags([])
-                    self.tweets.append(tweet)
                 else:
                     info[2] = time_functions.return_datetime(info[2],setting="vs").date()
                     try:
@@ -137,7 +136,6 @@ class Event_pairs:
                         else:
                             tweet.set_entities([])
                             tweet.set_postags([])
-                        self.tweets.append(tweet)
                     except(IndexError, AttributeError):
                         info[4] = [time_functions.return_datetime(x,setting="vs").date() \
                             for x in info[4].split(" ")]
@@ -162,7 +160,39 @@ class Event_pairs:
                         else:
                             tweet.set_entities([])
                             tweet.set_postags([])
-                        self.tweets.append(tweet)
+                if entities:
+                    if self.cities:
+                        remove_chunk = []
+                        new_chunks = []
+                        for i,chunk in enumerate(tweet.chunks):
+                            pt = [x.replace(" ","_") for x in re.findall(self.cities,chunk)]
+                            cts = [x for x in pt if not x == ""]
+                            if len(cts) > 0:
+                                regexPattern = '|'.join(map(re.escape, cts))
+                                new_chunks.extend(re.split(regexPattern,chunk))
+                                remove_chunk.append(i)
+                        if len(remove_chunk) > 0:
+                            for i,e in enumerate(remove_chunk):
+                                del tweet.chunks[e-i]
+                            tweet.chunks.extend(new_chunks)
+                        if len(remove_chunk) > 0:
+                            for i,e in enumerate(remove_chunk):
+                                del tweet.chunks[e-i]
+                            tweet.chunks.extend(new_chunks)
+                    entities = []
+                    for chunk in tweet.chunks:
+                        entities.extend(calculations.extract_entity(chunk,self.classencoder,self.dmodel))
+                    entities = sorted(entities,key = lambda x: x[1],reverse=True)
+                    #add hashtags to process
+                    for chunk in tweet.chunks:
+                        hashtags = [x for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1]
+                        if len(hashtags) > 0:
+                            entities.extend(hashtags)
+                    if len(entities) > 0:
+                        tweet.set_entities([x[0] for x in entities])
+                    else:
+                        tweet.set_entities([])
+                self.tweets.append(tweet)
             except:
                 print(len(info),info)
 
