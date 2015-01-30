@@ -189,7 +189,7 @@ class Event_pairs:
                         phrase = dateref_phrase[1]
                         refdates = dateref_phrase[2:]
                         dtweet = self.Tweet()
-                        #dtweet.set_postags(calculations.return_postags(text,self.frogger))
+                        dtweet.set_postags(calculations.return_postags(text,self.frogger))
                         units = [tokens[1],tokens[6],date,text,phrase,refdates,chunks]
                         dtweet.set_meta(units)
                         entities = []
