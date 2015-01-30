@@ -37,7 +37,7 @@ class Event_pairs:
         self.frogger = frog.Frog(fo,c)
         self.ucto_settingsfile = "/vol/customopt/uvt-ru/etc/ucto/tokconfig-nl-twitter"
 
-    def detect_events(self,tweetfile):
+    def detect_events(self,tweetfile,events = True):
         #start from last modeltweets
         #try:
         eventfile = open("tmp/modeltweets.txt","r",encoding = "utf-8")
@@ -76,23 +76,24 @@ class Event_pairs:
             #     " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
             # tweetinfo.write("\t".join(info) + "\n")
         tweetinfo.close()
-        #rank events, resolve overlap and enrich events
-        self.rank_events("csx")
-        self.resolve_overlap_events()
-        self.enrich_events("csx")
-        #output events
-        eventdict = defaultdict(lambda : {})
-        for i,event in enumerate(sorted(self.events,key = lambda x : x.score,reverse=True)):
-            #if event.tt_ratio > 0.30:
-                event.rank_tweets(rep=True)
-                event_unit = {"date":event.date,"keyterms":event.entities,"score":event.score,
-                    "tweets":[{"id":x.id,"user":x.user,"date":x.date,"text":x.text,
-                    "date references":",".join([str(y) for y in x.daterefs]),
-                    "entities":",".join(x.entities),"postags":" | ".join(",".join(x) for x in tweet.postags)} for x in event.tweets]} 
-                eventdict[i] = event_unit
-        self.tweets = []
-        self.events = []
-        return eventdict
+        if events:
+            #rank events, resolve overlap and enrich events
+            self.rank_events("csx")
+            self.resolve_overlap_events()
+            self.enrich_events("csx")
+            #output events
+            eventdict = defaultdict(lambda : {})
+            for i,event in enumerate(sorted(self.events,key = lambda x : x.score,reverse=True)):
+                #if event.tt_ratio > 0.30:
+                    event.rank_tweets(rep=True)
+                    event_unit = {"date":event.date,"keyterms":event.entities,"score":event.score,
+                        "tweets":[{"id":x.id,"user":x.user,"date":x.date,"text":x.text,
+                        "date references":",".join([str(y) for y in x.daterefs]),
+                        "entities":",".join(x.entities),"postags":" | ".join(",".join(x) for x in tweet.postags)} for x in event.tweets]} 
+                    eventdict[i] = event_unit
+            self.tweets = []
+            self.events = []
+            return eventdict
 
     def append_eventtweets(self,eventtweets):
         for et in eventtweets:
