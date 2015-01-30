@@ -39,12 +39,12 @@ class Event_pairs:
 
     def detect_events(self,tweetfile):
         #start from last modeltweets
-        try:
-            eventfile = open("tmp/modeltweets.txt","r",encoding = "utf-8")
-            self.append_eventtweets(eventfile.readlines())
-            eventfile.close()
-        except:
-            print("no modeltweets")
+        #try:
+        eventfile = open("tmp/modeltweets.txt","r",encoding = "utf-8")
+        self.append_eventtweets(eventfile.readlines())
+        eventfile.close()
+        #except:
+        #    print("no modeltweets")
         #process tweets
         self.select_date_entity_tweets(tweetfile.split("\n")[1:],format = "twiqs")
         #prune tweets
