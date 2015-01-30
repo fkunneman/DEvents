@@ -491,7 +491,7 @@ class Event_pairs:
             rankings = {}
             for i,x in enumerate([e[0] for e in self.entities]):
                 rankings[x] = [i,self.entities[i]]
-            print("BEFORE",[x[0] for x in self.entities])
+            #print("BEFORE",[x[0] for x in self.entities])
             for i,e0 in enumerate([x[0] for x in self.entities[:-1]]):
                 scores = [[0,0] for y in itertools.repeat(None,(len(self.entities) - (i+1)))]
                 entities = [x[0] for x in self.entities[i+1:]]
@@ -531,7 +531,7 @@ class Event_pairs:
             new_entities = []
             for rank in range(len(self.entities)):
                 new_entities.append([e[1] for e in rankings.values() if e[0] == rank][0]) 
-            print("AFTER",new_entities)
+            #print("AFTER",new_entities)
             self.entities = new_entities
 
         def add_ttratio(self):
