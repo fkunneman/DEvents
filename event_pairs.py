@@ -98,7 +98,7 @@ class Event_pairs:
         for et in eventtweets:
             info = et.strip().split("\t")
             if len(info) > 12:
-                info[7] = time_functions.return_datetime(info[2],setting="vs").date()
+                info[7] = time_functions.return_datetime(info[7],setting="vs").date()
                 info[10] = [time_functions.return_datetime(x,setting="vs").date() \
                     for x in info[10].split(" ")]
                 tweet = self.Tweet()
