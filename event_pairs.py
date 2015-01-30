@@ -196,70 +196,68 @@ class Event_pairs:
             except:
                 print(len(info),info)
 
-    def select_date_entity_tweets(self,new_tweets,format):
+    def select_date_entity_tweets(self,new_tweets):
         tokenizer = ucto.Tokenizer(self.ucto_settingsfile)
         for tweet in new_tweets:
             tokens = tweet.strip().split("\t")
-            if (format == "twiqs" or (format == "exp" and tokens[0] == "dutch")) \
-                    and not re.search(r"\bRT\b",tokens[-1]):
-                tokenizer.process(tokens[-1])
-                text = " ".join([x.text.lower() for x in tokenizer])
-                if format == "exp":
-                    date = time_functions.return_datetime(tokens[3],setting="vs").date()
-                else:
-                    try:
-                        date = time_functions.return_datetime(tokens[2],setting="vs").date()
-                    except:
-                        print("dateerror",tweet,tokens)
-                dateref_phrase = calculations.extract_date(text,date)
-                if dateref_phrase:
-                    if len(dateref_phrase) > 2:
-                        chunks = dateref_phrase[0]
-                        if self.cities:
-                            remove_chunk = []
-                            new_chunks = []
-                            for i,chunk in enumerate(chunks):
-                                pt = [x.replace(" ","_") for x in re.findall(self.cities,chunk)]
-                                cts = [x for x in pt if not x == ""]
-                                if len(cts) > 0:
-                                    regexPattern = '|'.join(map(re.escape, cts))
-                                    new_chunks.extend(re.split(regexPattern,chunk))
-                                    remove_chunk.append(i)
-                            if len(remove_chunk) > 0:
-                                for i,e in enumerate(remove_chunk):
-                                    del chunks[e-i]
-                                chunks.extend(new_chunks)
-                            if len(remove_chunk) > 0:
-                                for i,e in enumerate(remove_chunk):
-                                    del chunks[e-i]
-                                chunks.extend(new_chunks)
-                        phrase = dateref_phrase[1]
-                        refdates = dateref_phrase[2:]
-                        dtweet = self.Tweet()
-                        dtweet.set_postags(calculations.return_postags(text,self.frogger))
-                        units = [tokens[1],tokens[6],date,text,phrase,refdates,chunks]
-                        dtweet.set_meta(units)
-                        entities = []
-                        if self.tmpdir:
-                            for chunk in chunks:
-                                entities.extend(calculations.extract_entity(chunk,self.classencoder,self.dmodel))
-                        else:
-                            for chunk in chunks:
-                                entities.extend(calculations.extract_entity(chunk))
-                        entities = sorted(entities,key = lambda x: x[1],reverse=True)
-                        if len(entities) > 0:
-                            dtweet.set_entities([x[0] for x in entities])
-                        else:
-                            dtweet.set_entities([])
-                        #add hashtags to process
+            tokenizer.process(tokens[-1])
+            text = " ".join([x.text.lower() for x in tokenizer])
+            if format == "exp":
+                date = time_functions.return_datetime(tokens[3],setting="vs").date()
+            else:
+                try:
+                    date = time_functions.return_datetime(tokens[2],setting="vs").date()
+                except:
+                    print("dateerror",tweet,tokens)
+            dateref_phrase = calculations.extract_date(text,date)
+            if dateref_phrase:
+                if len(dateref_phrase) > 2:
+                    chunks = dateref_phrase[0]
+                    if self.cities:
+                        remove_chunk = []
+                        new_chunks = []
+                        for i,chunk in enumerate(chunks):
+                            pt = [x.replace(" ","_") for x in re.findall(self.cities,chunk)]
+                            cts = [x for x in pt if not x == ""]
+                            if len(cts) > 0:
+                                regexPattern = '|'.join(map(re.escape, cts))
+                                new_chunks.extend(re.split(regexPattern,chunk))
+                                remove_chunk.append(i)
+                        if len(remove_chunk) > 0:
+                            for i,e in enumerate(remove_chunk):
+                                del chunks[e-i]
+                            chunks.extend(new_chunks)
+                        if len(remove_chunk) > 0:
+                            for i,e in enumerate(remove_chunk):
+                                del chunks[e-i]
+                            chunks.extend(new_chunks)
+                    phrase = dateref_phrase[1]
+                    refdates = dateref_phrase[2:]
+                    dtweet = self.Tweet()
+                    dtweet.set_postags(calculations.return_postags(text,self.frogger))
+                    units = [tokens[1],tokens[6],date,text,phrase,refdates,chunks]
+                    dtweet.set_meta(units)
+                    entities = []
+                    if self.tmpdir:
                         for chunk in chunks:
-                            hashtags = [x for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1]
-                            if len(hashtags) > 0:
-                                if dtweet.e:
-                                    dtweet.entities.extend(hashtags)
-                                else:
-                                    dtweet.set_entities(hashtags)
-                        self.tweets.append(dtweet)
+                            entities.extend(calculations.extract_entity(chunk,self.classencoder,self.dmodel))
+                    else:
+                        for chunk in chunks:
+                            entities.extend(calculations.extract_entity(chunk))
+                    entities = sorted(entities,key = lambda x: x[1],reverse=True)
+                    if len(entities) > 0:
+                        dtweet.set_entities([x[0] for x in entities])
+                    else:
+                        dtweet.set_entities([])
+                    #add hashtags to process
+                    for chunk in chunks:
+                        hashtags = [x for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1]
+                        if len(hashtags) > 0:
+                            if dtweet.e:
+                                dtweet.entities.extend(hashtags)
+                            else:
+                                dtweet.set_entities(hashtags)
+                    self.tweets.append(dtweet)
                        
     def rank_events(self,method):
         date_entity_score = []
