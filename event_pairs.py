@@ -51,7 +51,6 @@ class Event_pairs:
         self.discard_last_day(31)
         #write modeltweets
         tweetinfo = open("tmp/modeltweets.txt","w",encoding = "utf-8")
-        print("date",self.tweets[0].date)
         for tweet in self.tweets:
             if hasattr(tweet, 'postags') and hasattr(tweet, 'phrase'):
                 info = [tweet.id,tweet.user,str(tweet.date),tweet.text,tweet.phrase,
@@ -98,14 +97,16 @@ class Event_pairs:
     def append_eventtweets(self,eventtweets):
         for et in eventtweets:
             info = et.strip().split("\t")
+            print(len(info),info)
             if len(info) > 12:
+#                print(len(info),info)
                 info[7] = time_functions.return_datetime(info[7],setting="vs").date()
-                info[10] = [time_functions.return_datetime(x,setting="vs").date() \
-                    for x in info[10].split(" ")]
+                info[11] = [time_functions.return_datetime(x,setting="vs").date() \
+                    for x in info[11].split(" ")]
                 tweet = self.Tweet()
-                units = info[:11]
-                units.append([x.strip() for x in info[11].split("|")]) #chunks
-                units.append(info[12])
+                units = info[:12]
+                units.append([x.strip() for x in info[12].split("|")]) #chunks
+                units.append(info[13])
                 tweet.set_meta(units)
                 self.tweets.append(tweet)
             else:
