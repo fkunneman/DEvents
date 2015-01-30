@@ -640,15 +640,19 @@ class Event_pairs:
                 for x in sorted(tweet_score,key = lambda x : x[1],reverse=True):
                     add = True
                     content = [x for x in x[0].split() if not ht.search(x) and not usr.search(x) and not url.search(x)]
-                    for rt in self.reptweets:
-                        overlap = len(set(content) & set(rt[1])) / max(len(set(content)),len(set(rt[1])))
-                        if overlap > 0.8:              
-                            add = False
-                            noadds.append(x[0])
+                    try:
+                        for rt in self.reptweets:
+
+                            overlap = len(set(content) & set(rt[1])) / max(len(set(content)),len(set(rt[1])))
+                            if overlap > 0.8:              
+                                add = False
+                                noadds.append(x[0])
+                                break
+                        if add:
+                            self.reptweets.append((x[0],content))
+                        if len(self.reptweets) == 5:
                             break
-                    if add:
-                        self.reptweets.append((x[0],content))
-                    if len(self.reptweets) == 5:
+                    except:
                         break
                 self.reptweets = [x[0] for x in self.reptweets]
                 if len(self.reptweets) < 5:
