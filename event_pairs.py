@@ -108,6 +108,8 @@ class Event_pairs:
                     units.append([x.strip() for x in info[12].split("|")]) #chunks
                     units.append(info[13])
                     tweet.set_meta(units)
+                    tweet.set_entities([])
+                    tweet.set_postags([])
                     self.tweets.append(tweet)
                 else:
                     info[2] = time_functions.return_datetime(info[2],setting="vs").date()
@@ -431,14 +433,14 @@ class Event_pairs:
             self.e = False
 
         def set_meta(self,units):
-            if len(units) == 13:
+            if len(units) == 14:
                 self.id = units[1]
                 self.user = units[4]
                 self.date = units[7]
                 self.text = units[9]
-                self.daterefs = units[10]
-                self.chunks = units[11]
-                self.phrase = units[12]
+                self.daterefs = units[11]
+                self.chunks = units[12]
+                self.phrase = units[13]
             else:
                 self.id = units[0]
                 self.user = units[1]
