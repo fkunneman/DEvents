@@ -202,13 +202,10 @@ class Event_pairs:
             tokens = tweet.strip().split("\t")
             tokenizer.process(tokens[-1])
             text = " ".join([x.text.lower() for x in tokenizer])
-            if format == "exp":
-                date = time_functions.return_datetime(tokens[3],setting="vs").date()
-            else:
-                try:
-                    date = time_functions.return_datetime(tokens[2],setting="vs").date()
-                except:
-                    print("dateerror",tweet,tokens)
+            try:
+                date = time_functions.return_datetime(tokens[2],setting="vs").date()
+            except:
+                print("dateerror",tweet,tokens)
             dateref_phrase = calculations.extract_date(text,date)
             if dateref_phrase:
                 if len(dateref_phrase) > 2:
