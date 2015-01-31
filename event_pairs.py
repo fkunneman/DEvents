@@ -83,16 +83,18 @@ class Event_pairs:
             #output events
             eventdict = defaultdict(lambda : {})
             for i,event in enumerate(sorted(self.events,key = lambda x : x.score,reverse=True)):
-                #if event.tt_ratio > 0.30:
-                    event.rank_tweets(rep=True)
+                if event.tt_ratio > 0.30:
+                    #event.rank_tweets(rep=True)
                     event_unit = {"date":event.date,"keyterms":event.entities,"score":event.score,
                         "tweets":[{"id":x.id,"user":x.user,"date":x.date,"text":x.text,
                         "date references":",".join([str(y) for y in x.daterefs]),
                         "entities":",".join(x.entities),"postags":" | ".join(",".join(x) for x in tweet.postags)} for x in event.tweets]} 
                     eventdict[i] = event_unit
-            self.tweets = []
-            self.events = []
-            return eventdict
+        else:
+            eventdict = {}
+        self.tweets = []
+        self.events = []
+        return eventdict
 
     def append_eventtweets(self,eventtweets,entities = False):
         for et in eventtweets:
@@ -179,6 +181,7 @@ class Event_pairs:
                             for i,e in enumerate(remove_chunk):
                                 del tweet.chunks[e-i]
                             tweet.chunks.extend(new_chunks)
+                    tweet.set_postags(calculations.return_postags(tweet.text,self.frogger))
                     entities = []
                     for chunk in tweet.chunks:
                         entities.extend(calculations.extract_entity(chunk,self.classencoder,self.dmodel))
@@ -368,7 +371,7 @@ class Event_pairs:
             outwrite.close()
         print("overlap",len(self.events))
 
-    def enrich_events(self,method,xpos = False):
+    def enrich_events(self,method,xpos = False,order = True):
         documents = [" ".join([" ".join(x.chunks) for x in y.tweets]) for y in self.events]
         tfidf_vectorizer = TfidfVectorizer()
         tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
@@ -404,10 +407,27 @@ class Event_pairs:
                         event.entities.append((term,0))
 #            if "linkshandigen" in [x[0] for x in event.entities] or "flikken" in [x[0] for x in event.entities] or "maastricht" in [x[0] for x in event.entities] or "flikkendag" in [x[0] for x in event.entities] or "de sims 4" in [x[0] for x in event.entities]:
 #                print("BEFORE order",event.entities)
-            event.order_entities() #order entities by their average position in the tweets
+            if self.cities:
+                event.places = []
+                #check if city in terms
+                for entity in event.entities:
+                    pt = [x.replace(" ","_") for x in re.findall(self.cities,entity)]
+                    cts = [x for x in pt if not x == ""]
+                    if len(cts) > 0:
+                        if not cts[0] == "nederland":
+                            event.places.append([cts[0]])
+                if len(event.places) == 0: #check for city in tweets
+                    for tweet in event.tweets:
+                        pt = [x.replace(" ","_") for x in re.findall(self.cities,tweet.text)]
+                        cts = [x for x in pt if not x == ""]
+                        if len(cts) > 0:
+                            if not cts[0] == "nederland":
+                                event.places.append([cts[0]])
+            if order:
+                event.order_entities() #order entities by their average position in the tweets
 #            if "linkshandigen" in [x[0] for x in event.entities] or "flikken" in [x[0] for x in event.entities] or "maastricht" in [x[0] for x in event.entities] or "flikkendag" in [x[0] for x in event.entities] or "de sims 4" in [x[0] for x in event.entities]:
 #                print("AFTER order",event.entities)
-            #event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
+                event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
         print("enrich",len(self.events))
 
     def discard_last_day(self,window):
