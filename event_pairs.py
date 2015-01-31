@@ -186,19 +186,22 @@ class Event_pairs:
                             tweet.chunks.extend(new_chunks)
                     tweet.set_postags(calculations.return_postags(tweet.text,self.frogger))
                     entities = []
+                    print("before",entities)
                     for chunk in tweet.chunks:
                         entities.extend(calculations.extract_entity(chunk,self.classencoder,self.dmodel))
                     entities = sorted(entities,key = lambda x: x[1],reverse=True)
                     #add hashtags to process
+                    print("before ht",entities)
                     for chunk in tweet.chunks:
                         hashtags = [x for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1]
                         if len(hashtags) > 0:
                             entities.extend(hashtags)
+                    print("after ht",entities)
                     if len(entities) > 0:
                         tweet.set_entities([x[0] for x in entities])
                     else:
                         tweet.set_entities([])
-                print(tweet.entities)
+#                print(tweet.entities)
                 self.tweets.append(tweet)
             except:
                 print(len(info),info)

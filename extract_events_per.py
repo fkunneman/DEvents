@@ -27,7 +27,7 @@ parser.add_argument('--cities', action = 'store',
 args = parser.parse_args() 
 
 #sort input-files
-day_files = {}}
+day_files = {}
 if args.i: 
     for infile in args.i:
         day = infile.split("/")[-1][:-4]
@@ -37,7 +37,7 @@ ep = Event_pairs(args.w,args.d,cities = args.cities)
 
 def output_events(d):
     print("ranking events")
-    ep.rank_events(args.a)
+    ep.rank_events(2000)
     ep.resolve_overlap_events()
     ep.enrich_events("csx",order = False)
     eventinfo = open(d + "events_fit.txt","w",encoding = "utf-8")
@@ -46,7 +46,7 @@ def output_events(d):
             ", ".join([event.places]) + \
             ", ".join([x[0] for x in event.entities]) + "\t" + \
             ", ".join([x.id for x in event.tweets]) + "\t" + \
-            "-----".join([x.text for x in event.tweets]))
+            "-----".join([x.text for x in event.tweets])
         eventinfo.write(outstr)
     eventinfo.close()
 
