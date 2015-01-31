@@ -40,12 +40,14 @@ class Event_pairs:
     def detect_events(self,tweetfile,events = True):
         #start from last modeltweets
         #try:
+        print("appending modeltweets")
         eventfile = open("tmp/modeltweets.txt","r",encoding = "utf-8")
         self.append_eventtweets(eventfile.readlines())
         eventfile.close()
         #except:
         #    print("no modeltweets")
         #process tweets
+        print("processing new tweets")
         self.select_date_entity_tweets(tweetfile.split("\n")[1:])
         #prune tweets
         self.discard_last_day(31)
@@ -102,6 +104,7 @@ class Event_pairs:
             try:
                 if len(info) > 12:
     #                print(len(info),info)
+                    entities = True
                     info[7] = time_functions.return_datetime(info[7],setting="vs").date()
                     info[11] = [time_functions.return_datetime(x,setting="vs").date() \
                         for x in info[11].split(" ")]
