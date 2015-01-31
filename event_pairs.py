@@ -245,6 +245,7 @@ class Event_pairs:
                     units = [tokens[1],tokens[6],date,text,phrase,refdates,chunks]
                     dtweet.set_meta(units)
                     entities = []
+                    print("before",entities)
                     if self.tmpdir:
                         for chunk in chunks:
                             entities.extend(calculations.extract_entity(chunk,self.classencoder,self.dmodel))
@@ -256,6 +257,7 @@ class Event_pairs:
                         dtweet.set_entities([x[0] for x in entities])
                     else:
                         dtweet.set_entities([])
+                    print("before ht",entities)
                     #add hashtags to process
                     for chunk in chunks:
                         hashtags = [x for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1]
@@ -264,6 +266,7 @@ class Event_pairs:
                                 dtweet.entities.extend(hashtags)
                             else:
                                 dtweet.set_entities(hashtags)
+                        print("after ht",hashtags)
                     self.tweets.append(dtweet)
                        
     def rank_events(self,method):
