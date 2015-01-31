@@ -195,7 +195,7 @@ class Event_pairs:
                         tweet.set_entities([x[0] for x in entities])
                     else:
                         tweet.set_entities([])
-                print tweet.entities
+                print(tweet.entities)
                 self.tweets.append(tweet)
             except:
                 print(len(info),info)
