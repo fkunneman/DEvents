@@ -42,6 +42,14 @@ def output_events(d):
     ep.enrich_events("csx",order = False)
     eventinfo = open(d + "events_fit.txt","w",encoding = "utf-8")
     for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
+        print("join([str(event.date),str(event.score)])",event.date,event.score)
+        print("\t".join([str(event.date),str(event.score)]))
+        print("join([event.places])",event.places)
+        print(", ".join([event.places]))
+        print("join([x[0] for x in event.entities])",event.entities)
+        print(", ".join([x[0] for x in event.entities]))
+        print("join([x.text for x in event.tweets])",event.tweets)
+        print("-----".join([x.text for x in event.tweets]))
         outstr = "\t".join([str(event.date),str(event.score)]) + "\t" + \
             ", ".join([event.places]) + \
             ", ".join([x[0] for x in event.entities]) + "\t" + \
