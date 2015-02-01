@@ -55,7 +55,7 @@ for i,day in enumerate(sorted(day_files.keys())):
     tweetfile = open(day_files[day],"r",encoding = "utf-8")
     ep.append_eventtweets(tweetfile.readlines(),entities=True)
     tweetfile.close()
-    if i >= 30:
+    if i >= 1:
         basedir = args.o + day + "/"
         if not os.path.isdir(basedir):
             os.mkdir(basedir)
@@ -80,5 +80,5 @@ for i,day in enumerate(sorted(day_files.keys())):
                     " | ".join(tweet.entities)]
             tweetinfo.write("\t".join(info) + "\n")
         tweetinfo.close()
-        ep.discard_last_day(2)
+        ep.discard_last_day(30)
         output_events(basedir)
