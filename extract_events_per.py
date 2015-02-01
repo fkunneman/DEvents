@@ -80,5 +80,5 @@ for i,day in enumerate(sorted(day_files.keys())):
                     " | ".join(tweet.entities)]
             tweetinfo.write("\t".join(info) + "\n")
         tweetinfo.close()
-        ep.discard_last_day(30)
+        ep.discard_last_day(2)
         output_events(basedir)
