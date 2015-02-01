@@ -44,14 +44,14 @@ def output_events(d):
     for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
         # print("join([str(event.date),str(event.score)])",event.date,event.score)
         # print("\t".join([str(event.date),str(event.score)]))
-        # print("join([event.places])",event.places)
-        # print(", ".join([event.places]))
-        # print("join([x[0] for x in event.entities])",event.entities)
-        # print(", ".join([x[0] for x in event.entities]))
-        # print("join([x.text for x in event.tweets])",event.tweets)
-        # print("-----".join([x.text for x in event.tweets]))
+        #print("join([event.places])",event.places)
+        #print(", ".join([event.places]))
+        #print("join([x[0] for x in event.entities])",event.entities)
+        #print(", ".join([x[0] for x in event.entities]))
+        #print("join([x.text for x in event.tweets])",event.tweets)
+        #print("-----".join([x.text for x in event.tweets]))
         outstr = "\t".join([str(event.date),str(event.score)]) + "\t" + \
-            ", ".join([event.places]) + \
+            ", ".join(event.places) + \
             ", ".join([x[0] for x in event.entities]) + "\t" + \
             ", ".join([x.id for x in event.tweets]) + "\t" + \
             "-----".join([x.text for x in event.tweets])
@@ -63,7 +63,7 @@ for i,day in enumerate(sorted(day_files.keys())):
     tweetfile = open(day_files[day],"r",encoding = "utf-8")
     ep.append_eventtweets(tweetfile.readlines(),entities=True)
     tweetfile.close()
-    if i >= 1:
+    if i >= 0:
         basedir = args.o + day + "/"
         if not os.path.isdir(basedir):
             os.mkdir(basedir)
