@@ -29,10 +29,14 @@ class Event_pairs:
             li = sorted(cts, key=len, reverse=True)
             li = [tx.replace('.','\.').replace('*','\*') for tx in li] # not to match anything with . (dot) or *
             self.cities = re.compile('\\b' + '\\b|\\b'.join(li) + '\\b')
+        else:
+            self.cities = False
         if f:
             c = "/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg"
             fo = frog.FrogOptions()
             self.frogger = frog.Frog(fo,c)
+        else:
+            self.frogger = False
         self.ucto_settingsfile = "/vol/customopt/uvt-ru/etc/ucto/tokconfig-nl-twitter"
 
     def detect_events(self,tweetfile,events = True):
