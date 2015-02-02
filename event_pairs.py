@@ -106,17 +106,18 @@ class Event_pairs:
             try:
                 if len(info) > 12:
     #                print(len(info),info)
-                    entities = True
-                    info[7] = time_functions.return_datetime(info[7],setting="vs").date()
-                    info[11] = [time_functions.return_datetime(x,setting="vs").date() \
-                        for x in info[11].split(" ")]
-                    tweet = self.Tweet()
-                    units = info[:12]
-                    units.append([x.strip() for x in info[12].split("|")]) #chunks
-                    units.append(info[13])
-                    tweet.set_meta(units)
-                    tweet.set_entities([])
-                    tweet.set_postags([])
+                    if not re.search(r"\d{1}(/|-)\d{1}",info[13]):
+                        entities = True
+                        info[7] = time_functions.return_datetime(info[7],setting="vs").date()
+                        info[11] = [time_functions.return_datetime(x,setting="vs").date() \
+                            for x in info[11].split(" ")]
+                        tweet = self.Tweet()
+                        units = info[:12]
+                        units.append([x.strip() for x in info[12].split("|")]) #chunks
+                        units.append(info[13])
+                        tweet.set_meta(units)
+                        tweet.set_entities([])
+                        tweet.set_postags([])
                 else:
                     info[2] = time_functions.return_datetime(info[2],setting="vs").date()
                     try:
