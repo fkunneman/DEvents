@@ -101,6 +101,7 @@ class Event_pairs:
         return eventdict
 
     def append_eventtweets(self,eventtweets,entities = False):
+        tokenizer = ucto.Tokenizer(self.ucto_settingsfile)
         for et in eventtweets:
             info = et.strip().split("\t")
             try:
@@ -189,6 +190,8 @@ class Event_pairs:
                         tweet.set_postags(calculations.return_postags(tweet.text,self.frogger))
                     entities = []
                     for chunk in tweet.chunks:
+                        tokenizer.process(chunk)
+                        chunk = " ".join([x.text.lower() for x in tokenizer])
                         entities.extend(calculations.extract_entity(chunk,self.classencoder,self.dmodel))
                     entities = sorted(entities,key = lambda x: x[1],reverse=True)
                     tweet.set_entities([x[0] for x in entities])
