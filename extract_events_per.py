@@ -43,7 +43,7 @@ def output_events(d):
     eventinfo = open(d + "events_fit.txt","w",encoding = "utf-8")
     for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
         outstr = "\t".join([str(event.date),str(event.score)]) + "\t" + \
-            ", ".join(event.places) + \
+            ", ".join(event.places) + "\t" + \
             ", ".join([x[0] for x in event.entities]) + "\t" + \
             ", ".join([x.id for x in event.tweets]) + "\t" + \
             "-----".join([x.text for x in event.tweets])

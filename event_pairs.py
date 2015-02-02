@@ -433,9 +433,10 @@ class Event_pairs:
                         cts = [x for x in pt if not x == ""]
                         if len(cts) > 0:
                             if not cts[0] == "nederland":
-                                event.places.append(cts[0])
-                                event.entities.append((cts[0],0))
+                                event.places.append(cts[0])                               
                 event.places = list(set(event.places))
+                if len(event.places) == 1:
+                    event.entities.append((event.places[0],0)) 
             if order:
                 event.order_entities() #order entities by their average position in the tweets
 #            if "linkshandigen" in [x[0] for x in event.entities] or "flikken" in [x[0] for x in event.entities] or "maastricht" in [x[0] for x in event.entities] or "flikkendag" in [x[0] for x in event.entities] or "de sims 4" in [x[0] for x in event.entities]:
