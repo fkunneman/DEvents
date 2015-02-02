@@ -37,9 +37,9 @@ ep = Event_pairs(args.w,args.d,cities = args.cities)
 
 def output_events(d):
     print("ranking events")
-    ep.rank_events(2000)
+    ep.rank_events(2500)
     ep.resolve_overlap_events()
-    ep.enrich_events("csx",order = False)
+    ep.enrich_events("cs",order = False)
     eventinfo = open(d + "events_fit.txt","w",encoding = "utf-8")
     for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
         outstr = "\t".join([str(event.date),str(event.score)]) + "\t" + \

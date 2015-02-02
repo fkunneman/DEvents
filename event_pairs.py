@@ -16,7 +16,7 @@ import calculations
 
 class Event_pairs:
 
-    def __init__(self,wikidir=False,tmpdir=False,cities=False,t=False):
+    def __init__(self,wikidir=False,tmpdir=False,f = False, cities=False):
         self.tweets = []
         self.tmpdir = tmpdir
         if wikidir:
@@ -29,12 +29,10 @@ class Event_pairs:
             li = sorted(cts, key=len, reverse=True)
             li = [tx.replace('.','\.').replace('*','\*') for tx in li] # not to match anything with . (dot) or *
             self.cities = re.compile('\\b' + '\\b|\\b'.join(li) + '\\b')
-        c = "/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg"
-        if t:
-            fo = frog.FrogOptions(threads=t)
-        else:
+        if f:
+            c = "/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg"
             fo = frog.FrogOptions()
-        self.frogger = frog.Frog(fo,c)
+            self.frogger = frog.Frog(fo,c)
         self.ucto_settingsfile = "/vol/customopt/uvt-ru/etc/ucto/tokconfig-nl-twitter"
 
     def detect_events(self,tweetfile,events = True):
@@ -186,7 +184,8 @@ class Event_pairs:
                             for i,e in enumerate(remove_chunk):
                                 del tweet.chunks[e-i]
                             tweet.chunks.extend(new_chunks)
-                    tweet.set_postags(calculations.return_postags(tweet.text,self.frogger))
+                    if self.frogger: 
+                        tweet.set_postags(calculations.return_postags(tweet.text,self.frogger))
                     entities = []
 #                    print("before",entities)
                     for chunk in tweet.chunks:
@@ -250,7 +249,10 @@ class Event_pairs:
                     phrase = dateref_phrase[1]
                     refdates = dateref_phrase[2:]
                     dtweet = self.Tweet()
-                    dtweet.set_postags(calculations.return_postags(text,self.frogger))
+                    if self.frogger:
+                        dtweet.set_postags(calculations.return_postags(text,self.frogger))
+                    else:
+                        dtweet.set_postags([])
                     units = [tokens[1],tokens[6],date,text,phrase,refdates,chunks]
                     dtweet.set_meta(units)
                     entities = []
