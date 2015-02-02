@@ -191,7 +191,6 @@ class Event_pairs:
                     entities = sorted(entities,key = lambda x: x[1],reverse=True)
                     tweet.set_entities([x[0] for x in entities])
                     #add hashtags to process
-    #                    print("before ht",entities)
                     for chunk in tweet.chunks:
                         hashtags = [x for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1]
                         if len(hashtags) > 0:
@@ -199,8 +198,6 @@ class Event_pairs:
                                 tweet.entities.extend(hashtags)
                             else:
                                 tweet.set_entities(hashtags)
-    #                print(tweet.entities)
-                print(tweet.text,tweet.entities,tweet.phrase)
                 self.tweets.append(tweet)
             except:
                 continue
