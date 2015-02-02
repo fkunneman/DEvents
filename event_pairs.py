@@ -305,10 +305,10 @@ class Event_pairs:
                     users = [x.user for x in date_entity_tweets[date][entity]]
                     g2_user = (len(list(set(users))) / len(users)) * g2
                     date_entity_score.append([date,(entity,g2_user),g2_user,date_entity_tweets[date][entity]])
-        if method == "ngrams":
-            top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:7500]    
-        else:
-            top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:2500]    
+        # if method == "ngrams":
+        #     top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:7500]    
+        # else:
+        top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:2500]    
         self.events = []
         for x in range(len(top)):
             self.events.append(self.Event(x,top[x]))
