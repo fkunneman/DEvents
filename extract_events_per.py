@@ -46,7 +46,7 @@ def output_events(d):
             ", ".join(event.places) + "\t" + \
             ", ".join([x[0] for x in event.entities]) + "\t" + \
             ", ".join([x.id for x in event.tweets]) + "\t" + \
-            "-----".join([x.text for x in event.tweets])
+            "-----".join([x.text for x in event.tweets]) + "\n"
         eventinfo.write(outstr)
     eventinfo.close()
 
