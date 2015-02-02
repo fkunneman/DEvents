@@ -122,34 +122,6 @@ class Event_pairs:
                     units = info[:6]
                     units.append([x.strip() for x in info[6].split("|")]) #chunks
                     tweet.set_meta(units)
-<<<<<<< HEAD
-                    tweet.set_entities([])
-                    tweet.set_postags([])
-#                    print(info,info[9])
-#                    print("before ent: id",tweet.id,"text",tweet.text,"date",tweet.date,"ref",tweet.daterefs,"user",tweet.user,"phrase",tweet.phrase,"chunks",tweet.chunks)
-                else:
-                    info[2] = time_functions.return_datetime(info[2],setting="vs").date()
-                    try:
-                        info[5] = [time_functions.return_datetime(x,setting="vs").date() \
-                            for x in info[5].split(" ")]
-                        tweet = self.Tweet()
-                        units = info[:6]
-                        units.append([x.strip() for x in info[6].split("|")]) #chunks
-                        tweet.set_meta(units)
-                        if len(info) >= 8:
-                            entities = [x.strip() for x in info[7].split(" | ")]
-                            if len(entities) == 1 and entities[0] == "--":
-                                tweet.set_entities([])
-                            else:
-                                tweet.set_entities(entities)
-                            if len(info) == 9:
-                                postags = [tuple(x.split(",")) for x in info[8].split(" | ")]
-                                if len(postags) == 1 and postags[0][0] == "--":
-                                    tweet.set_postags([])
-                                else:
-                                    tweet.set_postags(postags)
-                            else:
-=======
                     if len(info) >= 8:
                         entities = [x.strip() for x in info[7].split(" | ")]
                         if len(entities) == 1 and entities[0] == "--":
@@ -159,7 +131,6 @@ class Event_pairs:
                         if len(info) == 9:
                             postags = [tuple(x.split(",")) for x in info[8].split(" | ")]
                             if len(postags) == 1 and postags[0][0] == "--":
->>>>>>> 674f4bd37036b1b312196798cade4e3addeccb11
                                 tweet.set_postags([])
                             else:
                                 tweet.set_postags(postags)
@@ -207,52 +178,22 @@ class Event_pairs:
                         for i,e in enumerate(remove_chunk):
                             del tweet.chunks[e-i]
                         tweet.chunks.extend(new_chunks)
-                    if len(remove_chunk) > 0:
-                        for i,e in enumerate(remove_chunk):
-                            del tweet.chunks[e-i]
-                        tweet.chunks.extend(new_chunks)
                 if self.frogger: 
                     tweet.set_postags(calculations.return_postags(tweet.text,self.frogger))
                 entities = []
-#                    print("before",entities)
-<<<<<<< HEAD
-                    for chunk in tweet.chunks:
-                        entities.extend(calculations.extract_entity(chunk,self.classencoder,self.dmodel))
-                    entities = sorted(entities,key = lambda x: x[1],reverse=True)
-                    tweet.set_entities([x[0] for x in entities])
-                    #add hashtags to process
-#                    print("before ht",entities)
-                    for chunk in tweet.chunks:
-                        hashtags = [x for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1]
-                        if len(hashtags) > 0:
-                            if tweet.e:
-                                tweet.entities.extend(hashtags)
-                            else:
-                                tweet.set_entities(hashtags)
-
-#                        if len(hashtags) > 0:
-#                            entities.extend(hashtags)
-#                    print("after ht",entities)
-#                    if len(entities) > 0:
-#                        tweet.set_entities(entities)
-#                    else:
-#                        tweet.set_entities([])
-=======
                 for chunk in tweet.chunks:
                     entities.extend(calculations.extract_entity(chunk,self.classencoder,self.dmodel))
                 entities = sorted(entities,key = lambda x: x[1],reverse=True)
+                tweet.set_entities([x[0] for x in entities])
                 #add hashtags to process
 #                    print("before ht",entities)
                 for chunk in tweet.chunks:
                     hashtags = [x for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1]
                     if len(hashtags) > 0:
-                        entities.extend(hashtags)
-#                    print("after ht",entities)
-                if len(entities) > 0:
-                    tweet.set_entities([x[0] for x in entities])
-                else:
-                    tweet.set_entities([])
->>>>>>> 674f4bd37036b1b312196798cade4e3addeccb11
+                        if tweet.e:
+                            tweet.entities.extend(hashtags)
+                        else:
+                            tweet.set_entities(hashtags)
 #                print(tweet.entities)
             self.tweets.append(tweet)
             # except:
