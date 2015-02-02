@@ -197,12 +197,9 @@ class Event_pairs:
                     tweet.chunks = new_chunks
                     for chunk in tweet.chunks:
                         entities.extend(calculations.extract_entity(chunk,self.classencoder,self.dmodel))
-                        hashtags = [x for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1]
+                        hashtags = [(x,0) for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1]
                         if len(hashtags) > 0:
-                            if tweet.e:
-                                tweet.entities.extend(hashtags)
-                            else:
-                                tweet.set_entities(hashtags)
+                            entities.extend(hashtags)
                     entities = sorted(entities,key = lambda x: x[1],reverse=True)
                     tweet.set_entities([x[0] for x in entities])
                 self.tweets.append(tweet)
@@ -388,20 +385,21 @@ class Event_pairs:
         print("overlap",len(self.events))
 
     def enrich_events(self,method,xpos = False,order = True):
-        documents = [" ".join([" ".join(x.chunks) for x in y.tweets]) for y in self.events]
-        tfidf_vectorizer = TfidfVectorizer()
-        tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
-        word_indexes = tfidf_vectorizer.get_feature_names()
-        doc_tfidf = tfidf_matrix.toarray()
+        if method == "csx":
+            documents = [" ".join([" ".join(x.chunks) for x in y.tweets]) for y in self.events]
+            tfidf_vectorizer = TfidfVectorizer()
+            tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
+            word_indexes = tfidf_vectorizer.get_feature_names()
+            doc_tfidf = tfidf_matrix.toarray()
         #for each event
         for i,event in enumerate(self.events):
             event.resolve_overlap_entities() #resolve overlap
-            tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
-            tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
-            event.add_tfidf(tfidf_sorted,word_indexes)
 #            if "linkshandigen" in [x[0] for x in event.entities] or "flikken" in [x[0] for x in event.entities] or "maastricht" in [x[0] for x in event.entities] or "flikkendag" in [x[0] for x in event.entities] or "de sims 4" in [x[0] for x in event.entities]:
 #                print("BEFORE add",event.entities)
             if method == "csx": #add terms
+                tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
+                tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
+                event.add_tfidf(tfidf_sorted,word_indexes)
                 top_terms = [word_indexes[j[0]] for j in tfidf_sorted][:5]
                 term_postag_counts = defaultdict(lambda : defaultdict(int))
                 #acquire most frequent postag for each term (provided postag is a verb, adjective or noun)
