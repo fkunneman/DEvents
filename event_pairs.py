@@ -129,7 +129,7 @@ class Event_pairs:
                         tweet = self.Tweet()
                         units = info[:6]
                         units.append([x.strip() for x in info[6].split("|")]) #chunks
-                        tweet.set_meta(units)
+                        tweet.set_meta(units,phr=True)
                         if len(info) >= 8:
                             entities = [x.strip() for x in info[7].split(" | ")]
                             if len(entities) == 1 and entities[0] == "--":
@@ -494,7 +494,7 @@ class Event_pairs:
         def __init__(self):
             self.e = False
 
-        def set_meta(self,units):
+        def set_meta(self,units,phr = False):
             if len(units) == 14:
                 self.id = units[1]
                 self.user = units[4]
@@ -508,7 +508,7 @@ class Event_pairs:
                 self.user = units[1]
                 self.date = units[2]
                 self.text = units[3]
-                if len(units) == 7:
+                if phr:
                     self.phrase = units[4]
                     self.daterefs = units[5]
                     self.chunks = units[6]
@@ -613,13 +613,13 @@ class Event_pairs:
                         for j,e1 in enumerate(entities):
                             if re.search(re.escape(e1),text):
                                 p1 = re.search(re.escape(e1),text).span()[0]
-#                                print("b",scores,p0,p1,j,scores[j])
+    #                                print("b",scores,p0,p1,j,scores[j])
                                 if p0 < p1:
                                     scores[j][0] += 1
                                     #pl0 += 1
                                 else:
                                     scores[j][1] += 1
-#                                print("a",scores)
+    #                                print("a",scores)
                 for j,e1 in enumerate(entities):
                     score = scores[j]
                     if score[0] > score[1] and rankings[e0][0] > rankings[e1][0]:
