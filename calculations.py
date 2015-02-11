@@ -328,14 +328,20 @@ def has_overlap(ids1,ids2):
         return False
 
 #given two sets of tweet id list (tweets describing an event), couple the lists that overlap, return a new set
-def merge_event_sets(set_current,set_new):
-    set_merged = set_current
+def merge_event_sets(set_current,set_new=False):
+    if set_new:
+        set_merged = set_current
+    else:
+        set_merged = set_current[0]
     for i,eventdict_new in enumerate(set_new):
         print(i)
         date = eventdict_new["date"]
         ids = eventdict_new["ids"]
         new = True
-        date_events = [(j,x) for j,x in enumerate(set_current) if x["date"] == date]
+        if set_new:
+            date_events = [(j,x) for j,x in enumerate(set_current) if x["date"] == date]
+        else:
+            date_events = [(j,x) for j,x in enumerate(set_merged) if x["date"] == date]
         for index_ed in date_events:
             j = index_ed[0]
             eventdict_current = index_ed[1]
