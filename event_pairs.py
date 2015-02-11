@@ -100,7 +100,7 @@ class Event_pairs:
         self.events = []
         return eventdict
 
-    def append_eventtweets(self,eventtweets,entities = False):
+    def append_eventtweets(self,eventtweets,ent = False):
         tokenizer = ucto.Tokenizer(self.ucto_settingsfile)
         for et in eventtweets:
             info = et.strip().split("\t")
@@ -171,7 +171,7 @@ class Event_pairs:
                         else:
                             tweet.set_entities([])
                             tweet.set_postags([])
-                if entities:
+                if ent:
                     if self.cities:
                         remove_chunk = []
                         new_chunks = []
@@ -246,7 +246,7 @@ class Event_pairs:
                     else:
                         dtweet.set_postags([])
                     units = [tokens[1],tokens[6],date,text,phrase,refdates,chunks]
-                    dtweet.set_meta(units)
+                    dtweet.set_meta(units,phr=True)
                     entities = []
   #                  print("before",entities)
                     if self.tmpdir:
@@ -298,6 +298,7 @@ class Event_pairs:
         total = len(self.tweets)
         for date in date_entity.keys():
             #cluster entities
+            #print(date_entity[date].keys())
             for entity in date_entity[date].keys():
                 unique_tweets = list(set(date_entity_tweets_cleaned[date][entity]))
                 if len(unique_tweets) >= 5:
@@ -597,6 +598,7 @@ class Event_pairs:
             rankings = {}
             for i,x in enumerate([e[0] for e in self.entities]):
                 rankings[x] = [i,self.entities[i]]
+            #print('BEFORE',rankings)
             #print("BEFORE",[x[0] for x in self.entities])
             for i,e0 in enumerate([x[0] for x in self.entities[:-1]]):
                 scores = [[0,0] for y in itertools.repeat(None,(len(self.entities) - (i+1)))]
@@ -634,11 +636,14 @@ class Event_pairs:
                         rankings[e0][0] += 1
                         for l in lowers:
                             rankings[l][0] += 1
-            new_entities = []
-            for rank in range(len(self.entities)):
-                new_entities.append([e[1] for e in rankings.values() if e[0] == rank][0]) 
+            if len(self.entities) == len(rankings.values()):
+                new_entities = []
+                #print(self.entities)
+                for rank in range(len(rankings.keys())):
+                    print(rankings.values(),rank)
+                    new_entities.append([e[1] for e in rankings.values() if e[0] == rank][0]) 
             #print("AFTER",new_entities)
-            self.entities = new_entities
+                self.entities = new_entities
 
         def add_ttratio(self):
             tokens = []
@@ -666,6 +671,7 @@ class Event_pairs:
                             scores.append(wordscore)
                         except KeyError:
                             continue
+#                print(scores)
                 score = numpy.mean(scores)
                 tweet_score.append((tweet.text,score))
             if rep:
