@@ -41,6 +41,22 @@ def return_postags(text,f,wws=False):
             output.append((token["text"],token["pos"]))
     return output
 
+def return_cities(chunks,cl):
+    remove_chunk = []
+    new_chunks = []
+    for i,chunk in enumerate(chunks):
+        pt = [x.replace(" ","_") for x in re.findall(cl,chunk)]
+        cts = [x for x in pt if not x == ""]
+        if len(cts) > 0:
+            regexPattern = '|'.join(map(re.escape, cts))
+            new_chunks.extend(re.split(regexPattern,chunk))
+            remove_chunk.append(i)
+    if len(remove_chunk) > 0:
+        for i,e in enumerate(remove_chunk):
+            del chunks[e-i]
+        chunks.extend(new_chunks)
+    return(chunks,cts)
+
 def decide_year(tdate,month,day):
     d1 = datetime.date(tdate.year,month,day)
     d2 = datetime.date(tdate.year+1,month,day)
@@ -280,7 +296,7 @@ def extract_date(tweet,date):
         else:
             return output
 
-def extract_entity(text,classencoder=False,dmodel=False):
+def extract_entity(text):
     ngram_score = []
     c = text.split()
     for i in range(5):
@@ -294,16 +310,13 @@ def extract_entity(text,classencoder=False,dmodel=False):
             ngrams = zip(c, c[1:], c[2:], c[3:])
         elif i == 4:
             ngrams = zip(c, c[1:], c[2:], c[3:], c[4:])
-        if classencoder: #commonness method
-            for ngram in ngrams:
+        for ngram in ngrams:
+            if not (len(ngram) == 1 and (re.match("~",ngram[0]) or re.match(r"\d+",ngram[0])):
                 ngram = " ".join(ngram)
                 pattern = classencoder.buildpattern(ngram)
                 if not pattern.unknown():
                     if dmodel[pattern] > 0.05:
                         ngram_score.append((ngram,dmodel[pattern]))
-        else: #ngram method
-            for ngram in ngrams:
-                ngram_score.append((" ".join(ngram),1))
     return ngram_score
 
 def calculate_cosine_similarity(vector1,vector2):
