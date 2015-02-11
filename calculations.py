@@ -335,15 +335,16 @@ def merge_event_sets(set_current,set_new):
         date = eventdict_new["date"]
         ids = eventdict_new["ids"]
         new = True
-        date_events = [(j,x) for j,x in enumerate(set_1) if x["date"] == date]
+        date_events = [(j,x) for j,x in enumerate(set_current) if x["date"] == date]
         for index_ed in date_events:
+            j = index_ed[0]
             eventdict_current = index_ed[1]
             if has_overlap(ids,eventdict_current["ids"]):
-                set_merged[j]["ids"] = eventdict_current["ids"].union(ids)
-                set_merged[j]["tweets"] = eventdict_current["tweets"].union(eventdict_new["tweets"])
+                set_merged[j]["ids"] = list(set(eventdict_current["ids"]).union(set(ids)))
+                set_merged[j]["tweets"] = list(set(eventdict_current["tweets"]).union(set(eventdict_new["tweets"])))
                 set_merged[j]["score"] = max(eventdict_current["score"],eventdict_new["score"])
-                set_merged[j]["entities"] = eventdict_current["entities"].union(eventdict_new["entities"])
-                set_merged[j]["cities"] = eventdict_current["cities"].union(eventdict_new["cities"])
+                set_merged[j]["entities"] = list(set(eventdict_current["entities"]).union(set(eventdict_new["entities"])))
+                set_merged[j]["cities"] = list(set(eventdict_current["cities"]).union(set(eventdict_new["cities"])))
                 print("add",j)
                 new = False
         if new:
