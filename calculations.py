@@ -319,6 +319,38 @@ def extract_entity(text):
                         ngram_score.append((ngram,dmodel[pattern]))
     return ngram_score
 
+def has_overlap(ids1,ids2):
+    overlap = list(set(ids1) & set(ids2))
+    overlap_percent = len(overlap) / len(ids1)
+    if overlap_percent > 0.30:
+        return True
+    else:
+        return False
+
+#given two sets of tweet id list (tweets describing an event), couple the lists that overlap, return a new set
+def merge_event_sets(set_current,set_new):
+    set_merged = set_current
+    for i,eventdict_new in enumerate(set_new):
+        print(i)
+        date = eventdict_new["date"]
+        ids = eventdict_new["ids"]
+        new = True
+        date_events = [(j,x) for j,x in enumerate(set_1) if x["date"] == date]
+        for index_ed in date_events:
+            eventdict_current = index_ed[1]
+            if has_overlap(ids,eventdict_current["ids"]):
+                set_merged[j]["ids"] = eventdict_current["ids"].union(ids)
+                set_merged[j]["tweets"] = eventdict_current["tweets"].union(eventdict_new["tweets"])
+                set_merged[j]["score"] = max(eventdict_current["score"],eventdict_new["score"])
+                set_merged[j]["entities"] = eventdict_current["entities"].union(eventdict_new["entities"])
+                set_merged[j]["cities"] = eventdict_current["cities"].union(eventdict_new["cities"])
+                print("add",j)
+                new = False
+        if new:
+            set_merged.append(eventdict_new)
+            print("new",len(set_merged))
+    return set_merged
+
 def calculate_cosine_similarity(vector1,vector2):
     if len(vector1) != len(vector2):
         print(str(len(vector1)) + " " + str(len(vector2))) 

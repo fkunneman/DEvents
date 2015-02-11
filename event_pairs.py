@@ -599,7 +599,6 @@ class Event_pairs:
                             scores.append(wordscore)
                         except KeyError:
                             continue
-#                print(scores)
                 score = numpy.mean(scores)
                 tweet_score.append((tweet.text,score))
             if rep:
