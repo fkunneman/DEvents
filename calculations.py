@@ -328,17 +328,18 @@ def has_overlap(ids1,ids2):
         return False
 
 #given two sets of tweet id list (tweets describing an event), couple the lists that overlap, return a new set
-def merge_event_sets(set_current,set_new=False):
-    if set_new:
+def merge_event_sets(set_current,set_new):
+    if len(set_current) > 0:
         set_merged = set_current
     else:
-        set_merged = set_current[0]
+        set_merged = [set_new[0]]
+        set_new = set_new[1:]
     for i,eventdict_new in enumerate(set_new):
-        print(i)
+#        print(i)
         date = eventdict_new["date"]
         ids = eventdict_new["ids"]
         new = True
-        if set_new:
+        if len(set_current) > 0:
             date_events = [(j,x) for j,x in enumerate(set_current) if x["date"] == date]
         else:
             date_events = [(j,x) for j,x in enumerate(set_merged) if x["date"] == date]
@@ -351,11 +352,11 @@ def merge_event_sets(set_current,set_new=False):
                 set_merged[j]["score"] = max(eventdict_current["score"],eventdict_new["score"])
                 set_merged[j]["entities"] = list(set(eventdict_current["entities"]).union(set(eventdict_new["entities"])))
                 set_merged[j]["cities"] = list(set(eventdict_current["cities"]).union(set(eventdict_new["cities"])))
-                print("add",j)
+ #               print("add",j)
                 new = False
         if new:
             set_merged.append(eventdict_new)
-            print("new",len(set_merged))
+  #          print("new",len(set_merged))
     return set_merged
 
 def calculate_cosine_similarity(vector1,vector2):
