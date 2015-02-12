@@ -37,7 +37,7 @@ ep = Event_pairs(args.w,args.d,cities = args.cities)
 
 def output_events(d):
     print("ranking events")
-    ep.rank_events(2500)
+    ep.rank_events()
     ep.resolve_overlap_events()
     ep.enrich_events(add=False,order = False)
     eventinfo = open(d + "events_fit.txt","w",encoding = "utf-8")
