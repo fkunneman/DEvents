@@ -52,7 +52,7 @@ def output_events(d):
 for i,day in enumerate(sorted(day_files.keys())):
     print("extracting tweets with a time reference posted on",day)
     tweetfile = open(day_files[day],"r",encoding = "utf-8")
-    ep.append_eventtweets(tweetfile.readlines(),entities=True)
+    ep.append_eventtweets(tweetfile.readlines(),ent=True)
     tweetfile.close()
     if i >= 30:
         basedir = args.o + day + "/"
