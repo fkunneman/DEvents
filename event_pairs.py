@@ -166,7 +166,7 @@ class Event_pairs:
                     new_chunks.append(chunk)
                 tweet.chunks = new_chunks
                 for chunk in tweet.chunks:
-                    entities.extend(calculations.extract_entity(chunk))
+                    entities.extend(calculations.extract_entity(chunk,self.classencoder,self.dmodel))
                 entities = sorted(entities,key = lambda x: x[1],reverse=True)
                 for chunk in tweet.chunks:
                     entities.extend([(x,0) for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1])
@@ -205,7 +205,7 @@ class Event_pairs:
                         dtweet.set_postags([])
                     entities = []
                     for chunk in chunks:
-                        entities.extend(calculations.extract_entity(chunk))
+                        entities.extend(calculations.extract_entity(chunk,self.classencoder,self.dmodel))
                     entities = sorted(entities,key = lambda x: x[1],reverse=True)
                     for chunk in chunks:
                         entities.extend([(x,0) for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1])

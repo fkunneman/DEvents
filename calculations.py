@@ -296,7 +296,7 @@ def extract_date(tweet,date):
         else:
             return output
 
-def extract_entity(text):
+def extract_entity(text,classencoder,dmodel):
     ngram_score = []
     c = text.split()
     for i in range(5):
