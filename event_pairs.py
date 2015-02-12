@@ -58,7 +58,7 @@ class Event_pairs:
             self.resolve_overlap_events()
             self.enrich_events()
             #output events
-            eventdict = defaultdict(lambda : {})
+            eventdict = []
             for i,event in enumerate(sorted(self.events,key = lambda x : x.score,reverse=True)):
                 if event.tt_ratio > 0.30:
                     #event.rank_tweets(rep=True)
@@ -67,9 +67,9 @@ class Event_pairs:
                         "date references":",".join([str(y) for y in x.daterefs]),
                         "entities":",".join(x.entities),
                         "postags":" | ".join(",".join(x) for x in tweet.postags)} for x in event.tweets]} 
-                    eventdict[i] = event_unit
+                    eventdict.append(event_unit)
         else:
-            eventdict = {}
+            eventdict = []
         self.tweets = []
         self.events = []
         return eventdict
@@ -332,7 +332,7 @@ class Event_pairs:
                         term_postag_counts[postag[0]][postag[1]] += 1 
                 new_candidates = [x for x in term_postag_counts.keys() if x in top_terms]          
                 #remove term that is already in entity set
-                current_entities = event.entities
+                current_entities = [x[0] for x in event.entities]
                 for term in top_terms:
                     if not (re.match("~",term) or re.match(r"\d+",term)):
                         ap = True
@@ -340,7 +340,7 @@ class Event_pairs:
                             if re.search(term,entity) or not term in new_candidates:
                                 ap = False
                         if ap:
-                            event.entities.append(term)
+                            event.entities.append((term,0))
             if self.cities:
                 #check if city in terms
                 places = defaultdict(int)
@@ -352,7 +352,7 @@ class Event_pairs:
                             total += 1
                 top_place = sorted(places, key=places.get, reverse=True)[0]
                 if places[top_place]/total > 0.8:
-                    event.entities.append(top_place) 
+                    event.entities.append((top_place,0)) 
             if order:
                 event.order_entities()
                 event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
