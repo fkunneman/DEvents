@@ -347,7 +347,7 @@ class Event_pairs:
                 total = 0
                 for t in event.tweets:
                     for city in t.cities:
-                        if not city == "nederland":
+                        if not (city == "nederland" or city == "--"):
                             places[city] += 1
                             total += 1
                 if len(places.keys()) > 0:
