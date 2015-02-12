@@ -25,14 +25,20 @@ for infile in args.i:
         eventdict["date"] = tokens[0]
         eventdict["score"] = tokens[1]
         eventdict["entities"] = tokens[2].split(", ")
-        eventdict["ids"] = tokens[3].split(", ")
-        eventdict["tweets"] = tokens[4].split("-----")
+        ids = tokens[3].split(", ")
+        texts = tokens[4].split("-----")
+        eventdict["tweets"] = []
+        for i,e in enumerate(ids):
+            tweet = {}
+            tweet["id"] = e
+            tweet["text"] = texts[i]
+            eventdict["tweets"].append(tweet)
         events.append(eventdict)
     unique_events = calculations.merge_event_sets(unique_events,events)
 
 outfile = open(args.o,"w",encoding="utf-8")
 for event in unique_events:
     outfile.write("\t".join([event["date"],event["score"],
-        ", ".join(event["entities"]),", ".join(event["ids"]),
-        "-----".join(event["tweets"]) + "\n"]))
+        ", ".join(event["entities"]),", ".join([t["id"] for t in event["tweets"]]),
+        "-----".join([t["text"] for t in event["tweets"]]) + "\n"]))
 outfile.close()

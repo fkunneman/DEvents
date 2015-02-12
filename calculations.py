@@ -319,7 +319,9 @@ def extract_entity(text,classencoder,dmodel):
                         ngram_score.append((ngram,dmodel[pattern]))
     return ngram_score
 
-def has_overlap(ids1,ids2):
+def has_overlap(ts1,ts2):
+    ids1 = [t["id"] for t in ts1]
+    ids2 = [t["id"] for t in ts2]
     overlap = list(set(ids1) & set(ids2))
     overlap_percent = len(overlap) / len(ids1)
     if overlap_percent > 0.30:
@@ -337,7 +339,7 @@ def merge_event_sets(set_current,set_new):
     for i,eventdict_new in enumerate(set_new):
 #        print(i)
         date = eventdict_new["date"]
-        ids = eventdict_new["ids"]
+        tweets = t["tweets"]
         new = True
         if len(set_current) > 0:
             date_events = [(j,x) for j,x in enumerate(set_current) if x["date"] == date]
@@ -346,12 +348,20 @@ def merge_event_sets(set_current,set_new):
         for index_ed in date_events:
             j = index_ed[0]
             eventdict_current = index_ed[1]
-            if has_overlap(ids,eventdict_current["ids"]):
-                set_merged[j]["ids"] = list(set(eventdict_current["ids"]).union(set(ids)))
-                set_merged[j]["tweets"] = list(set(eventdict_current["tweets"]).union(set(eventdict_new["tweets"])))
+            if has_overlap(tweets,eventdict_current["tweets"]):
+                merged_ids = list(set([t["id"] for t in eventdict_current["tweets"]]).union(set([t["id"] for t in tweets])))
+                set_merged[j]["tweets"] = []
+                for t in tweets:
+                    if t["id"] in merged_ids:
+                        set_merged[j].append(t)
+                        merged_ids.remove(t["id"])
+                for t in eventdict_current["tweets"]:
+                    if t["id"] in merged_ids:
+                        set_merged[j].append(t)
+                        merged_ids.remove(t["id"])
+                print(len(tweets),len(eventdict_current["tweets"]),len(set_merged[j]["tweets"]))
                 set_merged[j]["score"] = max(eventdict_current["score"],eventdict_new["score"])
                 set_merged[j]["entities"] = list(set(eventdict_current["entities"]).union(set(eventdict_new["entities"])))
-                set_merged[j]["cities"] = list(set(eventdict_current["cities"]).union(set(eventdict_new["cities"])))
  #               print("add",j)
                 new = False
         if new:

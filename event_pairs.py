@@ -255,8 +255,6 @@ class Event_pairs:
         print("rank",len(self.events))
 
     def resolve_overlap_events(self):
-        if outfile:
-            outwrite = open(outfile,"w",encoding="utf-8")
         documents = [" ".join([y.text for y in x.tweets]) for x in self.events]
         tfidf_vectorizer = TfidfVectorizer()
         tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
