@@ -175,6 +175,7 @@ class Event_pairs:
                 self.tweets.append(tweet)
             except:
                 continue
+            print(len(self.tweets),"tweets")
 
     def select_date_entity_tweets(self,new_tweets):
         tokenizer = ucto.Tokenizer(self.ucto_settingsfile)
