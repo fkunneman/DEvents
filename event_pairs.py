@@ -414,7 +414,7 @@ class Event_pairs:
                 info.append(tweet.phrase)
             else:
                 info.append("-")
-            if hasattr(tweet, "cities")
+            if hasattr(tweet, "cities"):
                 info.append(", ".join(tweet.cities))
             else:
                 info.append("-")
