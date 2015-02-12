@@ -353,15 +353,15 @@ def merge_event_sets(set_current,set_new):
                 set_merged[j]["tweets"] = []
                 for t in tweets:
                     if t["id"] in merged_ids:
-                        set_merged[j].append(t)
+                        set_merged[j]["tweets"].append(t)
                         merged_ids.remove(t["id"])
                 for t in eventdict_current["tweets"]:
                     if t["id"] in merged_ids:
-                        set_merged[j].append(t)
+                        set_merged[j]["tweets"].append(t)
                         merged_ids.remove(t["id"])
                 print(len(tweets),len(eventdict_current["tweets"]),len(set_merged[j]["tweets"]))
                 set_merged[j]["score"] = max(eventdict_current["score"],eventdict_new["score"])
-                set_merged[j]["keyterms"] = list(set(eventdict_current["entities"]).union(set(eventdict_new["entities"])))
+                set_merged[j]["keyterms"] = list(set(eventdict_current["keyterms"]).union(set(eventdict_new["keyterms"])))
  #               print("add",j)
                 new = False
         if new:
