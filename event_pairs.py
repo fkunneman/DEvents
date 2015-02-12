@@ -84,7 +84,7 @@ class Event_pairs:
                     if re.search(r"\d{1}(/|-)\d{1}",info[13]):
                         continue
                     else:
-                        entities = True
+                        ent = True
                         info[7] = time_functions.return_datetime(info[7],setting="vs").date()
                         info[11] = [time_functions.return_datetime(x,setting="vs").date() \
                             for x in info[11].split(" ")]
@@ -347,13 +347,11 @@ class Event_pairs:
                 total = 0
                 for t in event.tweets:
                     for city in t.cities:
-                        print(t.cities)
                         if not (city == "nederland" or city == "--"):
                             places[city] += 1
                             total += 1
                 if len(places.keys()) > 0:
                     top_place = sorted(places, key=places.get, reverse=True)[0]
-                    print("topplaces",places.keys(),top_place)
                     if places[top_place]/total > 0.8:
                         event.entities.append((top_place,0)) 
             if order:
