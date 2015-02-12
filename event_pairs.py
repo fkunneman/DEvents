@@ -352,7 +352,7 @@ class Event_pairs:
                         if not city == "nederland":
                             places[city] += 1
                             total += 1
-                top_place = sorted(places, key=places.get, reverse=True)[0]:
+                top_place = sorted(places, key=places.get, reverse=True)[0]
                 if places[top_place]/total > 0.8:
                     event.entities.append(top_place) 
             if order:
