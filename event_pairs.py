@@ -78,6 +78,7 @@ class Event_pairs:
         tokenizer = ucto.Tokenizer(self.ucto_settingsfile)
         for et in eventtweets:
             info = et.strip().split("\t")
+            print(info)
             tweet = self.Tweet()
             #try:
             if len(info) > 12:
