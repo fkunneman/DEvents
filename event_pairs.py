@@ -78,103 +78,102 @@ class Event_pairs:
         tokenizer = ucto.Tokenizer(self.ucto_settingsfile)
         for et in eventtweets:
             info = et.strip().split("\t")
-            print(info)
             tweet = self.Tweet()
-            #try:
-            if len(info) > 12:
-                if re.search(r"\d{1}(/|-)\d{1}",info[13]):
-                    continue
+            try:
+                if len(info) > 12:
+                    if re.search(r"\d{1}(/|-)\d{1}",info[13]):
+                        continue
+                    else:
+                        entities = True
+                        info[7] = time_functions.return_datetime(info[7],setting="vs").date()
+                        info[11] = [time_functions.return_datetime(x,setting="vs").date() \
+                            for x in info[11].split(" ")]
+                        units = info[:12]
+                        units.append([x.strip() for x in info[12].split("|")]) #chunks
+                        units.append(info[13])
+                        tweet.set_meta(units)
+                        tweet.set_entities([])
+                        tweet.set_postags([])
                 else:
-                    entities = True
-                    info[7] = time_functions.return_datetime(info[7],setting="vs").date()
-                    info[11] = [time_functions.return_datetime(x,setting="vs").date() \
-                        for x in info[11].split(" ")]
-                    units = info[:12]
-                    units.append([x.strip() for x in info[12].split("|")]) #chunks
-                    units.append(info[13])
-                    tweet.set_meta(units)
-                    tweet.set_entities([])
-                    tweet.set_postags([])
-            else:
-                info[2] = time_functions.return_datetime(info[2],setting="vs").date()
-                try:    
-                    info[4] = [time_functions.return_datetime(x,setting="vs").date() \
-                        for x in info[4].split(" ")]
-                    units = info[:5]
-                    units.append([x.strip() for x in info[5].split("|")]) #chunks
-                    tweet.set_meta(units)
-                    if len(info) >= 7: #entities
-                        entities = [x.strip() for x in info[6].split(" | ")]
-                        if len(entities) == 1 and entities[0] == "--":
-                            tweet.set_entities([])
-                        else:
-                            tweet.set_entities(entities)
-                        if len(info) >= 8: #postags
-                            postags = [tuple(x.split(",")) for x in info[7].split(" | ")]
-                            if len(postags) == 1 and postags[0][0] == "--":
-                                tweet.set_postags([])
+                    info[2] = time_functions.return_datetime(info[2],setting="vs").date()
+                    try:    
+                        info[4] = [time_functions.return_datetime(x,setting="vs").date() \
+                            for x in info[4].split(" ")]
+                        units = info[:5]
+                        units.append([x.strip() for x in info[5].split("|")]) #chunks
+                        tweet.set_meta(units)
+                        if len(info) >= 7: #entities
+                            entities = [x.strip() for x in info[6].split(" | ")]
+                            if len(entities) == 1 and entities[0] == "--":
+                                tweet.set_entities([])
                             else:
-                                tweet.set_postags(postags)
-                            if len(info) >= 9: #phrase
-                                tweet.set_phrase(info[8])
-                                if len(info) == 10:
-                                    cities = info[9].split(", ")
-                                    tweet.set_cities(cities)
+                                tweet.set_entities(entities)
+                            if len(info) >= 8: #postags
+                                postags = [tuple(x.split(",")) for x in info[7].split(" | ")]
+                                if len(postags) == 1 and postags[0][0] == "--":
+                                    tweet.set_postags([])
                                 else:
-                                    tweet.set_cities([])
+                                    tweet.set_postags(postags)
+                                if len(info) >= 9: #phrase
+                                    tweet.set_phrase(info[8])
+                                    if len(info) == 10:
+                                        cities = info[9].split(", ")
+                                        tweet.set_cities(cities)
+                                    else:
+                                        tweet.set_cities([])
+                                else:
+                                    tweet.set_phrase("-")
                             else:
-                                tweet.set_phrase("-")
-                        else:
-                            tweet.set_postags([])
-                    else:
-                        tweet.set_entities([])
-                        tweet.set_postags([])
-                except(IndexError, AttributeError):
-                    info[5] = [time_functions.return_datetime(x,setting="vs").date() \
-                        for x in info[5].split(" ")]
-                    units = info[:6]
-                    units.append([x.strip() for x in info[6].split("|")]) #chunks
-                    tweet.set_meta(units,phr=True)
-                    if len(info) >= 8:
-                        entities = [x.strip() for x in info[7].split(" | ")]
-                        if len(entities) == 1 and entities[0] == "--":
-                            tweet.set_entities([])
-                        else:
-                            tweet.set_entities(entities)
-                        if len(info) == 9:
-                            postags = [tuple(x.split(",")) for x in info[8].split(" | ")]
-                            if len(postags) == 1 and postags[0][0] == "--":
                                 tweet.set_postags([])
-                            else:
-                                tweet.set_postags(postags)
                         else:
+                            tweet.set_entities([])
                             tweet.set_postags([])
-                    else:
-                        tweet.set_entities([])
-                        tweet.set_postags([])
-            if ent:
-                if self.cities:
-                    citymatch = calculations.return_cities(tweet.chunks,self.cities)
-                    tweet.chunks = citymatch[0]
-                    tweet.set_cities(citymatch[1])
-                if self.frogger: 
-                    tweet.set_postags(calculations.return_postags(tweet.text,self.frogger))
-                entities = []
-                new_chunks = []
-                for chunk in tweet.chunks:
-                    tokenizer.process(chunk)
-                    chunk = " ".join([x.text.lower() for x in tokenizer])
-                    new_chunks.append(chunk)
-                tweet.chunks = new_chunks
-                for chunk in tweet.chunks:
-                    entities.extend(calculations.extract_entity(chunk,self.classencoder,self.dmodel))
-                entities = sorted(entities,key = lambda x: x[1],reverse=True)
-                for chunk in tweet.chunks:
-                    entities.extend([(x,0) for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1])
-                tweet.set_entities([x[0] for x in entities])
-            self.tweets.append(tweet)
-            #except:
-            #    continue
+                    except(IndexError, AttributeError):
+                        info[5] = [time_functions.return_datetime(x,setting="vs").date() \
+                            for x in info[5].split(" ")]
+                        units = info[:6]
+                        units.append([x.strip() for x in info[6].split("|")]) #chunks
+                        tweet.set_meta(units,phr=True)
+                        if len(info) >= 8:
+                            entities = [x.strip() for x in info[7].split(" | ")]
+                            if len(entities) == 1 and entities[0] == "--":
+                                tweet.set_entities([])
+                            else:
+                                tweet.set_entities(entities)
+                            if len(info) == 9:
+                                postags = [tuple(x.split(",")) for x in info[8].split(" | ")]
+                                if len(postags) == 1 and postags[0][0] == "--":
+                                    tweet.set_postags([])
+                                else:
+                                    tweet.set_postags(postags)
+                            else:
+                                tweet.set_postags([])
+                        else:
+                            tweet.set_entities([])
+                            tweet.set_postags([])
+                if ent:
+                    if self.cities:
+                        citymatch = calculations.return_cities(tweet.chunks,self.cities)
+                        tweet.chunks = citymatch[0]
+                        tweet.set_cities(citymatch[1])
+                    if self.frogger: 
+                        tweet.set_postags(calculations.return_postags(tweet.text,self.frogger))
+                    entities = []
+                    new_chunks = []
+                    for chunk in tweet.chunks:
+                        tokenizer.process(chunk)
+                        chunk = " ".join([x.text.lower() for x in tokenizer])
+                        new_chunks.append(chunk)
+                    tweet.chunks = new_chunks
+                    for chunk in tweet.chunks:
+                        entities.extend(calculations.extract_entity(chunk,self.classencoder,self.dmodel))
+                    entities = sorted(entities,key = lambda x: x[1],reverse=True)
+                    for chunk in tweet.chunks:
+                        entities.extend([(x,0) for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1])
+                    tweet.set_entities([x[0] for x in entities])
+                self.tweets.append(tweet)
+            except:
+                continue
         print(len(self.tweets),"tweets")
 
     def select_date_entity_tweets(self,new_tweets):
