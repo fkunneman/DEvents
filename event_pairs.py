@@ -66,7 +66,7 @@ class Event_pairs:
                         "tweets":[{"id":x.id,"user":x.user,"date":x.date,"text":x.text,
                         "date references":",".join([str(y) for y in x.daterefs]),
                         "entities":",".join(x.entities),
-                        "postags":" | ".join(",".join(x) for x in tweet.postags)} for x in event.tweets]} 
+                        "postags":" | ".join(",".join(y) for y in x.postags)} for x in event.tweets]} 
                     eventdict.append(event_unit)
         else:
             eventdict = []
@@ -575,7 +575,7 @@ class Event_pairs:
             if len(self.entities) == len(rankings.values()):
                 new_entities = []
                 for rank in range(len(rankings.keys())):
-                    print(rankings.values(),rank)
+                    #print(rankings.values(),rank)
                     new_entities.append([e[1] for e in rankings.values() if e[0] == rank][0]) 
                 self.entities = new_entities
 
