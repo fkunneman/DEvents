@@ -39,11 +39,10 @@ def output_events(d):
     print("ranking events")
     ep.rank_events(2500)
     ep.resolve_overlap_events()
-    ep.enrich_events("cs",order = False)
+    ep.enrich_events(add=False,order = False)
     eventinfo = open(d + "events_fit.txt","w",encoding = "utf-8")
     for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
         outstr = "\t".join([str(event.date),str(event.score)]) + "\t" + \
-            ", ".join(event.places) + "\t" + \
             ", ".join([x[0] for x in event.entities]) + "\t" + \
             ", ".join([x.id for x in event.tweets]) + "\t" + \
             "-----".join([x.text for x in event.tweets]) + "\n"
@@ -59,26 +58,6 @@ for i,day in enumerate(sorted(day_files.keys())):
         basedir = args.o + day + "/"
         if not os.path.isdir(basedir):
             os.mkdir(basedir)
-        tweetinfo = open(basedir + "modeltweets.txt","w",encoding = "utf-8")
-        for tweet in ep.tweets:
-            if hasattr(tweet, 'postags') and hasattr(tweet, 'phrase'):
-                info = [tweet.id,tweet.user,str(tweet.date),tweet.text,tweet.phrase,
-                    " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-                    " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
-            else:
-                if hasattr(tweet, 'postags'):
-                    info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
-                        " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-                        " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
-                elif hasattr(tweet, 'phrase'):
-                    info = [tweet.id,tweet.user,str(tweet.date),tweet.text,tweet.phrase,
-                        " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-                        " | ".join(tweet.entities)]
-                else:
-                    info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
-                    " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-                    " | ".join(tweet.entities)]
-            tweetinfo.write("\t".join(info) + "\n")
-        tweetinfo.close()
+        ep.write_modeltweets(basedir + "modeltweets.txt")
         ep.discard_last_day(31)
         output_events(basedir)

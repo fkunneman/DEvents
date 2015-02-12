@@ -311,7 +311,7 @@ def extract_entity(text):
         elif i == 4:
             ngrams = zip(c, c[1:], c[2:], c[3:], c[4:])
         for ngram in ngrams:
-            if not (len(ngram) == 1 and (re.match("~",ngram[0]) or re.match(r"\d+",ngram[0]))):
+            if not (len(ngram) == 1 and (re.match("~",ngram[0]) or re.match(r"\d+",ngram[0]) or re.match(r"ga",ngram[0]))):
                 ngram = " ".join(ngram)
                 pattern = classencoder.buildpattern(ngram)
                 if not pattern.unknown():

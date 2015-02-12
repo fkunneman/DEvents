@@ -51,27 +51,7 @@ class Event_pairs:
         #prune tweets
         self.discard_last_day(31)
         #write modeltweets
-        tweetinfo = open("tmp/modeltweets.txt","w",encoding = "utf-8")
-        for tweet in self.tweets:
-            if hasattr(tweet, 'postags') and hasattr(tweet, 'phrase'):
-                info = [tweet.id,tweet.user,str(tweet.date),tweet.text,tweet.phrase,
-                    " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-                    " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
-            else:
-                if hasattr(tweet, 'postags'):
-                    info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
-                        " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-                        " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
-                elif hasattr(tweet, 'phrase'):
-                    info = [tweet.id,tweet.user,str(tweet.date),tweet.text,tweet.phrase,
-                        " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-                        " | ".join(tweet.entities)]
-                else:
-                    info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
-                    " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-                    " | ".join(tweet.entities)]
-            tweetinfo.write("\t".join(info) + "\n")
-        tweetinfo.close()
+        self.write_modeltweets("tmp/modeltweets.txt")
         if events:
             #rank events, resolve overlap and enrich events
             self.rank_events()
@@ -85,7 +65,8 @@ class Event_pairs:
                     event_unit = {"date":event.date,"keyterms":event.entities,"score":event.score,
                         "tweets":[{"id":x.id,"user":x.user,"date":x.date,"text":x.text,
                         "date references":",".join([str(y) for y in x.daterefs]),
-                        "entities":",".join(x.entities),"postags":" | ".join(",".join(x) for x in tweet.postags)} for x in event.tweets]} 
+                        "entities":",".join(x.entities),
+                        "postags":" | ".join(",".join(x) for x in tweet.postags)} for x in event.tweets]} 
                     eventdict[i] = event_unit
         else:
             eventdict = {}
@@ -97,6 +78,7 @@ class Event_pairs:
         tokenizer = ucto.Tokenizer(self.ucto_settingsfile)
         for et in eventtweets:
             info = et.strip().split("\t")
+            tweet = self.Tweet()
             try:
                 if len(info) > 12:
                     if re.search(r"\d{1}(/|-)\d{1}",info[13]):
@@ -106,7 +88,6 @@ class Event_pairs:
                         info[7] = time_functions.return_datetime(info[7],setting="vs").date()
                         info[11] = [time_functions.return_datetime(x,setting="vs").date() \
                             for x in info[11].split(" ")]
-                        tweet = self.Tweet()
                         units = info[:12]
                         units.append([x.strip() for x in info[12].split("|")]) #chunks
                         units.append(info[13])
@@ -115,10 +96,41 @@ class Event_pairs:
                         tweet.set_postags([])
                 else:
                     info[2] = time_functions.return_datetime(info[2],setting="vs").date()
-                    try:
+                    try:    
+                        info[4] = [time_functions.return_datetime(x,setting="vs").date() \
+                            for x in info[4].split(" ")]
+                        units = info[:5]
+                        units.append([x.strip() for x in info[5].split("|")]) #chunks
+                        tweet.set_meta(units)
+                        if len(info) >= 7: #entities
+                            entities = [x.strip() for x in info[6].split(" | ")]
+                            if len(entities) == 1 and entities[0] == "--":
+                                tweet.set_entities([])
+                            else:
+                                tweet.set_entities(entities)
+                            if len(info) >= 8: #postags
+                                postags = [tuple(x.split(",")) for x in info[7].split(" | ")]
+                                if len(postags) == 1 and postags[0][0] == "--":
+                                    tweet.set_postags([])
+                                else:
+                                    tweet.set_postags(postags)
+                                if len(info) >= 9: #phrase
+                                    tweet.set_phrase(info[8])
+                                    if len(info) == 10:
+                                        cities = info[9].split(", ")
+                                        tweet.set_cities(cities)
+                                    else:
+                                        tweet.set_cities([])
+                                else:
+                                    tweet.set_phrase("-")
+                            else:
+                                tweet.set_postags([])
+                        else:
+                            tweet.set_entities([])
+                            tweet.set_postags([])
+                    except(IndexError, AttributeError):
                         info[5] = [time_functions.return_datetime(x,setting="vs").date() \
                             for x in info[5].split(" ")]
-                        tweet = self.Tweet()
                         units = info[:6]
                         units.append([x.strip() for x in info[6].split("|")]) #chunks
                         tweet.set_meta(units,phr=True)
@@ -130,30 +142,6 @@ class Event_pairs:
                                 tweet.set_entities(entities)
                             if len(info) == 9:
                                 postags = [tuple(x.split(",")) for x in info[8].split(" | ")]
-                                if len(postags) == 1 and postags[0][0] == "--":
-                                    tweet.set_postags([])
-                                else:
-                                    tweet.set_postags(postags)
-                            else:
-                                tweet.set_postags([])
-                        else:
-                            tweet.set_entities([])
-                            tweet.set_postags([])
-                    except(IndexError, AttributeError):
-                        info[4] = [time_functions.return_datetime(x,setting="vs").date() \
-                            for x in info[4].split(" ")]
-                        tweet = self.Tweet()
-                        units = info[:5]
-                        units.append([x.strip() for x in info[5].split("|")]) #chunks
-                        tweet.set_meta(units)
-                        if len(info) >= 7:
-                            entities = [x.strip() for x in info[6].split(" | ")]
-                            if len(entities) == 1 and entities[0] == "--":
-                                tweet.set_entities([])
-                            else:
-                                tweet.set_entities(entities)
-                            if len(info) == 8:
-                                postags = [tuple(x.split(",")) for x in info[7].split(" | ")]
                                 if len(postags) == 1 and postags[0][0] == "--":
                                     tweet.set_postags([])
                                 else:
@@ -201,36 +189,27 @@ class Event_pairs:
             dateref_phrase = calculations.extract_date(text,date)
             if dateref_phrase:
                 if len(dateref_phrase) > 2:
+                    dtweet = self.Tweet()
                     chunks = dateref_phrase[0]
                     if self.cities:
                         citymatch = calculations.return_cities(chunks,self.cities)
                         chunks = citymatch[0]
                         cities = citymatch[1]
-                    phrase = dateref_phrase[1]
-                    refdates = dateref_phrase[2:]
-                    dtweet = self.Tweet()
+                        dtweet.set_cities(cities)
+                    units = [tokens[1],tokens[6],date,text,dateref_phrase[2:],chunks]
+                    dtweet.set_meta(units)
+                    dtweet.set_phrase(dateref_phrase[1])
                     if self.frogger:
                         dtweet.set_postags(calculations.return_postags(text,self.frogger))
                     else:
                         dtweet.set_postags([])
-                    units = [tokens[1],tokens[6],date,text,phrase,refdates,chunks,cities]
-                    dtweet.set_meta(units,phr=True,cts=True)
                     entities = []
                     for chunk in chunks:
                         entities.extend(calculations.extract_entity(chunk,self.classencoder,self.dmodel))
                     entities = sorted(entities,key = lambda x: x[1],reverse=True)
-                    if len(entities) > 0:
-                        dtweet.set_entities([x[0] for x in entities])
-                    else:
-                        dtweet.set_entities([])
-                    #add hashtags to process
                     for chunk in chunks:
-                        hashtags = [x for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1]
-                        if len(hashtags) > 0:
-                            if dtweet.e:
-                                dtweet.entities.extend(hashtags)
-                            else:
-                                dtweet.set_entities(hashtags)
+                        entities.extend([(x,0) for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1])
+                    dtweet.set_entities([x[0] for x in entities])
                     self.tweets.append(dtweet)
                        
     def rank_events(self):
@@ -332,7 +311,7 @@ class Event_pairs:
                         break
         print("overlap",len(self.events))
 
-    def enrich_events(self,xpos = False,order = True):
+    def enrich_events(self,add=True,xpos = False,order = True):
         documents = [" ".join([" ".join(x.chunks) for x in y.tweets]) for y in self.events]
         tfidf_vectorizer = TfidfVectorizer()
         tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
@@ -341,28 +320,29 @@ class Event_pairs:
         #for each event
         for i,event in enumerate(self.events):
             event.resolve_overlap_entities() #resolve overlap
-            tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
-            tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
-            event.add_tfidf(tfidf_sorted,word_indexes)
-            top_terms = [word_indexes[j[0]] for j in tfidf_sorted][:4]
-            term_postag_counts = defaultdict(lambda : defaultdict(int))
-            #acquire most frequent postag for each term (provided postag is a verb, adjective or noun)
-            for tweet in event.tweets:
-                if xpos:
-                    tweet.set_postags(calculations.return_postags(tweet.text,self.frogger))
-                for postag in tweet.postags:
-                    term_postag_counts[postag[0]][postag[1]] += 1 
-            new_candidates = [x for x in term_postag_counts.keys() if x in top_terms]          
-            #remove term that is already in entity set
-            current_entities = [x[0] for x in event.entities]
-            for term in top_terms:
-                if not (re.match("~",term) or re.match(r"\d+",term)):
-                    ap = True
-                    for entity in current_entities:
-                        if re.search(term,entity) or not term in new_candidates:
-                            ap = False
-                    if ap:
-                        event.entities.append((term,0))
+            if add:
+                tfidf_tuples = [(j,tfidf) for j,tfidf in enumerate(doc_tfidf[i])]
+                tfidf_sorted = sorted(tfidf_tuples,key = lambda x : x[1],reverse = True)
+                event.add_tfidf(tfidf_sorted,word_indexes)
+                top_terms = [word_indexes[j[0]] for j in tfidf_sorted][:4]
+                term_postag_counts = defaultdict(lambda : defaultdict(int))
+                #acquire most frequent postag for each term (provided postag is a verb, adjective or noun)
+                for tweet in event.tweets:
+                    if xpos:
+                        tweet.set_postags(calculations.return_postags(tweet.text,self.frogger))
+                    for postag in tweet.postags:
+                        term_postag_counts[postag[0]][postag[1]] += 1 
+                new_candidates = [x for x in term_postag_counts.keys() if x in top_terms]          
+                #remove term that is already in entity set
+                current_entities = event.entities
+                for term in top_terms:
+                    if not (re.match("~",term) or re.match(r"\d+",term)):
+                        ap = True
+                        for entity in current_entities:
+                            if re.search(term,entity) or not term in new_candidates:
+                                ap = False
+                        if ap:
+                            event.entities.append(term)
             if self.cities:
                 #check if city in terms
                 places = defaultdict(int)
@@ -374,7 +354,7 @@ class Event_pairs:
                             total += 1
                 top_place = sorted(places, key=places.get, reverse=True)[0]:
                 if places[top_place]/total > 0.8:
-                    event.entities.append((top_place,0)) 
+                    event.entities.append(top_place) 
             if order:
                 event.order_entities()
                 event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
@@ -419,6 +399,28 @@ class Event_pairs:
                 self.dmodel[pattern] = float(tokens[3])
             ngramopen.close()
 
+    def write_modeltweets(self,outfile):
+        tweetinfo = open(outfile,"w",encoding = "utf-8")
+        for tweet in self.tweets:
+            info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
+                    " ".join([str(x) for x in tweet.daterefs]),
+                    "|".join([x for x in tweet.chunks]),
+                    " | ".join(tweet.entities)]
+            if hasattr(tweet, 'postags'):
+                info.append(" | ".join(",".join(x) for x in tweet.postags))
+            else:
+                info.append(",".join("--","--"))
+            if hasattr(tweet, 'phrase'):
+                info.append(tweet.phrase)
+            else:
+                info.append("-")
+            if hasattr(tweet, "cities")
+                info.append(", ".join(tweet.cities))
+            else:
+                info.append("-")
+            tweetinfo.write("\t".join(info) + "\n")
+        tweetinfo.close()
+
     class Tweet:
         """
         Class containing the characteristics of a tweet that mentions 
@@ -427,7 +429,7 @@ class Event_pairs:
         def __init__(self):
             self.e = False
 
-        def set_meta(self,units,phr = False,cts=False):
+        def set_meta(self,units,phr = False):
             if len(units) == 14:
                 self.id = units[1]
                 self.user = units[4]
@@ -448,8 +450,6 @@ class Event_pairs:
                 else:
                     self.daterefs = units[4]
                     self.chunks = units[5]
-                if cts:
-                    self.cities = units[-1]
 
         def set_entities(self,entities):
             if len(entities) == 0:
@@ -463,6 +463,9 @@ class Event_pairs:
                 self.postags = [("--","--")]
             else:
                 self.postags = tags
+
+        def set_phrase(self,phrase):
+            self.phrase = phrase
 
         def set_cities(self,cities):
             if len(cities) == 0:
