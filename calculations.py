@@ -339,7 +339,7 @@ def merge_event_sets(set_current,set_new):
     for i,eventdict_new in enumerate(set_new):
 #        print(i)
         date = eventdict_new["date"]
-        tweets = t["tweets"]
+        tweets = eventdict_new["tweets"]
         new = True
         if len(set_current) > 0:
             date_events = [(j,x) for j,x in enumerate(set_current) if x["date"] == date]
