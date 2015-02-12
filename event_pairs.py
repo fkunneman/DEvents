@@ -88,12 +88,13 @@ class Event_pairs:
                         info[7] = time_functions.return_datetime(info[7],setting="vs").date()
                         info[11] = [time_functions.return_datetime(x,setting="vs").date() \
                             for x in info[11].split(" ")]
-                        units = info[:12]
+                        units = [info[1],info[4],info[7],info[10],info[11]]
                         units.append([x.strip() for x in info[12].split("|")]) #chunks
-                        units.append(info[13])
                         tweet.set_meta(units)
+                        tweet.set_phrase(info[13])                    
                         tweet.set_entities([])
                         tweet.set_postags([])
+                        tweet.set_cities([])
                 else:
                     info[2] = time_functions.return_datetime(info[2],setting="vs").date()
                     try:    
@@ -122,35 +123,47 @@ class Event_pairs:
                                     else:
                                         tweet.set_cities([])
                                 else:
+                                    tweet.set_cities([])
                                     tweet.set_phrase("-")
                             else:
                                 tweet.set_postags([])
+                                tweet.set_cities([])
+                                tweet.set_phrase("-")
                         else:
                             tweet.set_entities([])
                             tweet.set_postags([])
+                            tweet.set_cities([])
+                            tweet.set_phrase("-")
                     except(IndexError, AttributeError):
                         info[5] = [time_functions.return_datetime(x,setting="vs").date() \
                             for x in info[5].split(" ")]
                         units = info[:6]
                         units.append([x.strip() for x in info[6].split("|")]) #chunks
                         tweet.set_meta(units,phr=True)
-                        if len(info) >= 8:
+                        if len(info) >= 8: #entities
                             entities = [x.strip() for x in info[7].split(" | ")]
                             if len(entities) == 1 and entities[0] == "--":
                                 tweet.set_entities([])
                             else:
                                 tweet.set_entities(entities)
-                            if len(info) == 9:
+                            if len(info) >= 9: #postags
                                 postags = [tuple(x.split(",")) for x in info[8].split(" | ")]
                                 if len(postags) == 1 and postags[0][0] == "--":
                                     tweet.set_postags([])
                                 else:
                                     tweet.set_postags(postags)
+                                if len(info) == 10:
+                                    cities = info[9].split(", ")
+                                    tweet.set_cities(cities)
+                                else:
+                                    tweet.set_cities([])
                             else:
                                 tweet.set_postags([])
+                                tweet.set_cities([])
                         else:
                             tweet.set_entities([])
                             tweet.set_postags([])
+                            tweet.set_cities([])
                 if ent:
                     if self.cities:
                         citymatch = calculations.return_cities(tweet.chunks,self.cities)
@@ -429,26 +442,17 @@ class Event_pairs:
             self.e = False
 
         def set_meta(self,units,phr = False):
-            if len(units) == 14:
-                self.id = units[1]
-                self.user = units[4]
-                self.date = units[7]
-                self.text = units[10]
-                self.daterefs = units[11]
-                self.chunks = units[12]
-                self.phrase = units[13]
+            self.id = units[0]
+            self.user = units[1]
+            self.date = units[2]
+            self.text = units[3]
+            if phr:
+                self.phrase = units[4]
+                self.daterefs = units[5]
+                self.chunks = units[6]
             else:
-                self.id = units[0]
-                self.user = units[1]
-                self.date = units[2]
-                self.text = units[3]
-                if phr:
-                    self.phrase = units[4]
-                    self.daterefs = units[5]
-                    self.chunks = units[6]
-                else:
-                    self.daterefs = units[4]
-                    self.chunks = units[5]
+                self.daterefs = units[4]
+                self.chunks = units[5]
 
         def set_entities(self,entities):
             if len(entities) == 0:
