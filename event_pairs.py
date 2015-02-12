@@ -350,9 +350,10 @@ class Event_pairs:
                         if not city == "nederland":
                             places[city] += 1
                             total += 1
-                top_place = sorted(places, key=places.get, reverse=True)[0]
-                if places[top_place]/total > 0.8:
-                    event.entities.append((top_place,0)) 
+                if len(places.keys()) > 0:
+                    top_place = sorted(places, key=places.get, reverse=True)[0]
+                    if places[top_place]/total > 0.8:
+                        event.entities.append((top_place,0)) 
             if order:
                 event.order_entities()
                 event.add_ttratio() #calculate type-token to erase events with highly simplified tweets
