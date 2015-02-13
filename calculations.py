@@ -359,13 +359,8 @@ def merge_event_sets(set_current,set_new):
                     if t["id"] in merged_ids:
                         set_merged[j]["tweets"].append(t)
                         merged_ids.remove(t["id"])
-                print(len(tweets),len(eventdict_current["tweets"]),len(set_merged[j]["tweets"]))
                 set_merged[j]["score"] = max(eventdict_current["score"],eventdict_new["score"])
-                print(set_merged[j],eventdict_current,eventdict_new)
-                try:
-                    set_merged[j]["keyterms"] = list(set(eventdict_current["keyterms"]).union(set(eventdict_new["keyterms"])))
-                except KeyError:
-                    set_merged[j]["keyterms"] = list(set([x.lower() for x in eventdict_current["keylist"]]).union(set([x.lower() for x in eventdict_new["keylist"]])))
+                set_merged[j]["keylist"] = list(set(eventdict_current["keylist"]).union(set(eventdict_new["keylist"])))
  #               print("add",j)
                 new = False
         if new:
