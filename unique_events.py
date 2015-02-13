@@ -24,7 +24,7 @@ for infile in args.i:
         tokens = line.strip().split("\t")
         eventdict["date"] = tokens[0]
         eventdict["score"] = tokens[1]
-        eventdict["keyterms"] = tokens[2].split(", ")
+        eventdict["keylist"] = tokens[2].split(", ")
         ids = tokens[3].split(", ")
         texts = tokens[4].split("-----")
         eventdict["tweets"] = []
@@ -39,6 +39,6 @@ for infile in args.i:
 outfile = open(args.o,"w",encoding="utf-8")
 for event in unique_events:
     outfile.write("\t".join([event["date"],event["score"],
-        ", ".join(event["keyterms"]),", ".join([t["id"] for t in event["tweets"]]),
+        ", ".join(event["keylist"]),", ".join([t["id"] for t in event["tweets"]]),
         "-----".join([t["text"] for t in event["tweets"]]) + "\n"]))
 outfile.close()
