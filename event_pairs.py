@@ -500,7 +500,7 @@ class Event_pairs:
 
         def order_entities(self):
             print("order before",self.entities)
-            new_entities = calculations.order_entities(self.entities,[x.text for x in self.tweets])
+            new_entities = calculations.order_entities([x[0] for x in self.entities],[x.text for x in self.tweets])
             new_entities_score = []
             for x in new_entities:
                 entity_score = [y for y in self.entities if y[0] == x][0]
