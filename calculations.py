@@ -320,7 +320,7 @@ def extract_entity(text,classencoder,dmodel):
                         ngram_score.append((ngram,dmodel[pattern]))
     return ngram_score
 
-def has_overlap_entity(self,s1,s2):
+def has_overlap_entity(s1,s2):
     if set(s1.split(" ")) & set(s2.split(" ")):
         return True
     else:
@@ -337,6 +337,7 @@ def resolve_overlap_entities(entities):
             one = True 
         elif entities[i][1] > entities[i+1][1]:
             one = True
+        print("calc",i,"one",one)
         if one:
             for e in new_entities:
                 if has_overlap_entity(re.sub('#','',entities[i][0]),re.sub('#','',e[0])):
@@ -345,6 +346,7 @@ def resolve_overlap_entities(entities):
         else: #entities have the same score
             #make list of entities with similar score
             sim_entities = [entities[i],entities[i+1]]
+            print("calc sim entities",sim_entities)
             j = i+2
             while j < len(entities):
                 if entities[j][1] == entities[i][1]: 
