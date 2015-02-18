@@ -364,7 +364,7 @@ def resolve_overlap_entities(entities):
 
 def order_entities(entities,tweets):
     rankings = {}
-    for i,x in enumerate([entities):
+    for i,x in enumerate(entities):
         rankings[x] = [i,entities[i]]
     for i,e0 in enumerate(entities[:-1]):
         scores = [[0,0] for y in itertools.repeat(None,(len(entities) - (i+1)))]
