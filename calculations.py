@@ -336,6 +336,7 @@ def merge_event_sets(set_current,set_new):
     else:
         set_merged = [set_new[0]]
         set_new = set_new[1:]
+    print("set merged",len(set_merged))
     for i,eventdict_new in enumerate(set_new):
 #        print(i)
         date = eventdict_new["date"]
@@ -365,7 +366,7 @@ def merge_event_sets(set_current,set_new):
                 new = False
         if new:
             set_merged.append(eventdict_new)
-  #          print("new",len(set_merged))
+    print("new",len(set_merged))
     return set_merged
 
 def calculate_cosine_similarity(vector1,vector2):
