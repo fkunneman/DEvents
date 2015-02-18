@@ -339,9 +339,12 @@ def resolve_overlap_entities(entities):
             one = True
         print("calc",i,"one",one)
         if one:
+            overlap = False
             for e in new_entities:
                 if has_overlap_entity(re.sub('#','',entities[i][0]),re.sub('#','',e[0])):
-                    new_entities.append(entities[i])
+                    overlap = True    
+            if not overlap:
+                new_entities.append(entities[i])
             i+=1
         else: #entities have the same score
             #make list of entities with similar score
