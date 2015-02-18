@@ -443,9 +443,11 @@ def merge_event_sets(set_current,set_new):
                         merged_ids.remove(t["id"])
                 set_merged[j]["score"] = max(eventdict_current["score"],eventdict_new["score"])
                 keylist_ents = [[x,0] for x in list(set(eventdict_current["keylist"]).union(set(eventdict_new["keylist"])))]
+                print("BEFORE",keylist_ents)
                 keylist_ents = resolve_overlap_entities(keylist_ents)
                 keylist_ents = order_entities([x[0] for x in keylist_ents],[x["text"] for x in set_merged[j]["tweets"]])
                 set_merged[j]["keylist"] = keylist_ents
+                print("AFTER",set_merged[j]["keylist"])
                 new = False
         if new:
             set_merged.append(eventdict_new)

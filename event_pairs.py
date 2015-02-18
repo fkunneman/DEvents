@@ -494,15 +494,19 @@ class Event_pairs:
             self.tweets = list(set(self.tweets + clust.tweets))
 
         def resolve_overlap_entities(self):
+            print("resolve before",self.entities)
             self.entities = calculations.resolve_overlap_entities(sorted(self.entities,key = lambda x : x[1],reverse=True))
+            print("resolve after",self.entities)
 
         def order_entities(self):
+            print("order before",self.entities)
             new_entities = calculations.order_entities(self.entities,[x.text for x in self.tweets])
             new_entities_score = []
             for x in new_entities:
-                entity_score = [y for y in self.entities = y[0] == x][0]
+                entity_score = [y for y in self.entities if y[0] == x][0]
                 new_entities_score.append(entity_score)
             self.entities = new_entities_score
+            print("order after",self.entities)
 
         def add_ttratio(self):
             tokens = []
