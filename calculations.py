@@ -359,7 +359,7 @@ def resolve_overlap_entities(entities):
                     break
             i=j
             #rank entities by length
-            sim_entities = sorted(sim_entities,key = lambda x : len(x[0].split(" ")))
+            sim_entities = sorted(sim_entities,key = lambda x : len(x[0].split(" ")), reverse=True)
             for se in sim_entities:
                 overlap = False
                 for e in new_entities:
@@ -377,6 +377,7 @@ def order_entities(entities,tweets):
         scores = [[0,0] for y in itertools.repeat(None,(len(entities) - (i+1)))]
         ents = entities[i+1:]
         for text in tweets:
+            print("order",e0,text)
             if re.search(re.escape(e0),text):
                 p0 = re.search(re.escape(e0),text).span()[0]           
                 for j,e1 in enumerate(ents):
