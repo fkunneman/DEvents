@@ -327,17 +327,14 @@ def has_overlap_entity(s1,s2):
         return False
 
 def resolve_overlap_entities(entities):
-    print("Calc entities",entities)
     new_entities = []
     i = 0
     while i < len(entities):
-        print("Calc",i,new_entities)
         one = False
         if i+1 >= len(entities):
             one = True 
         elif entities[i][1] > entities[i+1][1]:
             one = True
-        print("calc",i,"one",one)
         if one:
             overlap = False
             for e in new_entities:
@@ -349,7 +346,6 @@ def resolve_overlap_entities(entities):
         else: #entities have the same score
             #make list of entities with similar score
             sim_entities = [entities[i],entities[i+1]]
-            print("calc sim entities",sim_entities)
             j = i+2
             while j < len(entities):
                 if entities[j][1] == entities[i][1]: 
@@ -360,6 +356,7 @@ def resolve_overlap_entities(entities):
             i=j
             #rank entities by length
             sim_entities = sorted(sim_entities,key = lambda x : len(x[0].split(" ")), reverse=True)
+            sim_entities = [x.replace("_"," ") for x in sim_entities]
             for se in sim_entities:
                 overlap = False
                 for e in new_entities:
@@ -377,7 +374,6 @@ def order_entities(entities,tweets):
         scores = [[0,0] for y in itertools.repeat(None,(len(entities) - (i+1)))]
         ents = entities[i+1:]
         for text in tweets:
-            print("order",e0,text)
             if re.search(re.escape(e0),text):
                 p0 = re.search(re.escape(e0),text).span()[0]           
                 for j,e1 in enumerate(ents):
