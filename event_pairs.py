@@ -494,90 +494,15 @@ class Event_pairs:
             self.tweets = list(set(self.tweets + clust.tweets))
 
         def resolve_overlap_entities(self):
-            entities = sorted(self.entities,key = lambda x : x[1],reverse=True)
-            new_entities = []
-            i = 0
-            while i < len(entities):
-                one = False
-                if i+1 >= len(entities):
-                    one = True 
-                else:
-                    if entities[i][1] > entities[i+1][1]:
-                        one = True
-                overlap = False
-                for e in new_entities:
-                    if self.has_overlap(re.sub('#','',entities[i][0]),re.sub('#','',e[0])):
-                        overlap = True
-                if one:
-                    if not overlap:
-                        new_entities.append(entities[i])
-                    i+=1
-                else: #entities have the same score
-                    #make list of entities with similar score
-                    sim_entities = [entities[i],entities[i+1]]
-                    j = i+2
-                    while j < len(entities):
-                        if entities[j][1] == entities[i][1]: 
-                            sim_entities.append(entities[j])
-                            j+=1
-                        else:
-                            break
-                    i=j
-                    #rank entities by length
-                    sim_entities = sorted(sim_entities,key = lambda x : len(x[0].split(" ")))
-                    for se in sim_entities:
-                        overlap = False
-                        for e in new_entities:
-                            if self.has_overlap(se[0],e[0]):
-                                overlap = True
-                        if not overlap:
-                            new_entities.append(se)
-            self.entities = new_entities
-
-        def has_overlap(self,s1,s2):
-            if set(s1.split(" ")) & set(s2.split(" ")):
-                return True
-            else:
-                return False
+            self.entities = calculations.resolve_overlap_entities(sorted(self.entities,key = lambda x : x[1],reverse=True))
 
         def order_entities(self):
-            rankings = {}
-            for i,x in enumerate([e[0] for e in self.entities]):
-                rankings[x] = [i,self.entities[i]]
-            for i,e0 in enumerate([x[0] for x in self.entities[:-1]]):
-                scores = [[0,0] for y in itertools.repeat(None,(len(self.entities) - (i+1)))]
-                entities = [x[0] for x in self.entities[i+1:]]
-                for tweet in self.tweets:
-                    text = tweet.text
-                    if re.search(re.escape(e0),text):
-                        p0 = re.search(re.escape(e0),text).span()[0]           
-                        for j,e1 in enumerate(entities):
-                            if re.search(re.escape(e1),text):
-                                p1 = re.search(re.escape(e1),text).span()[0]
-                                if p0 < p1:
-                                    scores[j][0] += 1
-                                else:
-                                    scores[j][1] += 1
-                for j,e1 in enumerate(entities):
-                    score = scores[j]
-                    if score[0] > score[1] and rankings[e0][0] > rankings[e1][0]:
-                        lowers = [x for x in rankings.keys() if rankings[x][0] > rankings[e1][0] and rankings[x][0] < rankings[e0][0]]
-                        rankings[e0][0] = rankings[e1][0]
-                        rankings[e1][0] += 1
-                        for l in lowers:
-                            rankings[l][0] += 1
-                    elif score[1] > score[0] and rankings[e1][0] > rankings[e0][0]:
-                        lowers = [x for x in rankings.keys() if rankings[x][0] > rankings[e0][0] and rankings[x][0] < rankings[e1][0]]
-                        rankings[e1][0] = rankings[e0][0]
-                        rankings[e0][0] += 1
-                        for l in lowers:
-                            rankings[l][0] += 1
-            if len(self.entities) == len(rankings.values()):
-                new_entities = []
-                for rank in range(len(rankings.keys())):
-                    #print(rankings.values(),rank)
-                    new_entities.append([e[1] for e in rankings.values() if e[0] == rank][0]) 
-                self.entities = new_entities
+            new_entities = calculations.order_entities(self.entities,[x.text for x in self.tweets])
+            new_entities_score = []
+            for x in new_entities:
+                entity_score = [y for y in self.entities = y[0] == x][0]
+                new_entities_score.append(entity_score)
+            self.entities = new_entities_score
 
         def add_ttratio(self):
             tokens = []

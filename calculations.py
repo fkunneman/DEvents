@@ -5,6 +5,7 @@ import itertools
 import numpy
 import re
 import os
+import itertools
 import datetime
 from collections import defaultdict
 
@@ -319,6 +320,87 @@ def extract_entity(text,classencoder,dmodel):
                         ngram_score.append((ngram,dmodel[pattern]))
     return ngram_score
 
+def has_overlap_entity(self,s1,s2):
+    if set(s1.split(" ")) & set(s2.split(" ")):
+        return True
+    else:
+        return False
+
+def resolve_overlap_entities(entities):
+    new_entities = []
+    i = 0
+    while i < len(entities):
+        one = False
+        if i+1 >= len(entities):
+            one = True 
+        elif entities[i][1] > entities[i+1][1]:
+            one = True
+        if one:
+            for e in new_entities:
+                if has_overlap_entity(re.sub('#','',entities[i][0]),re.sub('#','',e[0])):
+                    new_entities.append(entities[i])
+            i+=1
+        else: #entities have the same score
+            #make list of entities with similar score
+            sim_entities = [entities[i],entities[i+1]]
+            j = i+2
+            while j < len(entities):
+                if entities[j][1] == entities[i][1]: 
+                    sim_entities.append(entities[j])
+                    j+=1
+                else:
+                    break
+            i=j
+            #rank entities by length
+            sim_entities = sorted(sim_entities,key = lambda x : len(x[0].split(" ")))
+            for se in sim_entities:
+                overlap = False
+                for e in new_entities:
+                    if has_overlap_entity(se[0],e[0]):
+                        overlap = True
+                if not overlap:
+                    new_entities.append(se)
+    return new_entities
+
+def order_entities(entities,tweets):
+    rankings = {}
+    for i,x in enumerate([entities):
+        rankings[x] = [i,entities[i]]
+    for i,e0 in enumerate(entities[:-1]):
+        scores = [[0,0] for y in itertools.repeat(None,(len(entities) - (i+1)))]
+        ents = entities[i+1:]
+        for text in tweets:
+            if re.search(re.escape(e0),text):
+                p0 = re.search(re.escape(e0),text).span()[0]           
+                for j,e1 in enumerate(ents):
+                    if re.search(re.escape(e1),text):
+                        p1 = re.search(re.escape(e1),text).span()[0]
+                        if p0 < p1:
+                            scores[j][0] += 1
+                        else:
+                            scores[j][1] += 1
+        for j,e1 in enumerate(ents):
+            score = scores[j]
+            if score[0] > score[1] and rankings[e0][0] > rankings[e1][0]:
+                lowers = [x for x in rankings.keys() if rankings[x][0] > rankings[e1][0] and rankings[x][0] < rankings[e0][0]]
+                rankings[e0][0] = rankings[e1][0]
+                rankings[e1][0] += 1
+                for l in lowers:
+                    rankings[l][0] += 1
+            elif score[1] > score[0] and rankings[e1][0] > rankings[e0][0]:
+                lowers = [x for x in rankings.keys() if rankings[x][0] > rankings[e0][0] and rankings[x][0] < rankings[e1][0]]
+                rankings[e1][0] = rankings[e0][0]
+                rankings[e0][0] += 1
+                for l in lowers:
+                    rankings[l][0] += 1
+    if len(entities) == len(rankings.values()):
+        new_entities = []
+        for rank in range(len(rankings.keys())):
+            new_entities.append([e[1] for e in rankings.values() if e[0] == rank][0]) 
+        return new_entities
+    else:
+        return entities
+
 def has_overlap(ts1,ts2):
     ids1 = [t["id"] for t in ts1]
     ids2 = [t["id"] for t in ts2]
@@ -338,7 +420,6 @@ def merge_event_sets(set_current,set_new):
         set_new = set_new[1:]
     print("set merged",len(set_merged))
     for i,eventdict_new in enumerate(set_new):
-#        print(i)
         date = eventdict_new["date"]
         tweets = eventdict_new["tweets"]
         new = True
@@ -361,8 +442,10 @@ def merge_event_sets(set_current,set_new):
                         set_merged[j]["tweets"].append(t)
                         merged_ids.remove(t["id"])
                 set_merged[j]["score"] = max(eventdict_current["score"],eventdict_new["score"])
-                set_merged[j]["keylist"] = list(set(eventdict_current["keylist"]).union(set(eventdict_new["keylist"])))
- #               print("add",j)
+                keylist_ents = [[x,0] for x in list(set(eventdict_current["keylist"]).union(set(eventdict_new["keylist"])))]
+                keylist_ents = resolve_overlap_entities(keylist_ents)
+                keylist_ents = order_entities([x[0] for x in keylist_ents],[x["text"] for x in set_merged[j]["tweets"]])
+                set_merged[j]["keylist"] = keylist_ents
                 new = False
         if new:
             set_merged.append(eventdict_new)
