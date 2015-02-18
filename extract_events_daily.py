@@ -18,11 +18,6 @@ parser.add_argument('-w', action = 'store', required = False,
     help = "The directory hosting the files with wikiscores per n-gram")
 parser.add_argument('-d', action = 'store', required = False, 
     help = "The tmp directory for pattern indexing")
-parser.add_argument('-a', action = 'store', required = True, choices = ["ngrams","cs","csx"], 
-    help = "The type of entity extraction. \'ngram\' for all ngrams (baseline), \'cs\' for entities based on Wikipedia commonness score "
-    "and \'csx\' for cs and extra terms from event clusters")
-parser.add_argument('-f', action = 'store', default = "twiqs", choices = ["exp","twiqs"],
-    help = "Specify the format of the inputted tweet files (default = twiqs)")
 parser.add_argument('-o', action = 'store', required = True,
     help = "The directory to write files to")
 parser.add_argument('-x', action='store_true', 
@@ -48,55 +43,31 @@ ep = Event_pairs(args.w,args.d,cities = args.cities)
 
 def output_events(d):
     print("ranking events")
-    ep.rank_events(args.a)
-    ep.resolve_overlap_events(d + "clusters.txt")
-    ep.enrich_events(args.a,xpos = args.x)
+    ep.rank_events()
+    ep.resolve_overlap_events()
+    ep.enrich_events(xpos = args.x)
     if args.x:
-        tweetinfo = open(d + "modeltweets.txt","w",encoding = "utf-8")
-        for tweet in ep.tweets:
-            if hasattr(tweet, 'postags') and hasattr(tweet, 'phrase'):
-                info = [tweet.id,tweet.user,str(tweet.date),tweet.text,tweet.phrase,
-                    " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-                    " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
-            else:
-                if hasattr(tweet, 'postags'):
-                    info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
-                        " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-                        " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
-                elif hasattr(tweet, 'phrase'):
-                    info = [tweet.id,tweet.user,str(tweet.date),tweet.text,tweet.phrase,
-                        " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-                        " | ".join(tweet.entities)]
-                else:
-                    info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
-                    " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-                    " | ".join(tweet.entities)]
-            tweetinfo.write("\t".join(info) + "\n")
-        tweetinfo.close()
+        ep.write_modeltweets(basedir + "modeltweets.txt")
     eventinfo = open(d + "events_fit.txt","w",encoding = "utf-8")
     if args.q:
         eventq = open(d + "events_qualtrics.txt","w",encoding = "utf-8")
     for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
-        #if event.tt_ratio > 0.30:
-            # if "linkshandigen" in [x[0] for x in event.entities] or "flikken" in [x[0] for x in event.entities] or "maastricht" in [x[0] for x in event.entities] or "flikkendag" in [x[0] for x in event.entities] or "de sims 4" in [x[0] for x in event.entities]:
-            #     print("BEFORE tweet rank",[x.text for x in event.tweets]) 
-        event.rank_tweets(rep = True)
-        # if "linkshandigen" in [x[0] for x in event.entities] or "flikken" in [x[0] for x in event.entities] or "maastricht" in [x[0] for x in event.entities] or "flikkendag" in [x[0] for x in event.entities] or "de sims 4" in [x[0] for x in event.entities]:
-        #     print("AFTER tweet rank",event.reptweets) 
-        if args.q:
-            eventq.write("[[Question:MC:SingleAnswer:Vertical]]\nVerwijzen deze 5 tweets naar dezelfde gebeurtenis? <br> <br> <br> " +
-                "\n<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"width: 500px;\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td><b>")
-            for tweet in event.reptweets:
-                eventq.write(tweet + "<br />\n\t\t\t<br />\n\t\t\t")
-            eventq.write("</tr>\n\t</tbody>\n</table>\n[[choices]]\nJa\nNee\n\n[[Question:MC:SingleAnswer:Vertical]]\n" +
-                "Hoe verhouden onderstaande termen zich tot de gebeurtenis? <br> <br>\n")
-            for ent in event.entities:
-                eventq.write("<b>" + ent[0] + "</b> <br>\n")
-            eventq.write("[[Choices]]\nGoed\nMatig\nSlecht\n\n")
-        outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + \
-            ", ".join([x[0] for x in event.entities]) + "\n" + \
-            "\n".join([x.text for x in event.tweets]) + "\n"
-        eventinfo.write(outstr)
+        if event.tt_ratio > 0.30:
+            event.rank_tweets(rep = True)
+            if args.q:
+                eventq.write("[[Question:MC:SingleAnswer:Vertical]]\nVerwijzen deze 5 tweets naar dezelfde gebeurtenis? <br> <br> <br> " +
+                    "\n<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"width: 500px;\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td><b>")
+                for tweet in event.reptweets:
+                    eventq.write(tweet + "<br />\n\t\t\t<br />\n\t\t\t")
+                eventq.write("</tr>\n\t</tbody>\n</table>\n[[choices]]\nJa\nNee\n\n[[Question:MC:SingleAnswer:Vertical]]\n" +
+                    "Hoe verhouden onderstaande termen zich tot de gebeurtenis? <br> <br>\n")
+                for ent in event.entities:
+                    eventq.write("<b>" + ent[0] + "</b> <br>\n")
+                eventq.write("[[Choices]]\nGoed\nMatig\nSlecht\n\n")
+            outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + \
+                ", ".join([x[0] for x in event.entities]) + "\n" + \
+                "\n".join([x.text for x in event.tweets]) + "\n"
+            eventinfo.write(outstr)
     eventinfo.close()
     if args.q:
         eventq.close()
@@ -122,27 +93,7 @@ for i,day in enumerate(sorted(day_files.keys())):
     basedir = args.o + day + "/"
     if not os.path.isdir(basedir):
         os.mkdir(basedir)
-    tweetinfo = open(basedir + "modeltweets.txt","w",encoding = "utf-8")
-    for tweet in ep.tweets:
-        if hasattr(tweet, 'postags') and hasattr(tweet, 'phrase'):
-            info = [tweet.id,tweet.user,str(tweet.date),tweet.text,tweet.phrase,
-                " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-                " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
-        else:
-            if hasattr(tweet, 'postags'):
-                info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
-                    " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-                    " | ".join(tweet.entities)," | ".join(",".join(x) for x in tweet.postags)]
-            elif hasattr(tweet, 'phrase'):
-                info = [tweet.id,tweet.user,str(tweet.date),tweet.text,tweet.phrase,
-                    " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-                    " | ".join(tweet.entities)]
-            else:
-                info = [tweet.id,tweet.user,str(tweet.date),tweet.text,
-                " ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks]),
-                " | ".join(tweet.entities)]
-        tweetinfo.write("\t".join(info) + "\n")
-    tweetinfo.close()
+    ep.write_modeltweets(basedir + "modeltweets.txt")
     ep.discard_last_day(args.window)
     if len(set([x.date for x in ep.tweets])) >= 6:
         output_events(basedir)
