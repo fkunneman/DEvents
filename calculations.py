@@ -357,11 +357,9 @@ def resolve_overlap_entities(entities):
             #rank entities by length
             sim_entities = sorted(sim_entities,key = lambda x : len(x[0].split(" ")), reverse=True)
             for se in sim_entities:
-                se[0] = se[0].replace("_"," ")
-            for se in sim_entities:
                 overlap = False
                 for e in new_entities:
-                    if has_overlap_entity(se[0],e[0]):
+                    if has_overlap_entity(se[0].replace("_"," ").replace("#",""),e[0].replace("_"," ").replace("#","")):
                         overlap = True
                 if not overlap:
                     new_entities.append(se)
