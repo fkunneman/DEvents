@@ -327,9 +327,11 @@ def has_overlap_entity(self,s1,s2):
         return False
 
 def resolve_overlap_entities(entities):
+    print("Calc entities",entities)
     new_entities = []
     i = 0
     while i < len(entities):
+        print("Calc",i,new_entities)
         one = False
         if i+1 >= len(entities):
             one = True 
