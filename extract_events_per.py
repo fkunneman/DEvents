@@ -39,7 +39,7 @@ def output_events(d):
     print("ranking events")
     ep.rank_events()
     ep.resolve_overlap_events()
-    ep.enrich_events(add=False,order = False)
+    ep.enrich_events(add=False,order=False)
     eventinfo = open(d + "events_fit.txt","w",encoding = "utf-8")
     for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
         outstr = "\t".join([str(event.date),str(event.score)]) + "\t" + \

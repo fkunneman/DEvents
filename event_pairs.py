@@ -269,15 +269,7 @@ class Event_pairs:
 
     def resolve_overlap_events(self):
         documents = [" ".join([y.text for y in x.tweets]) for x in self.events]
-        tfidf_vectorizer = TfidfVectorizer()
-        tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
-        cos = cosine_similarity(tfidf_matrix,tfidf_matrix)
-        pair_sim = defaultdict(lambda : defaultdict(list))
-        #agglomerative clustering
-        #order pairs by similarity
-        for i,document in enumerate(documents):
-            for j,sim in enumerate(cos[i]):
-                pair_sim[i][j] = cos[i][j]
+        pair_sim = calculations.return_similarity_graph(documents)
         dates = list(set([x.date for x in self.events]))
         for date in dates:
             events = [x for x in self.events if x.date == date]

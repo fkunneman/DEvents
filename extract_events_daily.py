@@ -18,6 +18,8 @@ parser.add_argument('-w', action = 'store', required = False,
     help = "The directory hosting the files with wikiscores per n-gram")
 parser.add_argument('-d', action = 'store', required = False, 
     help = "The tmp directory for pattern indexing")
+parser.add_argument('-f', action = 'store', default = "twiqs", choices = ["exp","twiqs"],
+    help = "Specify the format of the inputted tweet files (default = twiqs)")
 parser.add_argument('-o', action = 'store', required = True,
     help = "The directory to write files to")
 parser.add_argument('-x', action='store_true', 
