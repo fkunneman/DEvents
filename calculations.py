@@ -457,17 +457,21 @@ def merge_event_sets(set_current,set_new):
     print("new",len(set_merged))
     return set_merged
 
-def return_similarity_graph(documents):
+def return_similarity_graph(documents,one_to_all = False):
     tfidf_vectorizer = TfidfVectorizer()
     tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
     cos = cosine_similarity(tfidf_matrix,tfidf_matrix)
     pair_sim = defaultdict(lambda : defaultdict(list))
-    #agglomerative clustering
-    #order pairs by similarity
-    for i,document in enumerate(documents):
-        for j,sim in enumerate(cos[i]):
-            pair_sim[i][j] = cos[i][j]
-    return pair_sim
+    #write similarity pairs
+    if one_to_all:
+        for i,sim in enumerate(cos[0]):
+            pair_sim[]
+    else:
+        for i,document in enumerate(documents):
+            for j,sim in enumerate(cos[i]):
+                pair_sim[i][j] = cos[i][j]
+        return pair_sim
+
 
 def calculate_cosine_similarity(vector1,vector2):
     if len(vector1) != len(vector2):
