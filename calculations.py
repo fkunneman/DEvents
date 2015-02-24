@@ -460,6 +460,7 @@ def merge_event_sets(set_current,set_new):
 def return_similarity_graph(documents):
     tfidf_vectorizer = TfidfVectorizer()
     tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
+    print(tfidf_matrix)
     cos = cosine_similarity(tfidf_matrix,tfidf_matrix)
     pair_sim = defaultdict(lambda : defaultdict(list))
     #write similarity pairs

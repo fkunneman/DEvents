@@ -24,7 +24,7 @@ parser.add_argument('-f', type = float, action = 'store', default = 0.1,
 parser.add_argument('-s', action = 'store', nargs = '+', 
     choices = ["tweets","keys","hashtag","popularity"], 
     help = "The features for event similarity")
-parser.add_argument('-k', action = 'store', required = True, 
+parser.add_argument('-k', type=int, action = 'store', required = True, 
     help = "The value of k in k-NN clustering")    
 args = parser.parse_args()
 
@@ -41,7 +41,7 @@ for i,line in enumerate(eventlines):
     entities = tokens[2].split(", ")
     score = float(tokens[1])
     tweets = tokens[4].split("-----")
-    event = event_classes.Event(i,date,entities,score,tweets)
+    event = event_classes.Event(i,[date,entities,score,tweets])
     index_event[i] = event
     date_events[date].append(i)
 
@@ -52,14 +52,15 @@ sorted_dates = sorted(date_events.keys())
 event_ids = []
 for i,date in enumerate(sorted_dates):
     event_ids.extend(date_events[date])
-event_docs = [" ".join(index_events[x].tweets) for x in event_ids]
+event_docs = [" ".join(index_event[x].tweets) for x in event_ids]
+print(event_docs[:10])
 print("pair sim")
-pair_sim = calculations.return_similarity_graph(event_docs)
+pair_sim = calculations.return_similarity_graph(event_docs[:25000])
 i = 0
 NNs = defaultdict(list)    
 for j,event_id in enumerate(event_ids):
-    scores = [[key,pair_sim[j][key]] for key in range(event_ids)]
-    knn = sorted(scores,key = lambda x : x[1],reverse = True)[:k]
-    print j,knn
+    scores = [[key,pair_sim[j][key]] for key in event_ids]
+    knn = sorted(scores,key = lambda x : x[1],reverse = True)[:args.k]
+    print(j,knn)
     NNs[j] = knn
 
