@@ -17,9 +17,12 @@ months = (r"(jan|januari|feb|februari|mrt|maart|apr|april|mei|jun|juni|jul|juli|
     "sep|september|okt|oktober|nov|november|dec|december)")
 timex = re.compile(r"\d+ (jan|januari|feb|februari|mrt|maart|apr|april|mei|jun|juni|jul|juli|aug|augustus|"
     "sep|september|okt|oktober|nov|november|dec|december)")
+hasht = re.compile(r"#\d+(jan|januari|feb|februari|mrt|maart|apr|april|mei|jun|juni|jul|juli|aug|augustus|"
+    "sep|september|okt|oktober|nov|november|dec|december)")
 
 cityfile = open(args.cities,"r",encoding="utf-8")
-cities = [x.lower() for x in cityfile.read().split("\n")]
+cities = [x.strip().lower() for x in cityfile.read().split("\n")]
+#print(cities)
 
 infile = open(args.i,"r",encoding="utf-8")
 lines = infile.readlines()
@@ -27,15 +30,30 @@ print("begin:",len(lines),"lines")
 outfile = open(args.o,"w",encoding="utf-8")
 newlines = 0
 for line in lines:
-    tokens = line.strip().split("\t")
-    terms = tokens[2].split(",")
+    tokens = line.split("\t")
+    terms = tokens[2].split(", ")
     keep = False
+    new_terms = []
     for term in terms:
-        if not (keep and (timex.match(term) or term in cities)):
-            outfile.write(line)
-            keep = True
-            newlines += 1
+        if timex.match(term) or hasht.match(term):
+            continue
+        else:
+            new_terms.append(term)
+#            if not keep:
+#            	print(term)
+            if not term in cities:
+ #               if not keep:
+ #                   print("True")
+                keep = True
+  #              print(keep)
+   #         else:
+   #             if not keep:
+   #                 print("stays False")
+    if keep:
+        tokens[2] = ", ".join(new_terms)
+        outfile.write("\t".join(tokens))
+        newlines += 1
 
 infile.close()
 outfile.close()
-print("Done:",nelines,"lines")
+print("Done:",newlines,"lines")
