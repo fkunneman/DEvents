@@ -32,6 +32,7 @@ args = parser.parse_args()
 print("reading in events")
 index_event = {}
 date_events = defaultdict(list)
+date_bigdocs = defaultdict(list)
 infile = open(args.i,"r",encoding = "utf-8")
 eventlines = infile.readlines()
 infile.close()
@@ -45,26 +46,51 @@ for i,line in enumerate(eventlines):
     index_event[i] = event
     date_events[date].append(i)
 
+#generate bigdocs per date
+sorted_dates = sorted(date_events.keys())
+bigdocs = []
+segments = []
+for i,date in enumerate(sorted_dates):
+    event_ids = date_events[date]
+    date_bigdocs[date] = [" ".join(index_event[x].tweets) for x in event_ids]
+    # segments.append(len(event_ids))
+    # bigdocs.extend([" ".join(index_event[x].tweets) for x in event_ids])
+
 #cluster events
 print("start clustering")
-event_links = defaultdict(list)
-sorted_dates = sorted(date_events.keys())
-event_ids = []
-event_out = open(args.o + "event_order.txt","w","utf-8")
+unperiodics = []
+periodics = []
 for i,date in enumerate(sorted_dates):
-    event_ids.extend(date_events[date])
-    for e in date_events[date]:
-        event_out.write("\t".join([e.date," ".join(e.entities),e.score,"-----".join(e.tweets)]) + "\n")
-event_docs = [" ".join(index_event[x].tweets) for x in event_ids]
-print(event_docs[:10])
-print("pair sim")
-pair_sim = calculations.return_similarity_graph(event_docs[:25000])
-i = 0
-NNs = defaultdict(list)
-outfile =   
-for j,event_id in enumerate(event_ids):
-    scores = [[key,pair_sim[j][key]] for key in event_ids]
-    knn = sorted(scores,key = lambda x : x[1],reverse = True)[:args.k]
-    print(j,knn)
-    NNs[j] = knn
+    if i != len(sorted_dates)-1:
+        for j,date_forward in enumerate(sorted_dates[i+1:]):
+            if j > args.min:
+                bigdocs = date_bigdocs[date_forward]
+                for index in date_events[date]:
+                    bigdoc = " ".join(index_event[index].tweets)
+                    #most_similar = calculations.return_similarity_graph(bigdoc,bigdocs)[10]
+                    calculations.return_similarity_graph(bigdocs,bigdoc)
+                    #for x in 
+
+
+    # for e in date_events[date]:
+    #     event_out.write("\t".join([e.date," ".join(e.entities),e.score,"-----".join(e.tweets)]) + "\n")
+
+
+# event_links = defaultdict(list)
+# sorted_dates = sorted(date_events.keys())
+# event_ids = []
+# event_out = open(args.o + "event_order.txt","w","utf-8")
+
+# event_docs = [" ".join(index_event[x].tweets) for x in event_ids]
+# print(event_docs[:10])
+# print("pair sim")
+# pair_sim = calculations.return_similarity_graph(event_docs[:25000])
+# i = 0
+# NNs = defaultdict(list)
+# outfile =   
+# for j,event_id in enumerate(event_ids):
+#     scores = [[key,pair_sim[j][key]] for key in event_ids]
+#     knn = sorted(scores,key = lambda x : x[1],reverse = True)[:args.k]
+#     print(j,knn)
+#     NNs[j] = knn
 

@@ -457,17 +457,22 @@ def merge_event_sets(set_current,set_new):
     print("new",len(set_merged))
     return set_merged
 
-def return_similarity_graph(documents):
+def return_similarity_graph(documents,document=False):
     tfidf_vectorizer = TfidfVectorizer()
-    tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
-    print(tfidf_matrix)
-    cos = cosine_similarity(tfidf_matrix,tfidf_matrix)
-    pair_sim = defaultdict(lambda : defaultdict(list))
-    #write similarity pairs
-    for i,document in enumerate(documents):
-        for j,sim in enumerate(cos[i]):
-            pair_sim[i][j] = cos[i][j]
-    return pair_sim
+    if document:
+        tfidf_matrix = tfidf_vectorizer.fit_transform([document] + documents)
+        cos = cosine_similarity(tfidf_matrix[0],tfidf_matrix[1:])
+        print(cos)
+    else:
+        tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
+        #print(tfidf_matrix)
+        cos = cosine_similarity(tfidf_matrix,tfidf_matrix)
+        pair_sim = defaultdict(lambda : defaultdict(list))
+        #write similarity pairs
+        for i,document in enumerate(documents):
+            for j,sim in enumerate(cos[i]):
+                pair_sim[i][j] = cos[i][j]
+        return pair_sim
 
 def calculate_cosine_similarity(vector1,vector2):
     if len(vector1) != len(vector2):
