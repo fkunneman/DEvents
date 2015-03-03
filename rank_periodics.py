@@ -53,6 +53,8 @@ segments = []
 for i,date in enumerate(sorted_dates):
     event_ids = date_events[date]
     date_bigdocs[date] = [" ".join(index_event[x].tweets) for x in event_ids]
+    if i == 0:
+        print(date,date_bigdocs[date])
     # segments.append(len(event_ids))
     # bigdocs.extend([" ".join(index_event[x].tweets) for x in event_ids])
 
@@ -65,15 +67,18 @@ eventlinks = defaultdict(list)
 #     periodics[index] = False
 # sequences = []
 # index_sequences = {}
-i = args.min
+i = args.min+1
 for date in sorted_dates[i:]:
     print(date)
     for j,date_backward in enumerate(sorted_dates[0:i-args.min]):
         bigdocs = date_bigdocs[date_backward]
+        print(date_backward,len(date_events[date_backward]))
         for index in date_events[date]:
             bigdoc = " ".join(index_event[index].tweets)
-            #most_similar = calculations.return_similarity_graph(bigdoc,bigdocs)[10]
-            simevents = calculations.return_similarity_graph(bigdocs,bigdoc).sort(key=lambda x: x[1])
+            print(bigdoc,bigdocs)
+            simevents = sorted(calculations.return_similarity_graph(bigdocs,bigdoc),key=lambda x: x[1])
+            #sorted(unsorted_list, key = lambda x: int(x[3]))
+            print(simevents)
             for rank in range(5):
                 if simevents[rank][1] > 0.5:
                     simevent = simevents[0][0]
@@ -81,6 +86,7 @@ for date in sorted_dates[i:]:
                     eventlinks[index].append(simindex)
                 else:
                     break
+    i+=1
 
 print(eventlinks)
 
