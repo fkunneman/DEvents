@@ -462,10 +462,12 @@ def return_similarity_graph(documents,document=False):
     if document:
         tfidf_matrix = tfidf_vectorizer.fit_transform([document] + documents)
         cos = cosine_similarity(tfidf_matrix[0],tfidf_matrix[1:])
-        print(cos)
+        sims = []
+        for i,c in enumerate(cos[0]):
+            sims.append([i,c])
+        return sims
     else:
         tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
-        #print(tfidf_matrix)
         cos = cosine_similarity(tfidf_matrix,tfidf_matrix)
         pair_sim = defaultdict(lambda : defaultdict(list))
         #write similarity pairs

@@ -58,17 +58,40 @@ for i,date in enumerate(sorted_dates):
 
 #cluster events
 print("start clustering")
-unperiodics = []
-periodics = []
-for i,date in enumerate(sorted_dates):
-    if i != len(sorted_dates)-1:
-        for j,date_forward in enumerate(sorted_dates[i+1:]):
-            if j > args.min:
-                bigdocs = date_bigdocs[date_forward]
-                for index in date_events[date]:
-                    bigdoc = " ".join(index_event[index].tweets)
-                    #most_similar = calculations.return_similarity_graph(bigdoc,bigdocs)[10]
-                    calculations.return_similarity_graph(bigdocs,bigdoc)
+eventlinks = defaultdict(list)
+# unperiodics = []
+# periodics = {}
+# for index in index_event.keys():
+#     periodics[index] = False
+# sequences = []
+# index_sequences = {}
+i = args.min
+for date in sorted_dates[i:]:
+    print(date)
+    for j,date_backward in enumerate(sorted_dates[0:i-args.min]):
+        bigdocs = date_bigdocs[date_backward]
+        for index in date_events[date]:
+            bigdoc = " ".join(index_event[index].tweets)
+            #most_similar = calculations.return_similarity_graph(bigdoc,bigdocs)[10]
+            simevents = calculations.return_similarity_graph(bigdocs,bigdoc).sort(key=lambda x: x[1])
+            for rank in range(5):
+                if simevents[rank][1] > 0.5:
+                    simevent = simevents[0][0]
+                    simindex = date_events[date_backward][simevent]
+                    eventlinks[index].append(simindex)
+                else:
+                    break
+
+print(eventlinks)
+
+                    # if periodics[index]:
+                    #     sequence = index_sequences[index]
+                    #     sequences[sequence].append(simevent)
+                    #     periodics[simevent] = True
+                    #     index_sequences[simevent] = sequence
+                    # else:
+
+
                     #for x in 
 
 
