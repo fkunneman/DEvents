@@ -75,11 +75,15 @@ for date in sorted_dates[i:]:
         print(date_backward,len(date_events[date_backward]))
         for index in date_events[date]:
             bigdoc = " ".join(index_event[index].tweets)
-            print(bigdoc,bigdocs)
-            simevents = sorted(calculations.return_similarity_graph(bigdocs,bigdoc),key=lambda x: x[1])
+            #print(bigdoc,bigdocs)
+            simevents = sorted(calculations.return_similarity_graph(bigdocs,bigdoc),key=lambda x: x[1],reverse=True)
             #sorted(unsorted_list, key = lambda x: int(x[3]))
-            print(simevents)
-            for rank in range(5):
+            #print(simevents)
+            if len(simevents) < 5:
+                top = len(simevents)
+            else:
+                top = 5
+            for rank in range(top):
                 if simevents[rank][1] > 0.5:
                     simevent = simevents[0][0]
                     simindex = date_events[date_backward][simevent]
