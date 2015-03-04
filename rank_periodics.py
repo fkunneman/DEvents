@@ -76,12 +76,12 @@ for i,event in enumerate(events):
     event_vector = vectors[event]
     candidates = event_candidates[event]
     candidate_vectors = [vectors[candidate] for candidate in list(set(candidates) - set([x[0] for x in event_sims[event]]))]
-    print("event",event,len(event_vector))
-    print("candidates",candidates,[len(x) for x in candidate_vectors])
+#    print("event",event,len(event_vector))
+#    print("candidates",candidates,[len(x) for x in candidate_vectors])
     simscores = calculations.return_similarities(event_vector,candidate_vectors)
     for ss in simscores:
         event_sims[event].append([candidates[ss[0]],ss[1]])
-        event_sims[candidates[ss[0]]].append(event,ss[1])
+        event_sims[candidates[ss[0]]].append([event,ss[1]])
 
 print(event_sims,"Done.")
 
