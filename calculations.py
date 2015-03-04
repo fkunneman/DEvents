@@ -461,8 +461,5 @@ def tfidf_docs(documents):
     tfidf_vectorizer = TfidfVectorizer()
     return tfidf_vectorizer.fit_transform(documents)
 
-def return_similarities(vector,vectors):
-    sims = []
-    for i,v in enumerate(vectors):
-        sims.append([i,cosine_similarity(vector,v)])
-    return sims
+def return_similarities(vector1,vector2):
+    return cosine_similarity(vector1,vector2)
