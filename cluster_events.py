@@ -108,10 +108,10 @@ for comb in all_combs:
         if c0 in knn[c1]:
             #link between events
             if event_group[c0] != event_group[c1]:
-                if event_group[c0] == False:
+                if event_group[c0] == False: #c1 has a group
                     groups[event_group[c1]].append(c0)
                     event_group[c0] = event_group[c1]
-                elif event_group[c1] == False:
+                elif event_group[c1] == False: #c0 has a group
                     groups[event_group[c0]].append(c1)
                     event_group[c1] = event_group[c0]
                 else: #different groups  
@@ -131,11 +131,24 @@ print("writing to file")
 outfile = open(args.o,"w",encoding="utf-8")
 for group in groups:
     events = list(set(group))
-    if len(events) >= 3:
-        eventout = []
-        for evindex in events:
-            event = index_event[evindex]
-            eventout.append("|".join([str(evindex),str(event.date),",".join(event.entities)]))
+    eventout = []
+    dates = []
+    i = 0
+    while i < len(events):
+        evindex = events[i]
+        event = index_event[evindex]
+        date = event.date.date()
+        close = False
+        for d in dates:
+            if ((date-d).days * -1) <= args.min:
+                close = True
+        if close:
+            del events[i]
+        else: 
+            dates.append(date)
+            eventout.append("|".join([str(evindex),str(date),",".join(event.entities)]))
+            i += 1
+    if len(eventout) >= 3:
         outfile.write("\t".join(eventout) + "\n")
 outfile.close()
 
