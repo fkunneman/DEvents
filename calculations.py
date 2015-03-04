@@ -457,10 +457,14 @@ def merge_event_sets(set_current,set_new):
     print("new",len(set_merged))
     return set_merged
 
-def return_similarity_graph(documents,document=False):
+def tfidf_docs(documents):
     tfidf_vectorizer = TfidfVectorizer()
+    return tfidf_vectorizer.fit_transform(documents)
+
+def return_similarity_graph(documents,document=False):
+    
     if document:
-        tfidf_matrix = tfidf_vectorizer.fit_transform([document] + documents)
+        
         cos = cosine_similarity(tfidf_matrix[0],tfidf_matrix[1:])
         sims = []
         for i,c in enumerate(cos[0]):
@@ -498,3 +502,31 @@ def calculate_cosine_similarity(vector1,vector2):
     except:
         cosine_similarity = 0
     return cosine_similarity
+
+#temporarilly copied from pynlp.statistics
+def levenshtein(s1, s2, maxdistance=9999):
+    """Computes the levenshtein distance between two strings. Adapted from:  http://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#Python"""
+    l1 = len(s1)
+    l2 = len(s2)
+    if l1 < l2:
+        return levenshtein(s2, s1)
+    if not s1:
+        return len(s2)
+
+    #If the words differ too much in length,  (if  we have a low maxdistance) , we needn't bother compute distance:
+    if l1 > l2 + maxdistance:
+        return maxdistance+1
+
+    previous_row = list(range(l2 + 1))
+    for i, c1 in enumerate(s1):
+        current_row = [i + 1]
+        for j, c2 in enumerate(s2):
+            insertions = previous_row[j + 1] + 1 # j+1 instead of j since previous_row and current_row are one character longer
+            deletions = current_row[j] + 1       # than s2
+            substitutions = previous_row[j] + (c1 != c2)
+            current_row.append(min(insertions, deletions, substitutions))
+        if current_row[-1] > maxdistance:
+            return current_row[-1]
+        previous_row = current_row
+
+    return previous_row[-1]
