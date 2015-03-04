@@ -3,7 +3,9 @@
 import argparse
 from collections import defaultdict
 import datetime
-import multiprocessing
+import itertools
+#import multiprocessing
+import frog
 
 import event_classes
 import calculations
@@ -29,12 +31,14 @@ parser.add_argument('-k', type=int, action = 'store', required = True,
     help = "The value of k in k-NN clustering")    
 args = parser.parse_args()
 
+frogger = frog.Frog(frog.FrogOptions(),"/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg")
+
 #load in events
 print("reading in events")
 index_event = {}
-entity_events = defaultdict(list)
+entityl_events = defaultdict(list)
 date_events = defaultdict(list)
-#date_bigdocs = defaultdict(list)
+bigdocs = []
 infile = open(args.i,"r",encoding = "utf-8")
 eventlines = infile.readlines()
 infile.close()
@@ -44,21 +48,46 @@ for i,line in enumerate(eventlines):
     entities = tokens[2].split(", ")
     score = float(tokens[1])
     tweets = tokens[4].split("-----")
+    bigdocs.append(" ".join(tweets))
     event = event_classes.Event(i,[date,entities,score,tweets])
     index_event[i] = event
     date_events[date].append(i)
     for entity in entities:
-        entity_events[entity].append(i)
+        data = frogger.process(entity)
+        entityl = ""
+        for token in data:
+            entityl_events[token["lemma"]].append(i)
 
-#link words
-print("linking words")
-entities = sorted(entity_events.keys())
-for i,entity in enumerate(entities):
-    for entity2 in entities[i+1:]:
-        dist = calculations.levenshtein(entity,entity2)
-        if dist <= 2:
-            print(entity,entity2,dist)
+#generate canopies
+print("generating canopies")
+event_candidates = defaultdict(list)
+entityls = sorted(entityl_events.keys())
+for entityl in entityls:
+    events = entityl_events[entityl]
+    combos = itertools.combinations(events, 2)
+    for comb in combos:
+        event_candidates[comb[0]].append(comb[1])
+        event_candidates[comb[0]] = list(set(event_candidates[comb[0]]))
+        event_candidates[comb[1]].append(comb[0])
+        event_candidates[comb[1]] = list(set(event_candidates[comb[1]]))
 
+#cluster events
+print("extracting tf-idf graph")
+vectors = calculations.tfidf_docs(bigdocs):
+print("clustering events")
+event_sims = defaultdict(list)
+candidates = event_candidates.keys()
+for i,event in enumerate(candidates):
+    print(i,"of",len(candidates))
+    event_vector = vectors[event]
+    candidates = event_candidates[event]
+    candidate_vectors = [vectors[candidate] for candidate in list(set(candidates) - set([x[0] for x in event_sims[event]]))]:
+    simscores = return_similarities(event_vector,candidate_vectors)
+    for ss in simscores:
+        event_sims[event].append([candidates[ss[0]],ss[1]])
+        event_sims[candidates[ss[0]]].append(event,ss[1])
+
+print(event_sims,"Done.")
 
 
 #generate bigdocs per date
