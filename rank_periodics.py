@@ -3,6 +3,8 @@
 import argparse
 from collections import defaultdict
 import datetime
+import multiprocessing
+from pynlpl.statistics import levenshtein
 
 import event_classes
 import calculations
@@ -31,8 +33,9 @@ args = parser.parse_args()
 #load in events
 print("reading in events")
 index_event = {}
+entity_events = defaultdict(list)
 date_events = defaultdict(list)
-date_bigdocs = defaultdict(list)
+#date_bigdocs = defaultdict(list)
 infile = open(args.i,"r",encoding = "utf-8")
 eventlines = infile.readlines()
 infile.close()
@@ -45,54 +48,67 @@ for i,line in enumerate(eventlines):
     event = event_classes.Event(i,[date,entities,score,tweets])
     index_event[i] = event
     date_events[date].append(i)
+    for entity in entities:
+        entity_events[entity].append(i)
+
+#link words
+print("linking words")
+entities = sorted(entity_events.keys())
+for i,entity in enumerate(entities):
+    for j,entity2 in entities[i+1:]:
+        dist = levenshtein(entity,entity2)
+        if dist <= 10:
+            print(entity,entity2,dist)
+
+
 
 #generate bigdocs per date
-sorted_dates = sorted(date_events.keys())
-bigdocs = []
-segments = []
-for i,date in enumerate(sorted_dates):
-    event_ids = date_events[date]
-    date_bigdocs[date] = [" ".join(index_event[x].tweets) for x in event_ids]
-    if i == 0:
-        print(date,date_bigdocs[date])
+# sorted_dates = sorted(date_events.keys())
+# bigdocs = []
+# segments = []
+# for i,date in enumerate(sorted_dates):
+#     event_ids = date_events[date]
+#     date_bigdocs[date] = [" ".join(index_event[x].tweets) for x in event_ids]
+#     if i == 0:
+#         print(date,date_bigdocs[date])
     # segments.append(len(event_ids))
     # bigdocs.extend([" ".join(index_event[x].tweets) for x in event_ids])
 
 #cluster events
-print("start clustering")
-eventlinks = defaultdict(list)
-# unperiodics = []
-# periodics = {}
-# for index in index_event.keys():
-#     periodics[index] = False
-# sequences = []
-# index_sequences = {}
-i = args.min+1
-for date in sorted_dates[i:]:
-    print(date)
-    for j,date_backward in enumerate(sorted_dates[0:i-args.min]):
-        bigdocs = date_bigdocs[date_backward]
-        print(date_backward,len(date_events[date_backward]))
-        for index in date_events[date]:
-            bigdoc = " ".join(index_event[index].tweets)
-            #print(bigdoc,bigdocs)
-            simevents = sorted(calculations.return_similarity_graph(bigdocs,bigdoc),key=lambda x: x[1],reverse=True)
-            #sorted(unsorted_list, key = lambda x: int(x[3]))
-            #print(simevents)
-            if len(simevents) < 5:
-                top = len(simevents)
-            else:
-                top = 5
-            for rank in range(top):
-                if simevents[rank][1] > 0.5:
-                    simevent = simevents[0][0]
-                    simindex = date_events[date_backward][simevent]
-                    eventlinks[index].append(simindex)
-                else:
-                    break
-    i+=1
+# print("start clustering")
+# eventlinks = defaultdict(list)
+# # unperiodics = []
+# # periodics = {}
+# # for index in index_event.keys():
+# #     periodics[index] = False
+# # sequences = []
+# # index_sequences = {}
+# i = args.min+1
+# for date in sorted_dates[i:]:
+#     print(date)
+#     for j,date_backward in enumerate(sorted_dates[0:i-args.min]):
+#         bigdocs = date_bigdocs[date_backward]
+#         print(date_backward,len(date_events[date_backward]))
+#         for index in date_events[date]:
+#             bigdoc = " ".join(index_event[index].tweets)
+#             #print(bigdoc,bigdocs)
+#             simevents = sorted(calculations.return_similarity_graph(bigdocs,bigdoc),key=lambda x: x[1],reverse=True)
+#             #sorted(unsorted_list, key = lambda x: int(x[3]))
+#             #print(simevents)
+#             if len(simevents) < 5:
+#                 top = len(simevents)
+#             else:
+#                 top = 5
+#             for rank in range(top):
+#                 if simevents[rank][1] > 0.5:
+#                     simevent = simevents[0][0]
+#                     simindex = date_events[date_backward][simevent]
+#                     eventlinks[index].append(simindex)
+#                 else:
+#                     break
+#     i+=1
 
-print(eventlinks)
+# print(eventlinks)
 
                     # if periodics[index]:
                     #     sequence = index_sequences[index]
