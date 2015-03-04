@@ -72,8 +72,8 @@ print("calculating similarities")
 comb_sim = defaultdict(lambda : defaultdict(float))
 def calculate_similarity(combs,qu):
     for comb in combs:
-        cos = calculations.return_similarities(comb[0],comb[1])
-        qu.put([comb[0],comb[1],cos])
+        cos = calculations.return_similarities(vectors[comb[0]],vectors[comb[1]])
+        qu.put([comb[0],comb[1],cos[0][0]])
 
 q = multiprocessing.Queue()
 chunks = gen_functions.make_chunks(all_combs)
