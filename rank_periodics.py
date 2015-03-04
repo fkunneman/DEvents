@@ -32,26 +32,25 @@ parser.add_argument('-k', type=int, action = 'store', required = True,
     help = "The value of k in k-NN clustering")    
 args = parser.parse_args()
 
-frogger = frog.Frog(frog.FrogOptions(),"/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg")
-
 #load in events
 print("reading in events")
 
 def extract_events(events,qu):
-    for line in eventlines:
+    frogger = frog.Frog(frog.FrogOptions(),"/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg")
+    for j,line in enumerate(events):
         tokens = line.strip().split("\t")
         date = time_functions.return_datetime(tokens[0],setting="vs")
         entities = tokens[2].split(", ")
         score = float(tokens[1])
         tweets = tokens[4].split("-----")
         bigdoc = " ".join(tweets)
-        event = event_classes.Event(i,[date,entities,score,tweets])
+        event = event_classes.Event(j,[date,entities,score,tweets])
         entityls = []
         for entity in entities:
             data = frogger.process(entity)
             entityl = ""
-            for token in data:
-                entityls.append(token["lemma"])
+            for dt in data:
+                entityls.append(dt["lemma"])
         qu.put([event,bigdoc,list(set(entityls))])
 
 index_event = {}
@@ -62,7 +61,7 @@ eventlines = infile.readlines()
 infile.close()
 numlines = len(eventlines)
 q = multiprocessing.Queue()
-event_chunks = gen_functions.make_chunks(eventlines)
+event_chunks = gen_functions.make_chunks(eventlines,6)
 for ec in event_chunks:
     p = multiprocessing.Process(target=extract_events,args=[ec,q])
     p.start()
@@ -102,7 +101,7 @@ for i,event in enumerate(events):
     print(i,"of",len(events))
     event_vector = vectors[event]
     candidates = event_candidates[event]
-    candidate_vectors = [vectors[candidate] for candidate in list(set(candidates) - set([x[0] for x in event_sims[event]]))]:
+    candidate_vectors = [vectors[candidate] for candidate in list(set(candidates) - set([x[0] for x in event_sims[event]]))]
     simscores = calculations.return_similarities(event_vector,candidate_vectors)
     for ss in simscores:
         event_sims[event].append([candidates[ss[0]],ss[1]])
