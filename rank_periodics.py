@@ -55,7 +55,7 @@ for i,line in enumerate(eventlines):
 print("linking words")
 entities = sorted(entity_events.keys())
 for i,entity in enumerate(entities):
-    for j,entity2 in entities[i+1:]:
+    for entity2 in entities[i+1:]:
         dist = levenshtein(entity,entity2)
         if dist <= 10:
             print(entity,entity2,dist)
