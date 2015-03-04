@@ -84,7 +84,7 @@ for c in chunks:
 i = 0
 while True:
     l = q.get()
-    comb_sim[l[0]][l[1]] = (l[2]
+    comb_sim[l[0]][l[1]] = l[2]
     print(i,"/",num_combs)
     i += 1
     if i == num_combs:
