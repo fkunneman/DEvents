@@ -130,11 +130,12 @@ for comb in all_combs:
 print("writing to file")
 outfile = open(args.o,"w",encoding="utf-8")
 for group in groups:
-    if len(group) >= 3:
+    events = list(set(group))
+    if len(events) >= 3:
         eventout = []
-        for eindex in group:
-            event = index_event[eindex]
-            eventout.append("|".join([str(eindex),str(event.date),",".join(event.entities)]))
+        for evindex in events:
+            event = index_event[evindex]
+            eventout.append("|".join([str(evindex),str(event.date),",".join(event.entities)]))
         outfile.write("\t".join(eventout) + "\n")
 outfile.close()
 
