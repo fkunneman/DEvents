@@ -4,12 +4,13 @@ import argparse
 from collections import defaultdict
 import datetime
 import itertools
-#import multiprocessing
+import multiprocessing
 import frog
 
 import event_classes
 import calculations
 import time_functions
+import gen_functions
 
 """
 Program to detect periodic events and rank them by certainty
@@ -35,29 +36,49 @@ frogger = frog.Frog(frog.FrogOptions(),"/vol/customopt/uvt-ru/etc/frog/frog-twit
 
 #load in events
 print("reading in events")
+
+def extract_events(events,qu):
+    for line in eventlines:
+        tokens = line.strip().split("\t")
+        date = time_functions.return_datetime(tokens[0],setting="vs")
+        entities = tokens[2].split(", ")
+        score = float(tokens[1])
+        tweets = tokens[4].split("-----")
+        bigdoc = " ".join(tweets)
+        event = event_classes.Event(i,[date,entities,score,tweets])
+        entityls = []
+        for entity in entities:
+            data = frogger.process(entity)
+            entityl = ""
+            for token in data:
+                entityls.append(token["lemma"])
+        qu.put([event,bigdoc,list(set(entityls))])
+
 index_event = {}
 entityl_events = defaultdict(list)
-date_events = defaultdict(list)
 bigdocs = []
 infile = open(args.i,"r",encoding = "utf-8")
 eventlines = infile.readlines()
 infile.close()
-for i,line in enumerate(eventlines):
-    tokens = line.strip().split("\t")
-    date = time_functions.return_datetime(tokens[0],setting="vs")
-    entities = tokens[2].split(", ")
-    score = float(tokens[1])
-    tweets = tokens[4].split("-----")
-    bigdocs.append(" ".join(tweets))
-    event = event_classes.Event(i,[date,entities,score,tweets])
-    index_event[i] = event
-    date_events[date].append(i)
-    for entity in entities:
-        data = frogger.process(entity)
-        entityl = ""
-        for token in data:
-            entityl_events[token["lemma"]].append(i)
+numlines = len(eventlines)
+q = multiprocessing.Queue()
+event_chunks = gen_functions.make_chunks(eventlines)
+for ec in event_chunks:
+    p = multiprocessing.Process(target=extract_events,args=[ec,q])
+    p.start()
 
+i = 0
+while True:
+    l = q.get()
+    index_event[i] = l[0]
+    print(i," / ",numlines)
+    bigdocs.append(l[1])
+    for e in l[2]:
+        entityl_events[e].append(i)
+    i += 1
+    if i == numlines:
+        break
+        
 #generate canopies
 print("generating canopies")
 event_candidates = defaultdict(list)
@@ -76,13 +97,13 @@ print("extracting tf-idf graph")
 vectors = calculations.tfidf_docs(bigdocs):
 print("clustering events")
 event_sims = defaultdict(list)
-candidates = event_candidates.keys()
-for i,event in enumerate(candidates):
-    print(i,"of",len(candidates))
+events = event_candidates.keys()
+for i,event in enumerate(events):
+    print(i,"of",len(events))
     event_vector = vectors[event]
     candidates = event_candidates[event]
     candidate_vectors = [vectors[candidate] for candidate in list(set(candidates) - set([x[0] for x in event_sims[event]]))]:
-    simscores = return_similarities(event_vector,candidate_vectors)
+    simscores = calculations.return_similarities(event_vector,candidate_vectors)
     for ss in simscores:
         event_sims[event].append([candidates[ss[0]],ss[1]])
         event_sims[candidates[ss[0]]].append(event,ss[1])
