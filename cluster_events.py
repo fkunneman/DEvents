@@ -96,7 +96,6 @@ print("clustering events")
 events = sorted(knn.keys())
 for event in events:
     knn[event] = [n[0] for n in sorted(knn[event],key = lambda x : x[1],reverse = True)[:args.k]]
-    print knn[event]
 #make links based on jp
 event_group = {}
 for event in events:
@@ -135,7 +134,7 @@ for group in groups:
         eventout = []
         for eindex in group:
             event = index_event[eindex]
-            eventout.append("|".join(str(eindex),str(event.date),",".join(event.entities)))
+            eventout.append("|".join([str(eindex),str(event.date),",".join(event.entities)]))
         outfile.write("\t".join(eventout) + "\n")
 outfile.close()
 

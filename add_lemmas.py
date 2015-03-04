@@ -20,7 +20,7 @@ infile = open(args.i,"r",encoding = "utf-8")
 eventlines = infile.readlines()
 infile.close()
 numlines = len(eventlines)
-outfile = open(args.o,"w",encoding = "utf-8")
+outfile = open(args.o,"a",encoding = "utf-8")
 for i,line in enumerate(eventlines):
     print(i,"of",numlines)
     tokens = line.strip().split("\t")
