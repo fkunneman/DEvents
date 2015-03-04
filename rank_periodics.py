@@ -4,8 +4,6 @@ import argparse
 from collections import defaultdict
 import datetime
 import itertools
-import multiprocessing
-import frog
 
 import event_classes
 import calculations
@@ -34,25 +32,6 @@ args = parser.parse_args()
 
 #load in events
 print("reading in events")
-
-def extract_events(events,qu):
-    frogger = frog.Frog(frog.FrogOptions(),"/vol/customopt/uvt-ru/etc/frog/frog-twitter.cfg")
-    for j,line in enumerate(events):
-        tokens = line.strip().split("\t")
-        date = time_functions.return_datetime(tokens[0],setting="vs")
-        entities = tokens[2].split(", ")
-        score = float(tokens[1])
-        tweets = tokens[4].split("-----")
-        bigdoc = " ".join(tweets)
-        event = event_classes.Event(j,[date,entities,score,tweets])
-        entityls = []
-        for entity in entities:
-            data = frogger.process(entity)
-            entityl = ""
-            for dt in data:
-                entityls.append(dt["lemma"])
-        qu.put([event,bigdoc,list(set(entityls))])
-
 index_event = {}
 entityl_events = defaultdict(list)
 bigdocs = []
@@ -60,23 +39,18 @@ infile = open(args.i,"r",encoding = "utf-8")
 eventlines = infile.readlines()
 infile.close()
 numlines = len(eventlines)
-q = multiprocessing.Queue()
-event_chunks = gen_functions.make_chunks(eventlines,6)
-for ec in event_chunks:
-    p = multiprocessing.Process(target=extract_events,args=[ec,q])
-    p.start()
-
-i = 0
-while True:
-    l = q.get()
-    index_event[i] = l[0]
-    print(i," / ",numlines)
-    bigdocs.append(l[1])
-    for e in l[2]:
-        entityl_events[e].append(i)
-    i += 1
-    if i == numlines:
-        break
+for i,line in enumerate(eventlines):
+    print(i,"of",numlines)
+    tokens = line.strip().split("\t")
+    date = time_functions.return_datetime(tokens[0],setting="vs")
+    entities = tokens[2].split(", ")
+    score = float(tokens[1])
+    tweets = tokens[4].split("-----")
+    bigdocs.append(" ".join(tweets))
+    event = event_classes.Event(j,[date,entities,score,tweets])
+    index_event[i] = event
+    for entity in entities:
+        entityl_events[entityl].append(i)
         
 #generate canopies
 print("generating canopies")
