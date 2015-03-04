@@ -73,7 +73,7 @@ for entityl in entityls:
 
 #cluster events
 print("extracting tf-idf graph")
-vectors = calculations.tfidf_docs(bigdocs):
+vectors = calculations.tfidf_docs(bigdocs)
 print("clustering events")
 event_sims = defaultdict(list)
 candidates = event_candidates.keys()
@@ -81,7 +81,7 @@ for i,event in enumerate(candidates):
     print(i,"of",len(candidates))
     event_vector = vectors[event]
     candidates = event_candidates[event]
-    candidate_vectors = [vectors[candidate] for candidate in list(set(candidates) - set([x[0] for x in event_sims[event]]))]:
+    candidate_vectors = [vectors[candidate] for candidate in list(set(candidates) - set([x[0] for x in event_sims[event]]))]
     simscores = return_similarities(event_vector,candidate_vectors)
     for ss in simscores:
         event_sims[event].append([candidates[ss[0]],ss[1]])
