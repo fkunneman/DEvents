@@ -55,6 +55,7 @@ entityls = sorted(entityl_events.keys())
 all_combs = []
 for entityl in entityls:
     events = entityl_events[entityl]
+    print(entityl,[(e,index_event[e].entities) for e in events])
     combos = itertools.combinations(events, 2)
     for comb in combos:
         event_candidates[comb[0]].append(comb[1])
@@ -83,7 +84,7 @@ for c in chunks:
 i = 0
 while True:
     l = q.get()
-    comb_sim[l[0]][l[1]] = l[2]
+    comb_sim[l[0]][l[1]] = (l[2]
     print(i,"/",num_combs)
     i += 1
     if i == num_combs:
