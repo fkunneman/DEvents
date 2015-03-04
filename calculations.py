@@ -463,7 +463,7 @@ def tfidf_docs(documents):
 
 def return_similarities(vector,vectors):
     #if document:
-    cos = cosine_similarity(vector,vectors)
+    cos = cosine_similarity([vector],vectors)
     sims = []
     for i,c in enumerate(cos[0]):
         sims.append([i,c])

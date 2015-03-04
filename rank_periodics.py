@@ -47,10 +47,10 @@ for i,line in enumerate(eventlines):
     score = float(tokens[1])
     tweets = tokens[4].split("-----")
     bigdocs.append(" ".join(tweets))
-    event = event_classes.Event(j,[date,entities,score,tweets])
+    event = event_classes.Event(i,[date,entities,score,tweets])
     index_event[i] = event
     for entity in entities:
-        entityl_events[entityl].append(i)
+        entityl_events[entity].append(i)
         
 #generate canopies
 print("generating canopies")
@@ -76,6 +76,8 @@ for i,event in enumerate(events):
     event_vector = vectors[event]
     candidates = event_candidates[event]
     candidate_vectors = [vectors[candidate] for candidate in list(set(candidates) - set([x[0] for x in event_sims[event]]))]
+    print("event",event,len(event_vector))
+    print("candidates",candidates,[len(x) for x in candidate_vectors])
     simscores = calculations.return_similarities(event_vector,candidate_vectors)
     for ss in simscores:
         event_sims[event].append([candidates[ss[0]],ss[1]])
