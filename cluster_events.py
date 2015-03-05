@@ -59,17 +59,18 @@ le = len(entityls)
 for i,entityl in enumerate(entityls):
     print(i,"of",le,"canopies")
     events = entityl_events[entityl]
-    combos = itertools.combinations(events, 2)
-    for comb in combos:
-        dif = (comb[0][1].date()-comb[1][1].date()).days 
-        if dif < 0:
-            dif = dif * -1
-        if dif >= args.min and dif <= args.max: 
-            # event_candidates[comb[0]].append(comb[1])
-            # event_candidates[comb[0]] = list(set(event_candidates[comb[0]]))
-            # event_candidates[comb[1]].append(comb[0])
-            # event_candidates[comb[1]] = list(set(event_candidates[comb[1]]))
-            all_combs.append(tuple(sorted([comb[0][0],comb[1][0]])))
+    if (len(events) / numlines) < 0.03:
+        combos = itertools.combinations(events, 2)
+        for comb in combos:
+            dif = (comb[0][1].date()-comb[1][1].date()).days 
+            if dif < 0:
+                dif = dif * -1
+            if dif >= args.min and dif <= args.max: 
+                # event_candidates[comb[0]].append(comb[1])
+                # event_candidates[comb[0]] = list(set(event_candidates[comb[0]]))
+                # event_candidates[comb[1]].append(comb[0])
+                # event_candidates[comb[1]] = list(set(event_candidates[comb[1]]))
+                all_combs.append(tuple(sorted([comb[0][0],comb[1][0]])))
 all_combs = list(set(all_combs))
 num_combs = len(all_combs)
 
