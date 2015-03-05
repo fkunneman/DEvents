@@ -46,25 +46,30 @@ for i,line in enumerate(eventlines):
     event = event_classes.Event(i,[date,entities,score,tweets])
     index_event[i] = event
     entityls = tokens[5].split(", ")
+    print(entityls)
     for entityl in entityls:
-        entityl_events[entityl].append(i)
+        entityl_events[entityl].append([i,date])
         
 #generate canopies
 print("generating canopies")
 event_candidates = defaultdict(list)
 entityls = sorted(entityl_events.keys())
 all_combs = []
-for entityl in entityls:
+le = len(entityls)
+for i,entityl in enumerate(entityls):
+    print(i,"of",le,"canopies")
     events = entityl_events[entityl]
     combos = itertools.combinations(events, 2)
     for comb in combos:
-        dif = (index_event[comb[0]].date.date()-index_event[comb[1]].date.date()).days * -1
+        dif = (comb[0][1].date()-comb[1][1].date()).days 
+        if dif < 0:
+            dif = dif * -1
         if dif >= args.min and dif <= args.max: 
-            event_candidates[comb[0]].append(comb[1])
-            event_candidates[comb[0]] = list(set(event_candidates[comb[0]]))
-            event_candidates[comb[1]].append(comb[0])
-            event_candidates[comb[1]] = list(set(event_candidates[comb[1]]))
-            all_combs.append(tuple(sorted([comb[0],comb[1]])))
+            # event_candidates[comb[0]].append(comb[1])
+            # event_candidates[comb[0]] = list(set(event_candidates[comb[0]]))
+            # event_candidates[comb[1]].append(comb[0])
+            # event_candidates[comb[1]] = list(set(event_candidates[comb[1]]))
+            all_combs.append(tuple(sorted([comb[0][0],comb[1][0]])))
 all_combs = list(set(all_combs))
 num_combs = len(all_combs)
 
