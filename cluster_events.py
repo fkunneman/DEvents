@@ -45,8 +45,9 @@ for i,line in enumerate(eventlines):
     bigdocs.append(" ".join(tweets))
     event = event_classes.Event(i,[date,entities,score,tweets])
     index_event[i] = event
-    for entity in entities:
-        entityl_events[entity].append(i)
+    entityls = tokens[5].split(", ")
+    for entityl in entityls:
+        entityl_events[entityl].append(i)
         
 #generate canopies
 print("generating canopies")
