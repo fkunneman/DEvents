@@ -8,6 +8,7 @@ import os
 import itertools
 import datetime
 from collections import defaultdict
+import numpy
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import time_functions
@@ -467,18 +468,18 @@ def return_similarities(vector1,vector2):
     return cosine_similarity(vector1,vector2)
 
 def return_intervals(dates):
-    print(dates)
     intervals = []
-#    print("BEFORE",dates)
     last_date = dates.pop(0)
-#    print("AFTER",dates)
     while len(dates) > 0:
         dif = time_functions.timerel(dates[0],last_date,unit="day")
         if dif >= 2:
             intervals.append(dif)
- #       print("BEFORE",dates)
         last_date = dates.pop(0)
-  #      print("AFTER",dates)
-    print(intervals)
     return intervals
+
+def return_relative_stdev(sequence):
+    std = numpy.std(sequence)
+    avg = numpy.mean(sequence)
+    rstd = 100 * (std / avg)
+    return rstd
 

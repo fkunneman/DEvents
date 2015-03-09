@@ -22,10 +22,9 @@ for line in lines:
     tokens = line.strip().split("\t")
     dates = [time_functions.return_datetime(x.split(",")[0],setting="vs") for x in tokens[1].split("|")]
     if len(dates) > 2:
-        print(tokens[0])
         intervals = calculations.return_intervals(dates)
         if len(intervals) > 1:
-            score = gen_functions.return_standard_deviation(intervals)
+            score = calculations.return_relative_stdev(intervals)
             term_score.append([tokens[0],score,intervals])
 
 term_score_sorted = sorted(term_score,key = lambda x : x[1])
