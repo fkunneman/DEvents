@@ -467,12 +467,18 @@ def return_similarities(vector1,vector2):
     return cosine_similarity(vector1,vector2)
 
 def return_intervals(dates):
+    print(dates)
     intervals = []
+#    print("BEFORE",dates)
     last_date = dates.pop(0)
-    for date in dates:
-        dif = time_functions.timerel(date,last_date,unit="days")
+#    print("AFTER",dates)
+    while len(dates) > 0:
+        dif = time_functions.timerel(dates[0],last_date,unit="day")
         if dif >= 2:
             intervals.append(dif)
+ #       print("BEFORE",dates)
         last_date = dates.pop(0)
+  #      print("AFTER",dates)
+    print(intervals)
     return intervals
 

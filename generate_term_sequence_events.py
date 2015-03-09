@@ -1,7 +1,7 @@
 #!/usr/bin/env 
 
 import argparse
-from collections import defaultdict(list)
+from collections import defaultdict
 import ucto
 
 """
@@ -20,8 +20,12 @@ if args.t == "tweets":
     tokenizer = ucto.Tokenizer(ucto_settingsfile)
 #for each line
 infile = open(args.i,"r",encoding="utf-8")
-for i,line in enumerate(infile.readlines()):
-    tokens = lines.strip().split("\t")
+lines = infile.readlines()
+infile.close()
+nlines = len(lines)
+for i,line in enumerate(lines):
+    print(i,"of",nlines,"lines")
+    tokens = line.strip().split("\t")
     date = tokens[0]
     if args.t == "term":
         terms = tokens[2].split(", ")
@@ -31,7 +35,6 @@ for i,line in enumerate(infile.readlines()):
             terms = [x.text.lower() for x in tokenizer]
     for term in terms:
         term_dates[term].append((date,i))
-infile.close()
 
 outfile = open(args.o,"w",encoding="utf-8")
 #link date and term
