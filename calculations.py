@@ -10,6 +10,7 @@ import datetime
 from collections import defaultdict
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import time_functions
 
 def goodness_of_fit(total,dc,ec,ode):
     g2 = 0
@@ -464,3 +465,14 @@ def tfidf_docs(documents):
 
 def return_similarities(vector1,vector2):
     return cosine_similarity(vector1,vector2)
+
+def return_intervals(dates):
+    intervals = []
+    last_date = dates.pop(0)
+    for date in dates:
+        dif = time_functions.timerel(date,last_date,unit="days")
+        if dif >= 2:
+            intervals.append(dif)
+        last_date = dates.pop(0)
+    return intervals
+
