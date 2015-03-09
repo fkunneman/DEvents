@@ -4,6 +4,8 @@ import argparse
 import re
 from collections import defaultdict
 
+import calculations
+
 """
 program to clear event file from duplicates
 """
