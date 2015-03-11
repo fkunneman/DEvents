@@ -23,9 +23,9 @@ for line in lines:
     # dates = [time_functions.return_datetime(x.split(",")[0],setting="vs") for x in tokens[1].split("|")]
     # if len(dates) > 2:
     #     intervals = calculations.return_intervals(dates)
-    intervals = tokens[2].split(",")
+    intervals = [int(x) for x in tokens[2].split(",")]
     if len(intervals) > 1:
-        segmentation = calculations.return_segments(intervals)
+        segmentation = calculations.return_segmentation(intervals)
         score = calculations.return_relative_stdev(intervals)
         term_score.append([tokens[0],score,intervals])
 
