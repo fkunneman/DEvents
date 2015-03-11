@@ -483,3 +483,26 @@ def return_relative_stdev(sequence):
     rstd = 100 * (std / avg)
     return rstd
 
+def return_segmentation(sequence):
+    #extract all segments
+    segment_stdev = defaultdict(lambda : defaultdict(float))
+    for n in range(2,len(sequence)):
+        segments = [sequence[i:i+n] for i in range(len(sequence)-n+1)]
+        for i,segment in enumerate(segments):
+            segment_stdev[i][i+n] = return_relative_stdev(segment)
+    #find optimal segmentation
+    print(segment_stdev)
+    segment_indices = range(len_sequence)
+    highest = [] # [[path,score]]
+    for n in range(2,len(sequence)):
+        optimal = [0,0]
+        new_segmentations = [segment_indices[i:n] for i in range(2)]
+        print(new_segmentations)
+        # for ns in new_segmentations:
+        #     score = segment_stdev[new_segmentations[0]][new_segmentations[-1]]
+        #     if score > optimal[1]:
+        #         optimal[1] = score
+        #         optimal[0] =    
+        
+        #update best single segments
+
