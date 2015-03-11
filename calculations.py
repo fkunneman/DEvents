@@ -494,15 +494,20 @@ def return_segmentation(sequence):
     #find optimal segmentation
     segment_indices = range(len(sequence))
     highest = [] # [[path,score]]
-    for n in range(2,len(sequence)):
+    for n in range(2,len(sequence)+1):
         optimal = [0,0]
-        new_segmentations = [segment_indices[i:n] for i in range(2) if n-i >= 2]
-        print(new_segmentations)
-        # for ns in new_segmentations:
-        #     score = segment_stdev[new_segmentations[0]][new_segmentations[-1]]
-        #     if score > optimal[1]:
-        #         optimal[1] = score
-        #         optimal[0] =    
+        new_segmentations = [[i,n] for i in [0,1] if n-i >= 2]
+        for ns in new_segmentations:
+            score = segment_stdev[ns[0]][ns[1]]
+            if score > optimal[1]:
+                optimal[1] = score
+                optimal[0] = [ns[0],n[1]]
+        for start in range(2,n+1):
+            score = numpy.mean([highest[start][1],segment_stdev[start][n+1]])  
+            if score > optimal[1]:
+                optimal[1] = score
+                optimal[0] = [ns[0],n[1]]
+        highest[n] = optimal
+    print(sequence,highest[len_sequence])
         
         #update best single segments
-
