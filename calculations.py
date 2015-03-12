@@ -502,8 +502,10 @@ def return_segmentation(sequence):
                 optimal[1] = score
                 optimal[0] = [ns[0],ns[1]]
         for start in range(2,n):
+            print(sequence,n,start,highest[start],segment_stdev[start][n],len(highest[start][0]) / len(sequence))
             if n-start >= 2:
-                score = numpy.mean([highest[start][1],segment_stdev[start][n]])  
+                score = numpy.mean([highest[start][1],segment_stdev[start][n]]) * \
+                    (len(highest[start][0]) / len(sequence))  
             else:
                 score = highest[start][1]
             if score < optimal[1]:
