@@ -484,12 +484,14 @@ def return_relative_stdev(sequence):
     return rstd
 
 def return_segmentation(sequence):
+    print(sequence)
     
     def return_segs(k,seq):
         outsegs = []
         if k > 1:
             for n in range(1,len(seq)):
-                outsegs.extend([[n] + x for x in return_segs(k-1,seq[n:])])
+                outsegs.extend([[n] + x for x in return_segs(k-1,seq[n:]) if not \
+                re.search("1_1","_".join([str(y) for y in x]))])
         else:
             outsegs.append([len(seq)])
         return outsegs
@@ -503,23 +505,26 @@ def return_segmentation(sequence):
     #find optimal segmentation
     all_combs = []
     for k in range(1,len(sequence)):
-        all_combs.extend(return_segs(k,sequence))
+        all_combs.extend([x for x in return_segs(k,sequence) if not \
+        re.search("1_1","_".join([str(y) for y in x]))])
     best = [] # [[path,score]]
-    for combi in all_combs::
+    print(len(all_combs))
+    for combi in all_combs:
         scores = []
         start = 0
-        for bound in combi:
-            if bound-start >= 2:
-                scores.append(segment_stdev[start][bound])
-            start = bound
-            bonus = len(combi) / len(sequence)
-            score = (numpy.mean(scores)) * bonus
-            if len(best) = 0:
+        for l in combi:
+            if l >= 2:
+                scores.append(segment_stdev[start][start+l])
+            start = start+l
+        penalty = len(combi) / len(sequence)
+        #print(combi,scores)
+        score = (numpy.mean(scores)) + penalty
+        if len(best) == 0:
+            best = [combi,score]
+        else:
+            if score < best[1]:
                 best = [combi,score]
-            else:
-                if score < best[1]:
-                    best = [combi,score]
-        print(best)  
+    print(best)  
 
     #for start in range(1,len(sequence)-1): #number of segments
     # for n in range(2,len(sequence)+1):
@@ -541,6 +546,6 @@ def return_segmentation(sequence):
     #             optimal[1] = score
     #             optimal[0] = highest[start][0] + [n]
     #     highest[n] = optimal
-    print(sequence,highest[n])
+#    print(sequence,highest[n])
         
         #update best single segments
