@@ -490,7 +490,7 @@ def return_segmentation(sequence):
         segments = [sequence[i:i+n] for i in range(len(sequence)-n+1)]
         for i,segment in enumerate(segments):
             print(segment)
-            segment_stdev[i][i+n] = return_relative_stdev(segment)
+            segment_stdev[i][i+n] = return_relative_stdev(segment) * ((len(sequence) - n)/len(sequence))
     #find optimal segmentation
     segment_indices = range(len(sequence))
     highest = [] # [[path,score]]
