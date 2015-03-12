@@ -549,3 +549,13 @@ def return_segmentation(sequence):
 #    print(sequence,highest[n])
         
         #update best single segments
+
+def find_outliers(sequence):
+    outliers = []
+    avg = numpy.mean(sequence)
+    std = numpy.std(sequence)
+    for i,val in enumerate(sequence):
+        if abs(val-avg) > (std*2):
+            outliers.append([i,val])
+    print(outliers)
+
