@@ -271,7 +271,10 @@ class Event_pairs:
 
     def resolve_overlap_events(self):
         documents = [" ".join([y.text for y in x.tweets]) for x in self.events]
-        pair_sim = calculations.return_similarity_graph(documents)
+        pair_sim = defaultdict(lambda : defaultdict(float))
+        indices = range(len(documents))
+        for combi in itertool.combinations(indices,2):
+            pair_sim[combi[0],combi[1]] = calculations.return_similarities(documents[combi[0]],documents[combi[1]])
         dates = list(set([x.date for x in self.events]))
         for date in dates:
             events = [x for x in self.events if x.date == date]
