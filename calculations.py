@@ -464,7 +464,7 @@ def tfidf_docs(documents):
     tfidf_vectorizer = TfidfVectorizer()
     return tfidf_vectorizer.fit_transform(documents)
 
-def return_similarities(vectors1,vectors2):
+def return_similarities(vectors1,vectors2=False):
     if vectors2:
         return cosine_similarity(vectors1,vectors2)
     else:
