@@ -271,16 +271,13 @@ class Event_pairs:
 
     def resolve_overlap_events(self):
         documents = [" ".join([y.text for y in x.tweets]) for x in self.events]
-        pair_sim = defaultdict(lambda : defaultdict(float))
-        indices = range(len(documents))
-        for combi in itertool.combinations(indices,2):
-            pair_sim[combi[0],combi[1]] = calculations.return_similarities(documents[combi[0]],documents[combi[1]])
+        sims = calculations.return_similarities(documents,documents)
         dates = list(set([x.date for x in self.events]))
         for date in dates:
             events = [x for x in self.events if x.date == date]
             indexes = [x.ids[0] for x in events]
             pairs = [x for x in itertools.combinations(indexes,2)]
-            scores = [([x[0]],[x[1]],pair_sim[x[0]][x[1]]) for x in pairs if pair_sim[x[0]][x[1]] > 0.7]
+            scores = [([x[0]],[x[1]],sims[x[0]][x[1]]) for x in pairs if sims[x[0]][x[1]] > 0.7]
             if len(scores) > 0:
                 scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
                 while scores_sorted[0][2] > 0.7: #scores are not static 
@@ -312,7 +309,7 @@ class Event_pairs:
                     for e in events: #add new similarities as mean of the similarity between seperate events
                         if not bool(event_set & set(e.ids)):
                             sims = [(aa, bb) for aa in event.ids for bb in e.ids]
-                            mean_sim = numpy.mean([pair_sim[x[0]][x[1]] for x in sims])
+                            mean_sim = numpy.mean([sims[x[0]][x[1]] for x in sims])
                             scores.append((event.ids,e.ids,mean_sim))
                     scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True) #resort scores
                     if not len(scores_sorted) > 1:
