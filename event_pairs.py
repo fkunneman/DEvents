@@ -270,7 +270,7 @@ class Event_pairs:
         print("rank",len(self.events))
 
     def resolve_overlap_events(self):
-        documents = [" ".join([y.text for y in x.tweets]) for x in self.events]
+        documents = calculations.tfidf_docs([" ".join([y.text for y in x.tweets]) for x in self.events])
         sims = calculations.return_similarities(documents,documents)
         dates = list(set([x.date for x in self.events]))
         for date in dates:
