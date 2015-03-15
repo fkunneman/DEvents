@@ -498,33 +498,80 @@ def return_segmentation(sequence):
 
     #extract all segment scores
     segment_stdev = defaultdict(lambda : defaultdict(float))
+    sst = []
     for n in range(2,len(sequence)+1):
         segments = [sequence[i:i+n] for i in range(len(sequence)-n+1)]
         for i,segment in enumerate(segments):
-            segment_stdev[i][i+n] = return_relative_stdev(segment)
+            segment_stdev[i][i+n] = return_relative_stdev(segment) + (100-(n/len(sequence) * 100))
+            sst.append([[i,i+n],segment_stdev[i][i+n]])
+    top = sorted(sst,key = lambda k : k[1])[:3]
+    for seg in top:
+        st = seg[0][0]
+        #if st<0:
+        #    st = 0
+        e = seg[0][1]
+        #if e > len(sequence):
+        #    e = len(sequence)
+        testseq = sequence[st:e]
+        median = numpy.median(testseq)
+#        print(median)
+        #print((median*2)+3)
+        #print((median*2)-3)
+        db = range(int((median*2)-3),int((median*2)+3))
+        spl = range(int(median-3),int(median+3))
+        newseq = []
+        print(testseq)
+        while i < len(testseq):
+            if testseq[i] in db:
+                newseq.append([int(x) for x in [(testseq[i]/2)] * 2])
+                i+=1
+            else:
+                if i+2 < len(testseq):
+                    if sum([testseq[i],testseq[i+1],testseq[i+2]]) in spl:
+                        newseq.append(sum([testseq[i],testseq[i+1],testseq[i+2]]))
+                        i+=3
+                        continue
+                    #else:
+                    #    newseq.append(testseq[i])
+                    #    i+=1
+                #else:
+                if i+1 < len(testseq):
+                    if sum([testseq[i],testseq[i+1]]) in spl:
+                        newseq.append(sum([testseq[i],testseq[i+1]]))
+                        i+=2
+                    else:
+                        newseq.append(testseq[i])
+                        i+=1
+                else:
+                    newseq.append(testseq[i])
+                    i+=1
+        print(seg,newseq)
+                                         
+    return sorted(sst,key = lambda k : k[1])[:3]
+#    quit()
     #find optimal segmentation
-    all_combs = []
-    for k in range(1,len(sequence)):
-        all_combs.extend([x for x in return_segs(k,sequence) if not \
-        re.search("1_1","_".join([str(y) for y in x]))])
-    best = [] # [[path,score]]
-    print(len(all_combs))
-    for combi in all_combs:
-        scores = []
-        start = 0
-        for l in combi:
-            if l >= 2:
-                scores.append(segment_stdev[start][start+l])
-            start = start+l
-        penalty = len(combi) / len(sequence)
+ #   all_combs = []
+ #   for k in range(1,len(sequence)):
+ #       all_combs.extend([x for x in return_segs(k,sequence) if not \
+ #       re.search("1_1","_".join([str(y) for y in x]))])
+ #   best = [] # [[path,score]]
+ #   print(len(all_combs))
+ #   for combi in all_combs:
+ #       scores = []
+ #       start = 0
+ #       for l in combi:
+ #           if l >= 2:
+ #               scores.append(segment_stdev[start][start+l])
+ #           start = start+l
+ #       penalty = len(combi) / len(sequence)
         #print(combi,scores)
-        score = (numpy.mean(scores)) + penalty
-        if len(best) == 0:
-            best = [combi,score]
-        else:
-            if score < best[1]:
-                best = [combi,score]
-    print(best)  
+ #       score = (numpy.mean(scores)) + penalty
+ #       if len(best) == 0:
+ #           best = [combi,score]
+ #       else:
+ #           if score < best[1]:
+ #               best = [combi,score]
+#    print(best)  
 
     #for start in range(1,len(sequence)-1): #number of segments
     # for n in range(2,len(sequence)+1):
@@ -551,11 +598,15 @@ def return_segmentation(sequence):
         #update best single segments
 
 def find_outliers(sequence):
-    outliers = []
+    seq = []
     avg = numpy.mean(sequence)
     std = numpy.std(sequence)
+    print(sequence,avg,std)
     for i,val in enumerate(sequence):
-        if abs(val-avg) > (std*2):
-            outliers.append([i,val])
-    print(outliers)
-
+        #print(i,val,abs(val-avg),std)
+        if abs(val-avg) < std:
+            seq.append([i,val])
+    print(sequence,seq)
+#    if len(seq) == len(sequence):
+#       quit() 
+#    find_outliers([x[1] for x in seq])

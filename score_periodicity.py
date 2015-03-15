@@ -25,8 +25,8 @@ for line in lines:
     #     intervals = calculations.return_intervals(dates)
     intervals = [int(x) for x in tokens[2].split(",")]
     if len(intervals) > 1:
-        #segmentation = calculations.return_segmentation(intervals)
-        calculations.find_outliers(intervals)
+        segmentation = calculations.return_segmentation(intervals)
+#        calculations.find_outliers(intervals)
         score = calculations.return_relative_stdev(intervals)
         term_score.append([tokens[0],score,intervals])
 
