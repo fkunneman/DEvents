@@ -271,7 +271,7 @@ class Event_pairs:
 
     def resolve_overlap_events(self):
         documents = calculations.tfidf_docs([" ".join([y.text for y in x.tweets]) for x in self.events])
-        sims = calculations.return_similarities(documents,documents)
+        sims = calculations.return_similarities(documents)
         dates = list(set([x.date for x in self.events]))
         for date in dates:
             events = [x for x in self.events if x.date == date]
