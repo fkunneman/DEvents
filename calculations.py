@@ -438,7 +438,7 @@ def merge_event_sets(set_current,set_new):
             j = index_ed[0]
             eventdict_current = index_ed[1]
             if has_overlap(tweets,eventdict_current["tweets"]):
-                print("MERGE",eventdict_current["keylist"],eventdict_new["keylist"])
+                #print("MERGE",eventdict_current["keylist"],eventdict_new["keylist"])
                 merged_ids = list(set([t["id"] for t in eventdict_current["tweets"]]).union(set([t["id"] for t in tweets])))
                 set_merged[j]["tweets"] = []
                 for t in tweets:
