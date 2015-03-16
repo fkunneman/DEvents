@@ -1,5 +1,10 @@
 #!/usr/bin/env 
 
+import calculations
+import numpy
+import re
+import string
+
 class Tweet:
     """
     Class containing the characteristics of a tweet that mentions 
