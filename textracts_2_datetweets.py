@@ -17,34 +17,35 @@ for filename in sys.argv[2:]:
     #for every line
     for line in lines:
         tokens = line.strip().split("\t")
-        new_chunks = []
-        for chunk in tokens[12].split("|"):
-            #remove punctuation
-            chunk = chunk.strip().replace("  "," ")
-            chunk = re.sub(r"( )(!|\"|#|\$|%|&|\'|\(|\)|\*|\+|,|-|\.|/|:|;|<|=|>|\?|\[|\\|]|\^|_|`|{|\||}|~)+( )",r" ",chunk)
-            chunk = re.sub(r"(!|\"|#|\$|%|&|\'|\(|\)|\*|\+|,|-|\.|/|:|;|<|=|>|\?|\[|\\|]|\^|_|`|{|\||}|~)+( |$)",r"\2",chunk)
-            chunk = re.sub(r"(^| )(!|\"|#|\$|%|&|\'|\(|\)|\*|\+|,|-|\.|/|:|;|<|=|>|\?|\[|\\|]|\^|_|`|{|\||}|~)+",r"\1",chunk)
-            #remove false date
-            if re.search(false_date,chunk):
-                pats = [pat[0] for pat in re.findall(false_date,chunk)]
-                regexPattern = '|'.join(map(re.escape, pats))
-                chunks = re.split(regexPattern,chunk)
-            else:
-                chunks = [chunk]
-            #remove users, urls
-            for chunk in chunks:
-                pats = []
-                for token in chunk.split(" "):
-                    if len(token) > 0:
-                        if token[0] == '@' or url.search(token):
-                            pats.append(token)
-                if len(pats) > 0:
+        if len(tokens) >= 12:
+            new_chunks = []
+            for chunk in tokens[12].split("|"):
+                #remove punctuation
+                chunk = chunk.strip().replace("  "," ")
+                chunk = re.sub(r"( )(!|\"|#|\$|%|&|\'|\(|\)|\*|\+|,|-|\.|/|:|;|<|=|>|\?|\[|\\|]|\^|_|`|{|\||}|~)+( )",r" ",chunk)
+                chunk = re.sub(r"(!|\"|#|\$|%|&|\'|\(|\)|\*|\+|,|-|\.|/|:|;|<|=|>|\?|\[|\\|]|\^|_|`|{|\||}|~)+( |$)",r"\2",chunk)
+                chunk = re.sub(r"(^| )(!|\"|#|\$|%|&|\'|\(|\)|\*|\+|,|-|\.|/|:|;|<|=|>|\?|\[|\\|]|\^|_|`|{|\||}|~)+",r"\1",chunk)
+                #remove false date
+                if re.search(false_date,chunk):
+                    pats = [pat[0] for pat in re.findall(false_date,chunk)]
                     regexPattern = '|'.join(map(re.escape, pats))
-                    new_chunks.extend([x.strip() for x in re.split(regexPattern,chunk)])
+                    chunks = re.split(regexPattern,chunk)
                 else:
-                    new_chunks.append(chunk)
-        for chunk in new_chunks:
-            if len(chunk) > 0:
-                outfile.write(chunk.strip() + "\n")
+                    chunks = [chunk]
+                #remove users, urls
+                for chunk in chunks:
+                    pats = []
+                    for token in chunk.split(" "):
+                        if len(token) > 0:
+                            if token[0] == '@' or url.search(token):
+                                pats.append(token)
+                    if len(pats) > 0:
+                        regexPattern = '|'.join(map(re.escape, pats))
+                        new_chunks.extend([x.strip() for x in re.split(regexPattern,chunk)])
+                    else:
+                        new_chunks.append(chunk)
+            for chunk in new_chunks:
+                if len(chunk) > 0:
+                    outfile.write(chunk.strip() + "\n")
     outfile.close()
 
