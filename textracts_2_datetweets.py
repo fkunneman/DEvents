@@ -17,6 +17,7 @@ for filename in sys.argv[2:]:
     #for every line
     for line in lines:
         tokens = line.strip().split("\t")
+        print(tokens)
         if len(tokens) >= 12:
             new_chunks = []
             for chunk in tokens[12].split("|"):
