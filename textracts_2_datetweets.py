@@ -9,6 +9,7 @@ false_date = re.compile(r"(#?\d+(jan|januari|feb|februari|mrt|maart|apr|april|me
 url = re.compile(r"^http")
 
 for filename in sys.argv[2:]:
+    print(filename)
     infile = open(filename,encoding="utf-8")
     lines = infile.readlines()
     infile.close()
