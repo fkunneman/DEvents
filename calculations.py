@@ -472,8 +472,8 @@ def return_intervals(dates):
     last_date = dates.pop(0)
     while len(dates) > 0:
         dif = time_functions.timerel(dates[0],last_date,unit="day")
-        if dif >= 2:
-            intervals.append(dif)
+        #if dif >= 2:
+        intervals.append(dif)
         last_date = dates.pop(0)
     return intervals
 
