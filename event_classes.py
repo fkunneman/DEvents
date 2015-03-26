@@ -151,7 +151,7 @@ class Event:
 
 
 
-class Calender:
+class Calendar:
     """
     Class containing a set of event (clusters)
     """
@@ -194,10 +194,4 @@ class Calender:
                         sequence["merged_intervals"].append(merged_interval)
                         print("origine",sequence["dates"],sequence["intervals"],"\nMerged",sequence["merged_dates"],sequence["merged_intervals"])
                         #if merged_interval >= 6: #score periodicity
-
-
-
-
-
-
 
