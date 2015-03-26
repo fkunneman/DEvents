@@ -41,7 +41,7 @@ for i,line in enumerate(lines[:45000]):
 outfile = open(args.o + "test.txt","w",encoding = "utf-8")
 periodicities = []
 for term in event_calendar.term_stdev.keys():
-    for stdev in term_stdev[term]:
+    for stdev in event_calendar.term_stdev[term]:
         periodicities.append(stdev + [",".join([str(x) for x in calendar.term_sequences[term]["intervals"]])] + [",".join([str(x) for x in calendar.term_sequences[term]["merged_intervals"]])])
 sorted_periodicities = sorted(periodicities,key = lambda x : x[0])
 for per in sorted_periodicities:
