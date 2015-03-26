@@ -238,6 +238,7 @@ class Calendar:
                                     seq = intervals[i:]
                                     scores.append([i,calculations.return_relative_stdev(seq)])
                                 best = sorted(scores,key = lambda x : x[0])[0]
+                                print(best)
                                 if best[1] < 10:
                                     last_periodic = [0,best[1],best[0],len(sequence["merged_intervals"])]
                                     self.term_stdev[term].append([best[1],", ".join(sequence["merged_dates"][best[0]:]),",".join(sequence["merged_intervals"][best[0]:])])
