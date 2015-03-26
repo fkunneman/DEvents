@@ -27,14 +27,14 @@ event_calendar = event_classes.Calendar()
 infile = open(args.i,"r",encoding="utf-8")
 lines = infile.readlines()
 infile.close()
-for i,line in enumerate(lines):
+for i,line in enumerate(lines[:500]):
     tokens = line.strip().split("\t")
     date = time_functions.return_datetime(tokens[0],setting="vs")
     score = tokens[1]
     terms = tokens[2].split(", ")
     ids = tokens[3].split(", ")
     tweets = tokens[4].split("-----")
-    event = event_classes.Event([date,terms,score,tweets])
+    event = event_classes.Event(i,[date,terms,score,tweets])
     event.add_tids(ids)
     event_calendar.add_event(event)
 
