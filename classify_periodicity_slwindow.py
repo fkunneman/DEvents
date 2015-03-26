@@ -37,6 +37,9 @@ for i,line in enumerate(lines[:500]):
     event = event_classes.Event(i,[date,terms,score,tweets])
     event.add_tids(ids)
     event_calendar.add_event(event)
+    for string in event_calendar.string_events.keys():
+        print([x.entities for x in string_events[string]])
+
 
 #     date_terms[date].extend()
 #     for term in tokens[2].split(", "):
