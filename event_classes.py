@@ -215,7 +215,7 @@ class Calendar:
                                 if stdev < 10:
                                     #break gap from dates and intervals
                                     sequence["merged_dates"] = sequence["merged_dates"][:last_periodic[3]+1] + [event.date]
-                                    sequence["merged_intervals"] = sequence["merged_intervals"][:last_periodic[3]+1] + [sum(sequence["merged_intervals"][last_periodic[3]+1:])
+                                    sequence["merged_intervals"] = sequence["merged_intervals"][:last_periodic[3]+1] + [sum(sequence["merged_intervals"][last_periodic[3]+1:])]
                                     #update current sequence
                                     self.term_stdev[term][index] = [stdev,", ".join(sequence["merged_dates"][last_periodic[2]:last_periodic[3]+1]),",".join(intervals + [merged_interval])]
                                     sequence["last_periodic"] = [index,stdev,last_periodic[2],last_periodic[3]+1]
