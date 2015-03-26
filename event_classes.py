@@ -215,7 +215,7 @@ class Calendar:
                                 if stdev < 10:
                                     #break gap from dates and intervals
                                     sequence["merged_dates"] = sequence["merged_dates"][:last_periodic[3]+1] + [event.date]
-                                    sequence["merged_intervals"] = sequence["merged_intervals"][:last_periodic[3]+1] + [sum(sequence["merged_intervals"][last_periodic[3]+1:])
+                                    sequence["merged_intervals"] = sequence["merged_intervals"][:last_periodic[3]+1] + [sum(sequence["merged_intervals"][last_periodic[3]+1:])]
                                     #update current sequence
                                     self.term_stdev[term][index] = [stdev,", ".join(sequence["merged_dates"][last_periodic[2]:last_periodic[3]+1]),",".join(intervals + [merged_interval])]
                                     sequence["last_periodic"] = [index,stdev,last_periodic[2],last_periodic[3]+1]
@@ -235,8 +235,8 @@ class Calendar:
                             if len(intervals) >= 2: #find best periodicity
                                 scores = []
                                 for i in range(len(intervals[:-1])):
-                                    sequence = intervals[i:]
-                                    scores.append([i,calculations.return_relative_stdev(sequence)])
+                                    seq = intervals[i:]
+                                    scores.append([i,calculations.return_relative_stdev(seq)])
                                 best = sorted(scores,key = lambda x : x[0])[0]
                                 if best[1] < 10:
                                     last_periodic = [0,best[1],best[0],len(sequence["merged_intervals"])]
@@ -258,5 +258,4 @@ class Calendar:
                 #     self.event_string[event.ids[0]] = self.strings
                 #     self.string_events[self.strings].append(event)
                 #     self.strings += 1
-            print(self.term_stdev,term,sequence["merged_intervals"])
             print(term,sequence["merged_intervals"],self.term_stdev[term])
