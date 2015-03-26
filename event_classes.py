@@ -172,45 +172,47 @@ class Calendar:
             sequence = self.term_sequences[term]
             #print("INCOMING",event.ids[0],term,event.date)
             sequence["dates"].append(event.date)
+            sequence["events"].append(event)
             if len(sequence["dates"]) > 1:
                 #add interval
                 interval = time_functions.timerel(event.date,sequence["dates"][-2],unit="day")
                 #print(term,event.date,sequence["dates"][-2],interval)
                 if interval == 0: #merge
                     #print("MERGE",event.entities,sequence["events"][-1].entities)
-                    if event.ids[0] not in sequence["events"][-1].ids:
-                        sequence["events"][-1].merge(event)
+                    #if event.ids[0] not in sequence["events"][-1].ids:
+                    #    sequence["events"][-1].merge(event)
                     sequence["dates"].pop()
                     #string = self.event_string[sequence["events"][-2].ids[0]]
                     #self.event_string[event.ids[0]] = string
                     #self.string_events[string].append(event)
                 else:
-                    sequence["events"].append(event)
                     sequence["intervals"].append(interval)
-                    if interval == 1: #link
+                    #if interval == 1: #link
                         #link events
                         #print("LINK",sequence["events"][-2].entities,event.entities)
-                        string = self.event_string[sequence["events"][-2].ids[0]]
-                        self.event_string[event.ids[0]] = string
-                        self.string_events[string].append(event)
-                    else:
+                        #string = self.event_string[sequence["events"][-2].ids[0]]
+                        #self.event_string[event.ids[0]] = string
+                        #self.string_events[string].append(event)
+                    #else:
+                    if interval > 1:
                         sequence["merged_dates"].append(event.date)
                         merged_interval = time_functions.timerel(event.date,sequence["merged_dates"][-2],unit="day")
                         sequence["merged_intervals"].append(merged_interval)
-                        try:
-                            string = self.event_string[event.ids[0]]
-                        except KeyError:
-                            self.event_string[event.ids[0]] = self.strings
-                            self.string_events[self.strings].append(event)
-                            self.strings += 1
+                        # try:
+                        #     string = self.event_string[event.ids[0]]
+                        # except KeyError:
+                        #     self.event_string[event.ids[0]] = self.strings
+                        #     self.string_events[self.strings].append(event)
+                        #     self.strings += 1
                         #print("origine",sequence["dates"],sequence["intervals"],"\nMerged",sequence["merged_dates"],sequence["merged_intervals"])
                         #if merged_interval >= 6: #score periodicity
             else:
-                sequence["events"].append(event)
+                #sequence["events"].append(event)
                 sequence["merged_dates"].append(event.date)
-                try:
-                    string = self.event_string[event.ids[0]]
-                except KeyError:
-                    self.event_string[event.ids[0]] = self.strings
-                    self.string_events[self.strings].append(event)
-                    self.strings += 1
+                # try:
+                #     string = self.event_string[event.ids[0]]
+                # except KeyError:
+                #     self.event_string[event.ids[0]] = self.strings
+                #     self.string_events[self.strings].append(event)
+                #     self.strings += 1
+            print(sequence["merged_dates"],sequence["merged_intervals"])
