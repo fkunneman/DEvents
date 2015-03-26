@@ -4,6 +4,7 @@ import calculations
 import numpy
 import re
 import string
+from collections import defaultdict
 import time_functions
 
 class Tweet:
@@ -67,7 +68,8 @@ class Event:
 
     def merge(self,clust):
         self.ids.extend(clust.ids)
-        self.entities.extend(clust.entities)
+        self.entities.extend(clust.entities) 
+        self.entities = list(set(self.entities))
         self.score = max([self.score,clust.score])
         self.tweets = list(set(self.tweets + clust.tweets))
 
@@ -158,7 +160,7 @@ class Calendar:
     def __init__(self):
         self.event_string = {}
         self.string_events = defaultdict(list)
-        strings = 0
+        self.strings = 0
         self.event_pattern = {}
         self.pattern_events = defaultdict(list)
         self.term_sequences = defaultdict(lambda : defaultdict(list))
@@ -167,31 +169,44 @@ class Calendar:
     def add_event(self,event):
         #update term sequences
         for term in event.entities:
-            sequence = term_sequences[term]
+            sequence = self.term_sequences[term]
+            print("INCOMING",event.ids[0],term,event.date)
             sequence["dates"].append(event.date)
             if len(sequence["dates"]) > 1:
                 #add interval
                 interval = time_functions.timerel(event.date,sequence["dates"][-2],unit="day")
+                print(term,event.date,sequence["dates"][-2],interval)
                 if interval == 0: #merge
-                    print("MERGE",event.tweets,sequence["events"][-1].tweets)
-                    sequence["events"][-1].merge(event)
+                    #print("MERGE",event.entities,sequence["events"][-1].entities)
+                    if event.ids[0] not in sequence["events"][-1].ids:
+                        sequence["events"][-1].merge(event)
                     sequence["dates"].pop()
+                    #string = self.event_string[sequence["events"][-2].ids[0]]
+                    #self.event_string[event.ids[0]] = string
+                    #self.string_events[string].append(event)
                 else:
-                    sequence["intervals"].append(interval)
                     sequence["events"].append(event)
+                    sequence["intervals"].append(interval)
                     if interval == 1: #link
                         #link events
                         print("LINK",sequence["events"][-2].entities,event.entities)
-                        string = event_string[sequence["events"][-2]]
-                        event_string[event.ids[0]] = string
-                        string_events[string].append(event)
+                        string = self.event_string[sequence["events"][-2].ids[0]]
+                        self.event_string[event.ids[0]] = string
+                        self.string_events[string].append(event)
                     else:
-                        self.event_string[event.ids[0]] = strings
-                        self.string_events[strings].append(event)
-                        strings += 1
                         sequence["merged_dates"].append(event.date)
                         merged_interval = time_functions.timerel(event.date,sequence["merged_dates"][-2],unit="day")
                         sequence["merged_intervals"].append(merged_interval)
+                        self.event_string[event.ids[0]] = self.strings
+                        self.string_events[self.strings].append(event)
+                        self.strings += 1
                         print("origine",sequence["dates"],sequence["intervals"],"\nMerged",sequence["merged_dates"],sequence["merged_intervals"])
                         #if merged_interval >= 6: #score periodicity
+            else:
+                sequence["events"].append(event)
+                sequence["merged_dates"].append(event.date)
+                self.event_string[event.ids[0]] = self.strings
+                self.string_events[self.strings].append(event)
+                self.strings += 1
+                
 
