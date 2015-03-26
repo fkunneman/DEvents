@@ -4,6 +4,7 @@ import calculations
 import numpy
 import re
 import string
+import time_functions
 
 class Tweet:
     """
@@ -58,6 +59,11 @@ class Event:
         self.entities = info[1] #list
         self.score = info[2]
         self.tweets = info[3]
+        self.extensions = []
+        self.editions = []
+
+    def add_tids(self,tids):
+        self.tids = tids
 
     def merge(self,clust):
         self.ids.extend(clust.ids)
@@ -142,3 +148,56 @@ class Event:
                     tweetwords.append(word)
                 nreptweets.append(" ".join(tweetwords))
             self.reptweets = nreptweets
+
+
+
+class Calender:
+    """
+    Class containing a set of event (clusters)
+    """
+    def __init__(self):
+        self.event_string = {}
+        self.string_events = defaultdict(list)
+        strings = 0
+        self.event_pattern = {}
+        self.pattern_events = defaultdict(list)
+        self.term_sequences = defaultdict(lambda : defaultdict(list))
+        self.date_terms = defaultdict(list)
+
+    def add_event(self,event):
+        #update term sequences
+        for term in event.entities:
+            sequence = term_sequences[term]
+            sequence["dates"].append(event.date)
+            if len(sequence["dates"]) > 1:
+                #add interval
+                interval = time_functions.timerel(event.date,sequence["dates"][-2],unit="day")
+                if interval == 0: #merge
+                    print("MERGE",event.tweets,sequence["events"][-1].tweets)
+                    sequence["events"][-1].merge(event)
+                    sequence["dates"].pop()
+                else:
+                    sequence["intervals"].append(interval)
+                    sequence["events"].append(event)
+                    if interval == 1: #link
+                        #link events
+                        print("LINK",sequence["events"][-2].entities,event.entities)
+                        string = event_string[sequence["events"][-2]]
+                        event_string[event.ids[0]] = string
+                        string_events[string].append(event)
+                    else:
+                        self.event_string[event.ids[0]] = strings
+                        self.string_events[strings].append(event)
+                        strings += 1
+                        sequence["merged_dates"].append(event.date)
+                        merged_interval = time_functions.timerel(event.date,sequence["merged_dates"][-2],unit="day")
+                        sequence["merged_intervals"].append(merged_interval)
+                        print("origine",sequence["dates"],sequence["intervals"],"\nMerged",sequence["merged_dates"],sequence["merged_intervals"])
+                        #if merged_interval >= 6: #score periodicity
+
+
+
+
+
+
+
