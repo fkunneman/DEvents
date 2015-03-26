@@ -27,7 +27,7 @@ event_calendar = event_classes.Calendar()
 infile = open(args.i,"r",encoding="utf-8")
 lines = infile.readlines()
 infile.close()
-for i,line in enumerate(lines[:1500]):
+for i,line in enumerate(lines[:45000]):
     tokens = line.strip().split("\t")
     date = time_functions.return_datetime(tokens[0],setting="vs")
     score = tokens[1]
@@ -37,8 +37,19 @@ for i,line in enumerate(lines[:1500]):
     event = event_classes.Event(i,[date,terms,score,tweets])
     event.add_tids(ids)
     event_calendar.add_event(event)
-for string in event_calendar.string_events.keys():
-    print([x.entities for x in event_calendar.string_events[string]])
+
+outfile = open(args.o + "test.txt","w",encoding = "utf-8")
+periodicities = []
+for term in event_calendar.term_stdev.keys():
+    for stdev in term_stdev[term]:
+        periodicities.append(stdev + [",".join([str(x) for x in calendar.term_sequences[term]["intervals"]])] + [",".join([str(x) for x in calendar.term_sequences[term]["merged_intervals"]])])
+sorted_periodicities = sorted(periodicities,key = lambda x : x[0])
+for per in sorted_periodicities:
+    outfile.write(str(per[0]) + "\t" + "\t".join(per[1:]) + "\n")
+
+
+#for string in event_calendar.string_events.keys():
+#    print([x.entities for x in event_calendar.string_events[string]])
 
 
 #     date_terms[date].extend()

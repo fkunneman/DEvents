@@ -166,8 +166,10 @@ class Calendar:
         self.term_sequences = defaultdict(lambda : defaultdict(list))
         self.date_terms = defaultdict(list)
         self.term_stdev = defaultdict(list)
+        self.periodicities = []
 
     def add_event(self,event):
+        print(event.entities)
         #update term sequences
         for term in event.entities:
             sequence = self.term_sequences[term]
@@ -258,4 +260,4 @@ class Calendar:
                 #     self.event_string[event.ids[0]] = self.strings
                 #     self.string_events[self.strings].append(event)
                 #     self.strings += 1
-            print(term,sequence["merged_intervals"],self.term_stdev[term])
+        #print(term,sequence["merged_intervals"],self.term_stdev[term])
