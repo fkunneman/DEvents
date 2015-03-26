@@ -229,7 +229,7 @@ class Calendar:
                                     best = sorted(scores,key = lambda x : x[0])[0]
                                     if best[1] < 10:
                                         last_periodic = [index+1,best[1],last_periodic[3]+best[0],len(sequence["merged_intervals"])]
-                                        self.term_stdev[term].append([best[1],", ".join(sequence["merged_dates"][last_periodic[3]+best[0]:]),",".join(sequence["merged_intervals"][last_periodic[3]+best[0]:])])
+                                        self.term_stdev[term].append([best[1],", ".join([str(x) for x in sequence["merged_dates"][last_periodic[3]+best[0]:]]),",".join([str(x) for x in sequence["merged_intervals"][last_periodic[3]+best[0]:]])])
                         else: #calculate from beginning 
                             intervals = sequence["merged_intervals"]
                             if len(intervals) >= 2: #find best periodicity
@@ -240,7 +240,7 @@ class Calendar:
                                 best = sorted(scores,key = lambda x : x[0])[0]
                                 if best[1] < 10:
                                     last_periodic = [0,best[1],best[0],len(sequence["merged_intervals"])]
-                                    self.term_stdev[term].append([best[1],", ".join(sequence["merged_dates"][best[0]:]),",".join(sequence["merged_intervals"][best[0]:])])
+                                    self.term_stdev[term].append([best[1],", ".join([str(x) for x in sequence["merged_dates"][best[0]:]]),",".join([str(x) for x in sequence["merged_intervals"][best[0]:]])])
                                                             # try:      
                         #     string = self.event_string[event.ids[0]]
                         # except KeyError:
