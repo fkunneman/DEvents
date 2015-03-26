@@ -169,7 +169,7 @@ class Calendar:
         self.periodicities = []
 
     def add_event(self,event):
-        print(event.entities)
+        print("entities",event.entities)
         #update term sequences
         for term in event.entities:
             sequence = self.term_sequences[term]
