@@ -215,4 +215,4 @@ class Calendar:
                 #     self.event_string[event.ids[0]] = self.strings
                 #     self.string_events[self.strings].append(event)
                 #     self.strings += 1
-            print(sequence["merged_dates"],sequence["merged_intervals"])
+            print(term,sequence["merged_dates"],sequence["merged_intervals"])

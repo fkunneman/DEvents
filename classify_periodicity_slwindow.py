@@ -27,7 +27,7 @@ event_calendar = event_classes.Calendar()
 infile = open(args.i,"r",encoding="utf-8")
 lines = infile.readlines()
 infile.close()
-for i,line in enumerate(lines[:500]):
+for i,line in enumerate(lines[:1500]):
     tokens = line.strip().split("\t")
     date = time_functions.return_datetime(tokens[0],setting="vs")
     score = tokens[1]
