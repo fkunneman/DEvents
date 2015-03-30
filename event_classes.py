@@ -215,8 +215,8 @@ class Calendar:
                             if bzv:
                                 print("last periodic",index,stdev,intervals)
                             if last_periodic[3] == len(sequence["merged_intervals"])-1: #periodicity until last date
-                                print("periodicity until last date")
                                 stdev = calculations.return_relative_stdev(intervals + [merged_interval])
+                                print("periodicity until last date",intervals,stdev)
                                 if stdev < 10: #update current sequence
                                     self.term_stdev[term][index] = [stdev,sequence["merged_dates"][last_periodic[2]:last_periodic[3]+1],intervals + [merged_interval]]
                                     sequence["last_periodic"] = [index,stdev,last_periodic[2],last_periodic[3]+1]
