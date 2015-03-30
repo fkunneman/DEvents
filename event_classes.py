@@ -169,13 +169,13 @@ class Calendar:
         self.periodicities = []
 
     def add_event(self,event):
-        print("entities",event.entities)
+        #print("entities",event.entities)
         #update term sequences
         for term in event.entities:
             if term == '#bzv':
-                bzv == True
+                bzv = True
             else:
-                bzv == False
+                bzv = False
             sequence = self.term_sequences[term]
             #print("INCOMING",event.ids[0],term,event.date)
             sequence["dates"].append(event.date)
@@ -245,7 +245,7 @@ class Calendar:
                                         scores.append([i,calculations.return_relative_stdev(sequence)])
                                     best = sorted(scores,key = lambda x : x[0])[0]
                                     if best[1] < 10:
-                                        last_periodic = [index+1,best[1],last_periodic[3]+best[0],len(sequence["merged_intervals"])]
+                                        sequence["last_periodic"] = [index+1,best[1],last_periodic[3]+best[0],len(sequence["merged_intervals"])]
                                         self.term_stdev[term].append([best[1],", ".join([str(x) for x in sequence["merged_dates"][last_periodic[3]+best[0]:]]),",".join([str(x) for x in sequence["merged_intervals"][last_periodic[3]+best[0]:]])])
                         else: #calculate from beginning 
                             intervals = sequence["merged_intervals"]
@@ -258,7 +258,7 @@ class Calendar:
                                     scores.append([i,calculations.return_relative_stdev(seq)])
                                 best = sorted(scores,key = lambda x : x[0])[0]
                                 if best[1] < 10:
-                                    last_periodic = [0,best[1],best[0],len(sequence["merged_intervals"])]
+                                    sequence["last_periodic"] = [0,best[1],best[0],len(sequence["merged_intervals"])]
                                     self.term_stdev[term].append([best[1],", ".join([str(x) for x in sequence["merged_dates"][best[0]:]]),",".join([str(x) for x in sequence["merged_intervals"][best[0]:]])])
                                     if bzv:
                                         print("first stdev",[best[1],", ".join([str(x) for x in sequence["merged_dates"][best[0]:]]),",".join([str(x) for x in sequence["merged_intervals"][best[0]:]])])
