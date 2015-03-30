@@ -169,7 +169,7 @@ class Calendar:
         self.periodicities = []
 
     def add_event(self,event):
-#        print("entities",event.entities)
+        #print("entities",event.entities)
         #update term sequences
         for term in event.entities:
             if term == '#bzv':
@@ -218,7 +218,7 @@ class Calendar:
                                 print("periodicity until last date")
                                 stdev = calculations.return_relative_stdev(intervals + [merged_interval])
                                 if stdev < 10: #update current sequence
-                                    self.term_stdev[term][index] = [stdev,", ".join(sequence["merged_dates"][last_periodic[2]:last_periodic[3]+1]),",".join(intervals + [merged_interval])]
+                                    self.term_stdev[term][index] = [stdev,", ".join([str(x) for x in sequence["merged_dates"][last_periodic[2]:last_periodic[3]+1]]),",".join(str(x) for x in intervals + [merged_interval]])]
                                     sequence["last_periodic"] = [index,stdev,last_periodic[2],last_periodic[3]+1]
                                     if bzv:
                                         print("update stdev",sequence["last_periodic"])
@@ -232,7 +232,7 @@ class Calendar:
                                     sequence["merged_dates"] = sequence["merged_dates"][:last_periodic[3]+1] + [event.date]
                                     sequence["merged_intervals"] = sequence["merged_intervals"][:last_periodic[3]+1] + [sum(sequence["merged_intervals"][last_periodic[3]+1:])]
                                     #update current sequence
-                                    self.term_stdev[term][index] = [stdev,", ".join(sequence["merged_dates"][last_periodic[2]:last_periodic[3]+1]),",".join(intervals + [merged_interval])]
+                                    self.term_stdev[term][index] = [stdev,", ".join([str(x) for x in sequence["merged_dates"][last_periodic[2]:last_periodic[3]+1]]),",".join([str(x) for x in intervals + [merged_interval]])]
                                     sequence["last_periodic"] = [index,stdev,last_periodic[2],last_periodic[3]+1]
                             else: #calculate from end of last sequence  
                                 intervals = sequence["merged_intervals"][last_periodic[3]:]
