@@ -205,41 +205,43 @@ class Calendar:
                         sequence["merged_dates"].append(event.date)
                         merged_interval = time_functions.timerel(event.date,sequence["merged_dates"][-2],unit="day")
                         sequence["merged_intervals"].append(merged_interval)
-                        if bzv:
-                            print("NEW",sequence["merged_intervals"])
+                        # if bzv:
+                        #     print("NEW",sequence["merged_intervals"])
                         if len(sequence["last_periodic"]) > 0:
                             last_periodic = sequence["last_periodic"]
                             index = last_periodic[0]
                             stdev = last_periodic[1]
                             intervals = sequence["merged_intervals"][last_periodic[2]:last_periodic[3]]
-                            if bzv:
-                                print("last periodic",index,stdev,intervals)
+                            # if bzv:
+                            #     print("last periodic",index,stdev,intervals)
                             if last_periodic[3] == len(sequence["merged_intervals"])-1: #periodicity until last date
                                 stdev = calculations.return_relative_stdev(intervals + [merged_interval])
-                                if bzv:
-                                    print("periodicity until last date",intervals,stdev)
+                                # if bzv:
+                                #     print("periodicity until last date",intervals,stdev)
                                 if stdev < 10: #update current sequence
 #                                    self.term_stdev[term][index] = [stdev,", ".join([str(x) for x in sequence["merged_dates"][last_periodic[2]:last_periodic[3]+1]]),",".join([str(x) for x in intervals + [merged_interval]])]
                                     self.term_stdev[term][index] = [stdev,sequence["merged_dates"][last_periodic[2]:last_periodic[3]+1],intervals + [merged_interval]]
                                     sequence["last_periodic"] = [index,stdev,last_periodic[2],last_periodic[3]+1]
-                                    if bzv:
-                                        print("update stdev",sequence["last_periodic"])
-                            elif len(sequence["merged_intervals"]) - last_periodic[3] <= 3: #maximum 2 intervals before
-                                #merge intervals in gap (possibly outliers)
-                                stdev = calculations.return_relative_stdev(intervals + [sum(sequence["merged_intervals"][last_periodic[3]:])])
-                                if bzv:
-                                    print("merge intervals option",intervals + [sum(sequence["merged_intervals"][last_periodic[3]:])])
-                                if stdev < 10:
-                                    #break gap from dates and intervals
-                                    sequence["merged_dates"] = sequence["merged_dates"][:last_periodic[3]+1] + [event.date]
-                                    sequence["merged_intervals"] = sequence["merged_intervals"][:last_periodic[3]+1] + [sum(sequence["merged_intervals"][last_periodic[3]+1:])]
-                                    #update current sequence
-                                    self.term_stdev[term][index] = [stdev,sequence["merged_dates"][last_periodic[2]:last_periodic[3]+1],intervals + [merged_interval]]
-                                    sequence["last_periodic"] = [index,stdev,last_periodic[2],last_periodic[3]+1]
-                            else: #calculate from end of last sequence  
+                                    # if bzv:
+                                    #     print("update stdev",sequence["last_periodic"])
+                            else:
+                                if len(sequence["merged_intervals"]) - last_periodic[3] <= 3: #maximum 2 intervals before
+                                    #merge intervals in gap (possibly outliers)
+                                    stdev = calculations.return_relative_stdev(intervals + [sum(sequence["merged_intervals"][last_periodic[3]:])])
+                                    # if bzv:
+                                    #     print("merge intervals option",intervals + [sum(sequence["merged_intervals"][last_periodic[3]:])])
+                                    if stdev < 10:
+                                        #break gap from dates and intervals
+                                        sequence["merged_dates"] = sequence["merged_dates"][:last_periodic[3]+1] + [event.date]
+                                        sequence["merged_intervals"] = sequence["merged_intervals"][:last_periodic[3]+1] + [sum(sequence["merged_intervals"][last_periodic[3]+1:])]
+                                        #update current sequence
+                                        self.term_stdev[term][index] = [stdev,sequence["merged_dates"][last_periodic[2]:last_periodic[3]+1],intervals + [merged_interval]]
+                                        sequence["last_periodic"] = [index,stdev,last_periodic[2],last_periodic[3]+1]
+                                        continue
+                            # else: #calculate from end of last sequence  
                                 intervals = sequence["merged_intervals"][last_periodic[3]:]
-                                if bzv:
-                                    print("new sequence calculation",intervals)
+                                # if bzv:
+                                #     print("new sequence calculation",intervals)
                                 if len(intervals) >= 2: #find best periodicity
                                     scores = []
                                     for i in range(len(intervals[:-1])):
@@ -251,8 +253,7 @@ class Calendar:
                                         self.term_stdev[term].append([best[1],sequence["merged_dates"][last_periodic[3]+best[0]:],sequence["merged_intervals"][last_periodic[3]+best[0]:]])
                         else: #calculate from beginning 
                             intervals = sequence["merged_intervals"]
-                            if bzv:
-                                print("calculate from first")
+
                             if len(intervals) >= 2: #find best periodicity
                                 scores = []
                                 for i in range(len(intervals[:-1])):
@@ -262,8 +263,8 @@ class Calendar:
                                 if best[1] < 10:
                                     sequence["last_periodic"] = [0,best[1],best[0],len(sequence["merged_intervals"])]
                                     self.term_stdev[term].append([best[1],sequence["merged_dates"][best[0]:],sequence["merged_intervals"][best[0]:]])
-                                    if bzv:
-                                        print("first stdev",[best[1],", ".join([str(x) for x in sequence["merged_dates"][best[0]:]]),",".join([str(x) for x in sequence["merged_intervals"][best[0]:]])])
+                                    # if bzv:
+                                    #     print("first stdev",[best[1],", ".join([str(x) for x in sequence["merged_dates"][best[0]:]]),",".join([str(x) for x in sequence["merged_intervals"][best[0]:]])])
                                          # try:      
                         #     string = self.event_string[event.ids[0]]
                         # except KeyError:
