@@ -42,7 +42,7 @@ outfile = open(args.o + "test.txt","w",encoding = "utf-8")
 periodicities = []
 for term in event_calendar.term_stdev.keys():
     for stdev in event_calendar.term_stdev[term]:
-        periodicities.append(stdev + [",".join([str(x) for x in calendar.term_sequences[term]["intervals"]])] + [",".join([str(x) for x in calendar.term_sequences[term]["merged_intervals"]])])
+        periodicities.append(stdev + [term] + [",".join([str(x) for x in event_calendar.term_sequences[term]["intervals"]])] + [",".join([str(x) for x in event_calendar.term_sequences[term]["merged_intervals"]])])
 sorted_periodicities = sorted(periodicities,key = lambda x : x[0])
 for per in sorted_periodicities:
     outfile.write(str(per[0]) + "\t" + "\t".join(per[1:]) + "\n")
