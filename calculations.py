@@ -504,7 +504,7 @@ def return_segmentation(sequence):
         for i,segment in enumerate(segments):
             segment_stdev[i][i+n] = return_relative_stdev(segment) + (100-(n/len(sequence) * 100))
             sst.append([[i,i+n],segment_stdev[i][i+n]])
-    top = sorted(sst,key = lambda k : k[1])[:3]
+    top = sorted(sst,key = lambda k : k[1])
     for seg in top:
         st = seg[0][0]
         #if st<0:
@@ -547,7 +547,7 @@ def return_segmentation(sequence):
                     i+=1
         print(seg,newseq)
                                          
-    return sorted(sst,key = lambda k : k[1])[:3]
+    return sorted(sst,key = lambda k : k[1])
 #    quit()
     #find optimal segmentation
  #   all_combs = []
@@ -610,3 +610,6 @@ def find_outliers(sequence):
 #    if len(seq) == len(sequence):
 #       quit() 
 #    find_outliers([x[1] for x in seq])
+
+
+
