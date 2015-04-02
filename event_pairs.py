@@ -194,18 +194,22 @@ class Event_pairs:
     def select_date_entity_tweets(self,new_tweets):
         tokenizer = ucto.Tokenizer(self.ucto_settingsfile)
         for tweet in new_tweets:
+            print("new tweet")
             tokens = tweet.strip().split("\t")
             tokenizer.process(tokens[-1])
             text = " ".join([x.text.lower() for x in tokenizer])
+            print("tokenized",text)
             try:
                 date = time_functions.return_datetime(tokens[2],setting="vs").date()
             except:
                 print("dateerror",tweet,tokens)
+            print("dateextract")
             dateref_phrase = calculations.extract_date(text,date)
             if dateref_phrase:
                 if len(dateref_phrase) > 2:
                     dtweet = event_classes.Tweet()
                     chunks = dateref_phrase[0]
+                    print("citymatch")
                     if self.cities:
                         citymatch = calculations.return_cities(chunks,self.cities)
                         chunks = citymatch[0]
@@ -214,11 +218,13 @@ class Event_pairs:
                     units = [tokens[1],tokens[6],date,text,dateref_phrase[2:],chunks]
                     dtweet.set_meta(units)
                     dtweet.set_phrase(dateref_phrase[1])
+                    print("frogging")
                     if self.frogger:
                         dtweet.set_postags(calculations.return_postags(text,self.frogger))
                     else:
                         dtweet.set_postags([])
                     entities = []
+                    print("cs")
                     for chunk in chunks:
                         entities.extend(calculations.extract_entity(chunk,self.classencoder,self.dmodel))
                     entities = sorted(entities,key = lambda x: x[1],reverse=True)
@@ -226,6 +232,7 @@ class Event_pairs:
                         entities.extend([(x,0) for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1])
                     dtweet.set_entities([x[0] for x in entities])
                     self.tweets.append(dtweet)
+            print("done")
                        
     def rank_events(self):
         date_entity_score = []
