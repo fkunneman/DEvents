@@ -220,7 +220,7 @@ class Calendar:
                                     #update current sequence
                                     self.term_stdev[term][index] = [stdev,sequence["merged_dates"][last_periodic[2]:last_periodic[3]+1],intervals + [merged_interval]]
                                     sequence["last_periodic"] = [index,stdev,last_periodic[2],last_periodic[3]+1]
-                                    continue
+                                    #continue
                             intervals = sequence["merged_intervals"][last_periodic[3]:]
                             if len(intervals) >= 2: #find best periodicity
                                 scores = []
