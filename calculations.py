@@ -504,6 +504,7 @@ def return_segmentation(sequence):
         for i,segment in enumerate(segments):
             segment_stdev[i][i+n] = return_relative_stdev(segment) + (100-(n/len(sequence) * 100))
             sst.append([[i,i+n],segment_stdev[i][i+n]])
+#    print("sst",sst)
     top = sorted(sst,key = lambda k : k[1])
     for seg in top:
         st = seg[0][0]
@@ -520,7 +521,7 @@ def return_segmentation(sequence):
         db = range(int((median*2)-3),int((median*2)+3))
         spl = range(int(median-3),int(median+3))
         newseq = []
-        print(testseq)
+ #       print(testseq)
         while i < len(testseq):
             if testseq[i] in db:
                 newseq.append([int(x) for x in [(testseq[i]/2)] * 2])
@@ -545,7 +546,7 @@ def return_segmentation(sequence):
                 else:
                     newseq.append(testseq[i])
                     i+=1
-        print(seg,newseq)
+  #      print(seg,newseq)
                                          
     return sorted(sst,key = lambda k : k[1])
 #    quit()
