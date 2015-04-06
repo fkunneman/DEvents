@@ -176,13 +176,14 @@ class Calendar:
                 #check interval
                 interval = time_functions.timerel(event.date,sequence["dates"][-1],unit="day")
                 if interval == 0:
-                    add == False
+                    add = False
                 else:
                     sequence["intervals"].append(interval)
             if add:
                 sequence["dates"].append(event.date)
                 sequence["weekdays"].append(event.date.weekday())
                 sequence["weeknrs"].append(event.date.isocalendar()[1])
+                sequence["years"].append(event.date.year)
                 sequence["months"].append(event.date.month)
                 sequence["month_weekday"].append([event.date.month,event.date.weekday(),
                     int(time_functions.timerel(event.date,datetime.datetime(event.date.year,\
