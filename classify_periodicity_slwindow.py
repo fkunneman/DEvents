@@ -38,6 +38,9 @@ for i,line in enumerate(lines):
     event.add_tids(ids)
     event_calendar.add_event(event)
 
+for es in event_calendar.entity_sequences.keys():
+    print(es,"\t",event_calendar.entity_sequences[es])
+
 # outfile = open(args.o + "test.txt","w",encoding = "utf-8")
 # periodicities = []
 # for term in event_calendar.term_stdev.keys():
