@@ -249,7 +249,7 @@ class Calendar:
                     #     self.string_events[self.strings].append(event)
                     #    self.strings += 1
             if new:      
-                date = timefunctions.return_datetime(event.date)
+                date = time_functions.return_datetime(event.date)
                 sequence["dates"].append(event.date)
                 sequence["weekdays"].append(date.weekday())
                 sequence["weeknrs"].append(date.isocalendar[1])
