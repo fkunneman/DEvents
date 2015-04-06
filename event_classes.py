@@ -178,11 +178,11 @@ class Calendar:
             sequence["months"].append(event.date.month)
             sequence["month_weekday"].append([event.date.month,event.date.weekday(),
                 int(time_functions.timerel(event.date,datetime.datetime(event.date.year,\
-                    event.date.month,1)) / 7) + 1])
+                    event.date.month,1),"day") / 7) + 1])
             sequence["events"].append(event)
-            if len(sequence.keys()) > 0: #there are one or more earlier entries with the term
+            if len(sequence["dates"]) > 1: #there are one or more earlier entries with the term
                 #check interval
-                interval = time_functions.timerel(event.date,sequence["dates"][-1],unit="day")
+                interval = time_functions.timerel(event.date,sequence["dates"][-2],unit="day")
                 if interval > 0:
                     sequence["intervals"].append(interval)
 
