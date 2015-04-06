@@ -170,22 +170,24 @@ class Calendar:
     #TODO event merge (but not in any case)
     def add_event(self,event):
         for entity in event.entities:
-            #update term sequences
+            add = True
             sequence = self.entity_sequences[entity]
-            sequence["dates"].append(event.date)
-            sequence["weekdays"].append(event.date.weekday())
-            sequence["weeknrs"].append(event.date.isocalendar()[1])
-            sequence["months"].append(event.date.month)
-            sequence["month_weekday"].append([event.date.month,event.date.weekday(),
-                int(time_functions.timerel(event.date,datetime.datetime(event.date.year,\
-                    event.date.month,1),"day") / 7) + 1])
-            sequence["events"].append(event)
-            if len(sequence["dates"]) > 1: #there are one or more earlier entries with the term
+            if len(sequence.keys()) > 0: #there are one or more earlier entries with the term
                 #check interval
-                interval = time_functions.timerel(event.date,sequence["dates"][-2],unit="day")
-                if interval > 0:
+                interval = time_functions.timerel(event.date,sequence["dates"][-1],unit="day")
+                if interval == 0:
+                    add == False
+                else:
                     sequence["intervals"].append(interval)
-
+            if add:
+                sequence["dates"].append(event.date)
+                sequence["weekdays"].append(event.date.weekday())
+                sequence["weeknrs"].append(event.date.isocalendar()[1])
+                sequence["months"].append(event.date.month)
+                sequence["month_weekday"].append([event.date.month,event.date.weekday(),
+                    int(time_functions.timerel(event.date,datetime.datetime(event.date.year,\
+                        event.date.month,1),"day") / 7) + 1])
+                sequence["events"].append(event)
 
 
 
