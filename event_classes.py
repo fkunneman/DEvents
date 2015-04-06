@@ -193,7 +193,7 @@ class Calendar:
                             stdev = last_periodic[1]
                             intervals = sequence["intervals"][last_periodic[2]:last_periodic[3]]
                             if last_periodic[3] == len(sequence["intervals"]): #periodicity until last date
-                                stdev = calculations.return_relative_stdev(sequene["intervals"])
+                                stdev = calculations.return_relative_stdev(sequence["intervals"])
                                 if stdev < 10: #update current sequence
                                     #self.term_stdev[term][index] = [stdev,", ".join([str(x) for x in sequence["merged_dates"][last_periodic[2]:last_periodic[3]+1]]),",".join([str(x) for x in intervals + [merged_interval]])]
                                     self.term_stdev[term][index] = [stdev,sequence["dates"][last_periodic[2]:last_periodic[3]+1] + event.date,intervals + interval]
@@ -249,11 +249,12 @@ class Calendar:
                     #     self.string_events[self.strings].append(event)
                     #    self.strings += 1
             if new:      
+                date = timefunctions.return_datetime(event.date)
                 sequence["dates"].append(event.date)
-                sequence["weekdays"].append(event.date.weekday())
-                sequence["weeknrs"].append(event.date.isocalendar[1])
-                sequence["months"].append(event.date.month)
-                sequence["month_weekday"].append([event.date.month,event.date.weekday(),
-                    int(time_functions.timerel(event.date - datetime.date(event.date.year,\
-                        event.date.month,1))/ 7) + 1])
+                sequence["weekdays"].append(date.weekday())
+                sequence["weeknrs"].append(date.isocalendar[1])
+                sequence["months"].append(date.month)
+                sequence["month_weekday"].append([date.month,date.weekday(),
+                    int(time_functions.timerel(event.date - datetime.date(date.year,\
+                        date.month,1))/ 7) + 1])
                 sequence["events"].append(event)
