@@ -177,7 +177,7 @@ class Calendar:
             sequence["weeknrs"].append(event.date.isocalendar()[1])
             sequence["months"].append(event.date.month)
             sequence["month_weekday"].append([event.date.month,event.date.weekday(),
-                int(time_functions.timerel(event.date,datetime(event.date.year,\
+                int(time_functions.timerel(event.date,datetime.datetime(event.date.year,\
                     event.date.month,1)) / 7) + 1])
             sequence["events"].append(event)
             if len(sequence.keys()) > 0: #there are one or more earlier entries with the term
