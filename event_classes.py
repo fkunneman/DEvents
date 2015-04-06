@@ -1,10 +1,12 @@
 #!/usr/bin/env 
 
-import calculations
 import numpy
 import re
 import string
 from collections import defaultdict
+import datetime
+
+import calculations
 import time_functions
 
 class Tweet:
@@ -169,15 +171,14 @@ class Calendar:
     def add_event(self,event):
         for entity in event.entities:
             #update term sequences
-
             sequence = self.entity_sequences[entity]
             sequence["dates"].append(event.date)
             sequence["weekdays"].append(event.date.weekday())
-            sequence["weeknrs"].append(event.date.isocalendar[1])
+            sequence["weeknrs"].append(event.date.isocalendar()[1])
             sequence["months"].append(event.date.month)
             sequence["month_weekday"].append([event.date.month,event.date.weekday(),
-                int(time_functions.timerel(event.date - datetime.date(event.date.year,\
-                    event.date.month,1))/ 7) + 1])
+                int(time_functions.timerel(event.date,datetime(event.date.year,\
+                    event.date.month,1)) / 7) + 1])
             sequence["events"].append(event)
             if len(sequence.keys()) > 0: #there are one or more earlier entries with the term
                 #check interval
