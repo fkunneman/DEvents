@@ -38,14 +38,14 @@ for i,line in enumerate(lines):
     event.add_tids(ids)
     event_calendar.add_event(event)
 
-outfile = open(args.o + "test.txt","w",encoding = "utf-8")
-periodicities = []
-for term in event_calendar.term_stdev.keys():
-    for stdev in event_calendar.term_stdev[term]:
-        periodicities.append([stdev[0]] + [term] + [",".join([str(x) for x in stdev[1]])] + [",".join([str(x) for x in stdev[2]])] + [",".join([str(x) for x in event_calendar.term_sequences[term]["intervals"]])])
-sorted_periodicities = sorted(periodicities,key = lambda x : x[0])
-for per in sorted_periodicities:
-    outfile.write(str(per[0]) + "\t" + "\t".join(per[1:]) + "\n")
+# outfile = open(args.o + "test.txt","w",encoding = "utf-8")
+# periodicities = []
+# for term in event_calendar.term_stdev.keys():
+#     for stdev in event_calendar.term_stdev[term]:
+#         periodicities.append([stdev[0]] + [term] + [",".join([str(x) for x in stdev[1]])] + [",".join([str(x) for x in stdev[2]])] + [",".join([str(x) for x in event_calendar.term_sequences[term]["intervals"]])])
+# sorted_periodicities = sorted(periodicities,key = lambda x : x[0])
+# for per in sorted_periodicities:
+#     outfile.write(str(per[0]) + "\t" + "\t".join(per[1:]) + "\n")
 
 
 #for string in event_calendar.string_events.keys():
