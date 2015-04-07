@@ -164,18 +164,18 @@ class Calendar:
         # self.event_pattern = {}
         # self.pattern_events = defaultdict(list)
         self.entity_sequences = defaultdict(lambda : defaultdict(list))
-        self.date_terms = defaultdict(list)
+        #self.date_terms = defaultdict(list)
         self.periodicities = []
-
+        self.term_stdev = defaultdict(lambda : defaultdict(list))
 
 
     #TODO event merge (but not in any case)
     def add_event(self,event):
         for i,entity in enumerate(event.entities):
-            date_terms[event.date].append(entity)
+            #date_terms[event.date].append(entity)
             add = True
             sequence = self.entity_sequences[entity]
-            sequence["entities"].extend(event.entities[:i] + event.entities[])
+            #sequence["entities"].extend(event.entities[:i] + event.entities[])
             if len(sequence.keys()) > 0: #there are one or more earlier entries with the term
                 #check interval
                 interval = time_functions.timerel(event.date,sequence["dates"][-1],unit="day")
@@ -192,7 +192,7 @@ class Calendar:
                         - remove / insert by date patterns
                         """
                         stdev = calculations.return_relative_stdev(sequence["intervals"])
-                        self.term_stdev[term][0] = [stdev,sequence["dates"] + event.date,sequence["intervals"]]
+                        self.term_stdev[entity][0] = [stdev,sequence["dates"] + [event.date],sequence["intervals"]]
     #                     if len(sequence["last_periodic"]) > 0:
     #                         last_periodic = sequence["last_periodic"]
     #                         index = last_periodic[0]

@@ -40,15 +40,17 @@ for i,line in enumerate(lines):
     event = event_classes.Event(i,[date,terms,score,tweets])
     event.add_tids(ids)
     event_calendar.add_event(event)
-    if date >= datetime.date(2014,01,01) and date <= datetime.date(2014,06,30):
-        for entity in event.entity:
-            term_periodicity.append([entity,event_calendar.term_stdev[entity][0][0],event_calendar.term_stdev[entity][0][1:]])
+    if date >= datetime.datetime(2014,1,1) and date <= datetime.datetime(2014,6,30):
+        for entity in event.entities:
+            if len(event_calendar.term_stdev[entity].keys()) > 0:
+                term_periodicity.append([entity,event_calendar.term_stdev[entity][0][0],event_calendar.term_stdev[entity][0][1],event_calendar.term_stdev[entity][0][2]])
 
 sorted_term_periodicity = sorted(term_periodicity,key = lambda x : x[1])
-outfile = open(args.o + "baseline_2014_firsthalf.txt","w","utf-8")
+outfile = open(args.o + "baseline_2014_firsthalf.txt","w",encoding = "utf-8")
 for tp in sorted_term_periodicity:
-    outfile.write(tp[0] + "\t" tp[1] + "\t" + "---".join(tp[2:]) + "\n")
-
+    print(tp)
+    outfile.write(tp[0] + "\t" + str(tp[1]) + "\t" + ",".join([str(x) for x in tp[2]]) + "\t" + ",".join([str(x) for x in tp[3]]) + "\n")
+outfile.close()
 
 #for es in event_calendar.entity_sequences.keys():
 #    print(es,"\t",event_calendar.entity_sequences[es])
