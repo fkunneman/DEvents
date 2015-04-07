@@ -634,7 +634,7 @@ def cluster_time_vectors(terms,sequences,term_candidates,begin_date,end_date,k):
     for i,vector1 in enumerate(vectors):
         print(i,"of",len(vectors),"vectors")
         similarities = []
-        candidates = [[terms.index(x),vectors[terms.index(x)]] for x in term_candidates[terms[i]]]
+        candidates = [[terms.index(x),vectors[terms.index(x)]] for x in term_candidates[i]]
         for c in candidates:
             similarities.append([c[0],numpy.dot(vector1,c[1])])
         vector_neighbours[i] = [x[0] for x in sorted(similarities,key = lambda k : k[1],reverse = True)[:k]]
