@@ -45,7 +45,7 @@ for i,line in enumerate(lines):
             if len(event_calendar.term_stdev[entity].keys()) > 0:
                 term_periodicity[entity] = [event_calendar.term_stdev[entity][0][0],event_calendar.term_stdev[entity][0][1],event_calendar.term_stdev[entity][0][2]]
 
-tps = [k,term_periodicity[k]]
+tps = [[k,term_periodicity[k]] for k in term_periodicity.keys()]
 sorted_term_periodicity = sorted(tps,key = lambda x : x[1][0])
 outfile = open(args.o + "baseline_2014_firsthalf.txt","w",encoding = "utf-8")
 for tp in sorted_term_periodicity:
