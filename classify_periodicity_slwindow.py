@@ -62,7 +62,7 @@ outfile.close()
 #clusterterms
 outfile = open(args.o + "baseline_2014_firsthalf_clustered.txt","w",encoding = "utf-8")
 dateseqs = [x[1][1] for x in sorted_term_periodicity_cutoff]
-clusters = calculations.cluster_time_vectors(dateseqs,datetime.datetime(2010,12,1),datetime.datetime(2014,7,1),3)
+clusters = calculations.cluster_time_vectors(dateseqs[:500],datetime.datetime(2010,12,1),datetime.datetime(2014,7,1),3)
 infoclusters = []
 for cluster in clusters.keys():
     vecs = clusters[cluster]

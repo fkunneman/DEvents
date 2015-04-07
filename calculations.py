@@ -638,7 +638,7 @@ def cluster_time_vectors(sequences,begin_date,end_date,k):
         for c in candidates:
             if c[0] != i:
                 similarities.append([c[0],numpy.dot(vector1,c[1])])
-        vector_neighbours[i] = sorted(similarities,key = lambda k : k[1],reverse = True)[:k]
+        vector_neighbours[i] = [x[0] for x in sorted(similarities,key = lambda k : k[1],reverse = True)[:k]]
     #perform clustering
     print("clustering")
     for i in range(len(vectors)):
