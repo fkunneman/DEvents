@@ -612,7 +612,8 @@ def find_outliers(sequence):
 #       quit() 
 #    find_outliers([x[1] for x in seq])
 
-def date_vectorize(sequences,begin_date,end_date):
+def cluster_time_vectors(sequences,begin_date,end_date,k):
+    #vectorize date sequences
     days = time_functions.timerel(end_date,begin_date)
     standard_sequence = days * [0]
     vectors = []
@@ -621,9 +622,6 @@ def date_vectorize(sequences,begin_date,end_date):
         for date in sequence:
             vector[time_functions.timerel(end_date,begin_date)] = 1
         vectors.append(vector)
-    return vectors
-
-def cluster_time_vectors(vectors,k):
     #generate initial clusters
     vector_cluster = {}
     cluster_vectors = defaultdict(list)
@@ -634,10 +632,12 @@ def cluster_time_vectors(vectors,k):
     #generate nearest neighbours
     print("extracting nearest neighbours")
     for i,vector1 in enumerate(vectors):
+        print(i,"of",len(vectors),"vectors")
         similarities = []
-        for j,vector2 in enumerate(vectors):
-            if j != i:
-                similarities.append(j,numpy.dot(vector1,vector2))
+        candidates = [[j,vec] for j,vec in enumerate(vectors) if len(set(sequences[i]) & set(sequences[j])) > 0]
+        for c in candidates:
+            if c[0] != i:
+                similarities.append(c[0],numpy.dot(vector1,c[1]))
         vector_neighbours[i] = sorted(similarities,key = lambda k : k[1],reverse = True)[:k]
     #perform clustering
     print("clustering")
