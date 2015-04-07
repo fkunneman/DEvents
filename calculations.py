@@ -612,5 +612,43 @@ def find_outliers(sequence):
 #       quit() 
 #    find_outliers([x[1] for x in seq])
 
+def date_vectorize(sequences,begin_date,end_date):
+    days = time_functions.timerel(end_date,begin_date)
+    standard_sequence = days * [0]
+    vectors = []
+    for sequence in sequences:
+        vector = standard_sequence
+        for date in sequence:
+            vector[time_functions.timerel(end_date,begin_date)] = 1
+        vectors.append(vector)
+    return vectors
 
+def cluster_time_vectors(vectors,k):
+    #generate initial clusters
+    vector_cluster = {}
+    cluster_vectors = defaultdict(list)
+    vector_neighbours = defaultdict(list)
+    for i in range(len(vectors)):
+        vector_cluster[i] = i
+        cluster_vectors[i] = [i]
+    #generate nearest neighbours
+    print("extracting nearest neighbours")
+    for i,vector1 in enumerate(vectors):
+        similarities = []
+        for j,vector2 in enumerate(vectors):
+            if j != i:
+                similarities.append(j,numpy.dot(vector1,vector2))
+        vector_neighbours[i] = sorted(similarities,key = lambda k : k[1],reverse = True)[:k]
+    #perform clustering
+    print("clustering")
+    for i in range(len(vectors)):
+        candidates = [x for x in vector_neighbours[i] if vector_cluster[x] != vector_cluster[i]]
+        for j in candidates:
+            if i in vector_neighbours[j]:
+                if vector_cluster[j] != j:
+                    print("clusterrisk",i,j,cluster_vectors[vector_cluster[i]],cluster_vectors[vector_cluster[j]])
+                del cluster_vectors[vector_cluster[j]]
+                vector_cluster[j] = vector_cluster[i]
+                cluster_vectors[vector_cluster[i]].append(j)
 
+    return cluster_vectors

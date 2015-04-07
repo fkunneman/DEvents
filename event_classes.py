@@ -185,7 +185,8 @@ class Calendar:
                     sequence["intervals"].append(interval)
                     #minimum requirement for periodicity
                     if len(sequence["intervals"]) >= 2 and \
-                        len([x for x in sequence["intervals"] if x > 5]) == len(sequence["intervals"]):
+                        len([x for x in sequence["intervals"] if x > 5]) == \
+                        len(sequence["intervals"]):
                         """
                         options:
                         - interval stdev (baseline)
@@ -194,7 +195,11 @@ class Calendar:
                         - remove / insert by date patterns
                         """
                         stdev = calculations.return_relative_stdev(sequence["intervals"])
-                        self.term_stdev[entity][0] = [stdev,sequence["dates"] + [event.date],sequence["intervals"]]
+                        self.term_stdev[entity][0] = [stdev,sequence["dates"] + \
+                            [event.date],sequence["intervals"]]
+
+
+
     #                     if len(sequence["last_periodic"]) > 0:
     #                         last_periodic = sequence["last_periodic"]
     #                         index = last_periodic[0]
