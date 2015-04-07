@@ -646,8 +646,11 @@ def cluster_time_vectors(sequences,begin_date,end_date,k):
         for j in candidates:
             if i in vector_neighbours[j]:
                 if vector_cluster[j] != j:
-                    print("clusterrisk",i,j,cluster_vectors[vector_cluster[i]],cluster_vectors[vector_cluster[j]])
-                del cluster_vectors[vector_cluster[j]]
+                    print("clusterrisk",i,j,cluster_vectors[vector_cluster[i]],cluster_vectors[vector_cluster[j]],sequences[i],sequences[j])
+                try:
+                    del cluster_vectors[vector_cluster[j]]
+                except KeyError:
+                    print("already deleted")
                 vector_cluster[j] = vector_cluster[i]
                 cluster_vectors[vector_cluster[i]].append(j)
 
