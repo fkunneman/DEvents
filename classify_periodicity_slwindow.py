@@ -62,14 +62,14 @@ outfile.close()
 #clusterterms
 outfile = open(args.o + "baseline_2014_firsthalf_clustered.txt","w",encoding = "utf-8")
 dateseqs = [x[1][1] for x in sorted_term_periodicity_cutoff]
-clusters = calculations.cluster_time_vectors(dateseqs[:500],datetime.datetime(2010,12,1),datetime.datetime(2014,7,1),3)
+clusters = calculations.cluster_time_vectors(dateseqs,datetime.datetime(2010,12,1),datetime.datetime(2014,7,1),3)
 infoclusters = []
 for cluster in clusters.keys():
     vecs = clusters[cluster]
     info = [sorted_term_periodicity_cutoff[x] for x in vecs]
     terms = [x[0] for x in info]
     stdevs = sorted([x[1][0] for x in info])
-    dateseqs = [",".join([str(d) for x in x[1][1]]) for x in info]
+    dateseqs = [",".join([str(d) for d in x[1][1]]) for x in info]
     intervals = [",".join([str(i) for i in x[1][2]]) for x in info]
     infoclusters.append([",".join(terms),stdevs,"---".join(dateseqs),"---".join(intervals)])
 sorted_info_clusters = sorted(infoclusters,key = lambda x : x[1][0])
