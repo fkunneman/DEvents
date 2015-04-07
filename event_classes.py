@@ -167,11 +167,15 @@ class Calendar:
         self.date_terms = defaultdict(list)
         self.periodicities = []
 
+
+
     #TODO event merge (but not in any case)
     def add_event(self,event):
-        for entity in event.entities:
+        for i,entity in enumerate(event.entities):
+            date_terms[event.date].append(entity)
             add = True
             sequence = self.entity_sequences[entity]
+            sequence["entities"].extend(event.entities[:i] + event.entities[])
             if len(sequence.keys()) > 0: #there are one or more earlier entries with the term
                 #check interval
                 interval = time_functions.timerel(event.date,sequence["dates"][-1],unit="day")
@@ -179,35 +183,16 @@ class Calendar:
                     add = False
                 else:
                     sequence["intervals"].append(interval)
-            if add:
-                sequence["dates"].append(event.date)
-                sequence["weekdays"].append(event.date.weekday())
-                sequence["weeknrs"].append(event.date.isocalendar()[1])
-                sequence["years"].append(event.date.year)
-                sequence["months"].append(event.date.month)
-                sequence["month_weekday"].append([event.date.month,event.date.weekday(),
-                    int(time_functions.timerel(event.date,datetime.datetime(event.date.year,\
-                        event.date.month,1),"day") / 7) + 1])
-                sequence["events"].append(event)
-
-
-
-
-
-
-
-    #             if interval <= 1:
-    #                 new = False
-    #             if interval > 1: #separate events
-    #                 sequence["intervals"].append(interval)
-    #                 if len(sequence["intervals"]) >= 2: #minimum requirement for periodicity
-    #                     """
-    #                     options:
-    #                     - interval stdev (baseline)
-    #                     - segment stdev
-    #                     - segment periodicity
-    #                     - remove / insert by date patterns
-    #                     """
+                    if len(sequence["intervals"]) >= 2: #minimum requirement for periodicity
+                        """
+                        options:
+                        - interval stdev (baseline)
+                        - segment stdev
+                        - segment periodicity
+                        - remove / insert by date patterns
+                        """
+                        stdev = calculations.return_relative_stdev(sequence["intervals"])
+                        self.term_stdev[term][0] = [stdev,sequence["dates"] + event.date,sequence["intervals"]]
     #                     if len(sequence["last_periodic"]) > 0:
     #                         last_periodic = sequence["last_periodic"]
     #                         index = last_periodic[0]
@@ -253,15 +238,45 @@ class Calendar:
     #                             if best[1] < 10:
     #                                 sequence["last_periodic"] = [0,best[1],best[0],len(sequence["intervals"])]
     #                                 self.term_stdev[term].append([best[1],sequence["dates"][best[0]:],sequence["intervals"][best[0]:]])
-    #                     # try:      
-    #                     #     string = self.event_string[event.ids[0]]
-    #                     # except KeyError:
-    #                     #     self.event_string[event.ids[0]] = self.strings
-    #                     #     self.string_events[self.strings].append(event)
-    #                     #     self.strings += 1
-    #             #else:
-    #                 #sequence["events"].append(event)
-    #                 #sequence["merged_dates"].append(event.date)
+                        # try:      
+                        #     string = self.event_string[event.ids[0]]
+                        # except KeyError:
+                        #     self.event_string[event.ids[0]] = self.strings
+                        #     self.string_events[self.strings].append(event)
+                        #     self.strings += 1
+                #else:
+                    #sequence["events"].append(event)
+                    #sequence["merged_dates"].append(event.date)
+
+
+            if add:
+                sequence["dates"].append(event.date)
+                sequence["weekdays"].append(event.date.weekday())
+                sequence["weeknrs"].append(event.date.isocalendar()[1])
+                sequence["years"].append(event.date.year)
+                sequence["months"].append(event.date.month)
+                sequence["month_weekday"].append([event.date.month,event.date.weekday(),
+                    int(time_functions.timerel(event.date,datetime.datetime(event.date.year,\
+                        event.date.month,1),"day") / 7) + 1])
+                sequence["events"].append(event)
+
+
+
+    #def cluster_entities(self):
+
+
+
+    #def rank_periodicity(self,date_begin,date_end):
+        #
+
+
+
+
+
+
+
+
+
 
                     # try:
                     #     string = self.event_string[event.ids[0]]

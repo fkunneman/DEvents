@@ -3,6 +3,7 @@
 import argparse
 from collections import defaultdict
 import ucto
+import datetime
 
 import event_classes
 import calculations
@@ -27,7 +28,9 @@ event_calendar = event_classes.Calendar()
 infile = open(args.i,"r",encoding="utf-8")
 lines = infile.readlines()
 infile.close()
+term_periodicity = []
 for i,line in enumerate(lines):
+    print(i,"of",len(lines))
     tokens = line.strip().split("\t")
     date = time_functions.return_datetime(tokens[0],setting="vs")
     score = tokens[1]
@@ -37,9 +40,18 @@ for i,line in enumerate(lines):
     event = event_classes.Event(i,[date,terms,score,tweets])
     event.add_tids(ids)
     event_calendar.add_event(event)
+    if date >= datetime.date(2014,01,01) and date <= datetime.date(2014,06,30):
+        for entity in event.entity:
+            term_periodicity.append([entity,event_calendar.term_stdev[entity][0][0],event_calendar.term_stdev[entity][0][1:]])
 
-for es in event_calendar.entity_sequences.keys():
-    print(es,"\t",event_calendar.entity_sequences[es])
+sorted_term_periodicity = sorted(term_periodicity,key = lambda x : x[1])
+outfile = open(args.o + "baseline_2014_firsthalf.txt","w","utf-8")
+for tp in sorted_term_periodicity:
+    outfile.write(tp[0] + "\t" tp[1] + "\t" + "---".join(tp[2:]) + "\n")
+
+
+#for es in event_calendar.entity_sequences.keys():
+#    print(es,"\t",event_calendar.entity_sequences[es])
 
 # outfile = open(args.o + "test.txt","w",encoding = "utf-8")
 # periodicities = []
