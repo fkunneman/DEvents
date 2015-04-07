@@ -183,7 +183,9 @@ class Calendar:
                     add = False
                 else:
                     sequence["intervals"].append(interval)
-                    if len(sequence["intervals"]) >= 2: #minimum requirement for periodicity
+                    #minimum requirement for periodicity
+                    if len(sequence["intervals"]) >= 2 and 
+                        len([x for x in sequence["intervals"] if x > 5]) == len(sequence["intervals"]):
                         """
                         options:
                         - interval stdev (baseline)
