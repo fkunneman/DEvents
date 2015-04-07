@@ -175,8 +175,6 @@ class Calendar:
             #date_terms[event.date].append(entity)
             add = True
             sequence = self.entity_sequences[entity]
-            sequence["entities"].extend([x for x in event.entities if x != entity])
-            sequence["entities"] = list(set(sequence["entities"]))
             if len(sequence.keys()) > 0: #there are one or more earlier entries with the term
                 #check interval
                 interval = time_functions.timerel(event.date,sequence["dates"][-1],unit="day")
@@ -267,6 +265,8 @@ class Calendar:
                     int(time_functions.timerel(event.date,datetime.datetime(event.date.year,\
                         event.date.month,1),"day") / 7) + 1])
                 sequence["events"].append(event)
+                sequence["entities"].extend([x for x in event.entities if x != entity])
+                sequence["entities"] = list(set(sequence["entities"]))
 
 
 
