@@ -28,7 +28,7 @@ event_calendar = event_classes.Calendar()
 infile = open(args.i,"r",encoding="utf-8")
 lines = infile.readlines()
 infile.close()
-term_periodicity = []
+term_periodicity = {}
 for i,line in enumerate(lines):
     print(i,"of",len(lines))
     tokens = line.strip().split("\t")
@@ -43,13 +43,13 @@ for i,line in enumerate(lines):
     if date >= datetime.datetime(2014,1,1) and date <= datetime.datetime(2014,6,30):
         for entity in event.entities:
             if len(event_calendar.term_stdev[entity].keys()) > 0:
-                term_periodicity.append([entity,event_calendar.term_stdev[entity][0][0],event_calendar.term_stdev[entity][0][1],event_calendar.term_stdev[entity][0][2]])
+                term_periodicity[entity] = [event_calendar.term_stdev[entity][0][0],event_calendar.term_stdev[entity][0][1],event_calendar.term_stdev[entity][0][2]]
 
-sorted_term_periodicity = sorted(term_periodicity,key = lambda x : x[1])
+tps = [k,term_periodicity[k]]
+sorted_term_periodicity = sorted(tps,key = lambda x : x[1][0])
 outfile = open(args.o + "baseline_2014_firsthalf.txt","w",encoding = "utf-8")
 for tp in sorted_term_periodicity:
-    print(tp)
-    outfile.write(tp[0] + "\t" + str(tp[1]) + "\t" + ",".join([str(x) for x in tp[2]]) + "\t" + ",".join([str(x) for x in tp[3]]) + "\n")
+    outfile.write(tp[0] + "\t" + str(tp[1][0]) + "\t" + ",".join([str(x) for x in tp[1][1]]) + "\t" + ",".join([str(x) for x in tp[1][2]]) + "\n")
 outfile.close()
 
 #for es in event_calendar.entity_sequences.keys():
