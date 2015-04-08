@@ -30,7 +30,7 @@ lines = infile.readlines()
 infile.close()
 term_periodicity = {}
 for i,line in enumerate(lines):
-    print(i,"of",len(lines))
+    #print(i,"of",len(lines))
     tokens = line.strip().split("\t")
     date = time_functions.return_datetime(tokens[0],setting="vs")
     score = tokens[1]

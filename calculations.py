@@ -672,7 +672,7 @@ def cluster_jp(term_vecs,k):
     #generate nearest neighbours
     print("extracting nearest neighbours")
     for term in terms:
-        vector_neighbours[term] = [x[0] for x in sorted(term_vecs[term],key = lambda x : x[1],reverse=True) if x in terms][:k]
+        vector_neighbours[term] = [x[0] for x in sorted(term_vecs[term],key = lambda x : x[1],reverse=True) if x[0] in terms][:k]
     #perform clustering
     print("clustering")
     for term in terms:
