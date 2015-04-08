@@ -5,6 +5,7 @@ import re
 import string
 from collections import defaultdict
 import datetime
+import itertools
 
 import calculations
 import time_functions
@@ -158,20 +159,31 @@ class Calendar:
     Class containing a set of event (clusters)
     """
     def __init__(self):
-        self.event_string = {}
-        self.string_events = defaultdict(list)
-        self.strings = 0
+        # self.event_string = {}
+        # self.string_events = defaultdict(list)
+        # self.strings = 0
         # self.event_pattern = {}
         # self.pattern_events = defaultdict(list)
-        self.entity_sequences = defaultdict(lambda : defaultdict(list))
         #self.date_terms = defaultdict(list)
-        self.periodicities = []
+        # self.periodicities = []
+        self.entity_sequences = defaultdict(lambda : defaultdict(list))
         self.term_stdev = defaultdict(lambda : defaultdict(list))
-
+        self.term_counts = defaultdict(int)
+        self.cooc_counts = defaultdict(lambda : defaultdict(int))
+        self.num_docs = 0
 
     #TODO event merge (but not in any case)
     def add_event(self,event):
+        #make counts
+        self.num_docs += 1
+        combis = itertools.combinations(event.entities,2)
+        for comb in combis:
+            s_comb = sorted(list(comb))
+            print(s_comb)
+            self.cooc_counts[s_comb[0]][s_comb[1]] += 1
+        #append temporal information
         for i,entity in enumerate(event.entities):
+            self.term_counts[entity] += 1
             #date_terms[event.date].append(entity)
             add = True
             sequence = self.entity_sequences[entity]
