@@ -70,7 +70,7 @@ term_candidates = {}
 for term in terms:
     term_candidates[term] = term_periodicity[term][3]
 
-clusters = calculations.cluster_jp(term_candidates)
+clusters = calculations.cluster_jp(term_candidates,3)
 infoclusters = []
 for cluster in clusters.keys():
     terms = clusters[cluster]
