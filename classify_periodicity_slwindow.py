@@ -42,13 +42,12 @@ for i,line in enumerate(lines):
     event_calendar.add_event(event)
     if date >= datetime.datetime(2014,1,1) and date <= datetime.datetime(2014,6,30):
         for entity in event.entities:
-            print(event_calendar.entity_sequences[entity]["entities"])
             if len(event_calendar.term_stdev[entity].keys()) > 0:
                 term_periodicity[entity] = [event_calendar.term_stdev[entity][0][0],
                 event_calendar.term_stdev[entity][0][1],event_calendar.term_stdev[entity][0][2],
                 [[x,calculations.return_pmi(event_calendar.num_docs,
                     event_calendar.term_counts[entity],event_calendar.term_counts[x],
-                    event_calendar.cooc_counts[sorted(entity,x)[0]][sorted(entity,x)[1]])] \
+                    event_calendar.cooc_counts[sorted([entity,x])[0]][sorted([entity,x])[1]])] \
                     for x in event_calendar.entity_sequences[entity]["entities"]]]
 
 tps = [[k,term_periodicity[k]] for k in term_periodicity.keys()]
@@ -66,10 +65,11 @@ for tp in sorted_term_periodicity:
 # outfile.close()
 
 outfile = open(args.o + "baseline_2014_firsthalf_pmi.txt","w",encoding = "utf-8")
-terms = [x[0] for x in sorted_term_periodicity_cutoff]
+terms = [x[0] for x in sorted_term_periodicity_cutoff[:25]]
 for term in terms:
     for s in term_periodicity[term][3]:
-        print(term,s) 
+        if s[0] in [x[0] for x in sorted_term_periodicity_cutoff]:
+            print(term,s) 
 
 quit()
 
