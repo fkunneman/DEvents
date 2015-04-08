@@ -179,7 +179,6 @@ class Calendar:
         combis = itertools.combinations(event.entities,2)
         for comb in combis:
             s_comb = sorted(list(comb))
-            print(s_comb)
             self.cooc_counts[s_comb[0]][s_comb[1]] += 1
         #append temporal information
         for i,entity in enumerate(event.entities):

@@ -45,10 +45,10 @@ for i,line in enumerate(lines):
             if len(event_calendar.term_stdev[entity].keys()) > 0:
                 term_periodicity[entity] = [event_calendar.term_stdev[entity][0][0],
                 event_calendar.term_stdev[entity][0][1],event_calendar.term_stdev[entity][0][2],
-                [[x,calculations.return_pmis(event_calendar.num_docs,
+                [[x,calculations.return_pmi(event_calendar.num_docs,
                     event_calendar.term_counts[entity],event_calendar.term_counts[x],
                     event.calendar.cooc_counts[sorted(entity,x)[0]][sorted(entity,x)[1]])] \
-                    for x in event_calendar.entity_sequences["entities"]]]
+                    for x in event_calendar.entity_sequences[entity]["entities"]]]
 
 tps = [[k,term_periodicity[k]] for k in term_periodicity.keys()]
 sorted_term_periodicity = sorted(tps,key = lambda x : x[1][0])
@@ -67,8 +67,8 @@ for tp in sorted_term_periodicity:
 outfile = open(args.o + "baseline_2014_firsthalf_pmi.txt","w",encoding = "utf-8")
 terms = [x[0] for x in sorted_term_periodicity_cutoff]
 for term in terms:
-    for s in term_periodicity[term]: 
-        print(s[3])
+    for s in term_periodicity[term][3]:
+        print(term,s) 
 
 quit()
 
