@@ -54,7 +54,7 @@ tps = [[k,term_periodicity[k]] for k in term_periodicity.keys()]
 sorted_term_periodicity = sorted(tps,key = lambda x : x[1][0])
 sorted_term_periodicity_cutoff = []
 for tp in sorted_term_periodicity:
-    if tp[1][0] < 80:
+    if tp[1][0] < 25:
         sorted_term_periodicity_cutoff.append(tp)
     else:
         break
@@ -70,7 +70,7 @@ term_candidates = {}
 for term in terms:
     term_candidates[term] = term_periodicity[term][3]
 
-clusters = calculations.cluster_jp(term_candidates,3)
+clusters = calculations.cluster_jp(term_candidates,2)
 infoclusters = []
 for cluster in clusters.keys():
     terms = clusters[cluster]
