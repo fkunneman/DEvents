@@ -180,6 +180,8 @@ class Calendar:
         for comb in combis:
             s_comb = sorted(list(comb))
             self.cooc_counts[s_comb[0]][s_comb[1]] += 1
+        if "boekenbal" in event.entities or "nacht van de theologie" in event.entities:
+            print(event.entities)
         #append temporal information
         for i,entity in enumerate(event.entities):
             self.term_counts[entity] += 1
