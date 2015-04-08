@@ -47,7 +47,7 @@ for i,line in enumerate(lines):
                 event_calendar.term_stdev[entity][0][1],event_calendar.term_stdev[entity][0][2],
                 [[x,calculations.return_pmi(event_calendar.num_docs,
                     event_calendar.term_counts[entity],event_calendar.term_counts[x],
-                    event.calendar.cooc_counts[sorted(entity,x)[0]][sorted(entity,x)[1]])] \
+                    event_calendar.cooc_counts[sorted(entity,x)[0]][sorted(entity,x)[1]])] \
                     for x in event_calendar.entity_sequences[entity]["entities"]]]
 
 tps = [[k,term_periodicity[k]] for k in term_periodicity.keys()]
