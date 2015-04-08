@@ -43,7 +43,12 @@ for i,line in enumerate(lines):
     if date >= datetime.datetime(2014,1,1) and date <= datetime.datetime(2014,6,30):
         for entity in event.entities:
             if len(event_calendar.term_stdev[entity].keys()) > 0:
-                term_periodicity[entity] = [event_calendar.term_stdev[entity][0][0],event_calendar.term_stdev[entity][0][1],event_calendar.term_stdev[entity][0][2]]
+                term_periodicity[entity] = [event_calendar.term_stdev[entity][0][0],
+                event_calendar.term_stdev[entity][0][1],event_calendar.term_stdev[entity][0][2],
+                [[x,calculations.return_pmis(event_calendar.num_docs,
+                    event_calendar.term_counts[entity],event_calendar.term_counts[x],
+                    event.calendar.cooc_counts[sorted(entity,x)[0]][sorted(entity,x)[1]])] \
+                    for x in event_calendar.entity_sequences["entities"]]]
 
 tps = [[k,term_periodicity[k]] for k in term_periodicity.keys()]
 sorted_term_periodicity = sorted(tps,key = lambda x : x[1][0])
@@ -54,14 +59,20 @@ for tp in sorted_term_periodicity:
     else:
         break
 
-outfile = open(args.o + "baseline_2014_firsthalf.txt","w",encoding = "utf-8")
-for tp in sorted_term_periodicity:
-    outfile.write(tp[0] + "\t" + str(tp[1][0]) + "\t" + ",".join([str(x) for x in tp[1][1]]) + "\t" + ",".join([str(x) for x in tp[1][2]]) + "\n")
-outfile.close()
+# outfile = open(args.o + "baseline_2014_firsthalf.txt","w",encoding = "utf-8")
+# for tp in sorted_term_periodicity:
+#     outfile.write(tp[0] + "\t" + str(tp[1][0]) + "\t" + ",".join([str(x) for x in tp[1][1]]) + "\t" + ",".join([str(x) for x in tp[1][2]]) + "\n")
+# outfile.close()
 
-#clusterterms
-outfile = open(args.o + "baseline_2014_firsthalf_clustered.txt","w",encoding = "utf-8")
+outfile = open(args.o + "baseline_2014_firsthalf_pmi.txt","w",encoding = "utf-8")
 terms = [x[0] for x in sorted_term_periodicity_cutoff]
+for term in terms:
+    for s in term_periodicity[term]: 
+        print(s[3])
+
+quit()
+
+
 entity_candidates = [[x for x in event_calendar.entity_sequences[term]["entities"] if x in terms] for term in terms]
 dateseqs = [x[1][1] for x in sorted_term_periodicity_cutoff]
 clusters = calculations.cluster_time_vectors(terms,dateseqs,entity_candidates,datetime.datetime(2010,12,1),datetime.datetime(2014,7,1),3)
@@ -78,6 +89,26 @@ sorted_info_clusters = sorted(infoclusters,key = lambda x : x[1][0])
 for clust in sorted_info_clusters:
     outfile.write(clust[0] + "\t" + ",".join([str(x) for x in clust[1]]) + "\t" + clust[2] + "\t" + clust[3] + "\n")
 outfile.close()
+
+#clusterterms
+# outfile = open(args.o + "baseline_2014_firsthalf_clustered.txt","w",encoding = "utf-8")
+# terms = [x[0] for x in sorted_term_periodicity_cutoff]
+# entity_candidates = [[x for x in event_calendar.entity_sequences[term]["entities"] if x in terms] for term in terms]
+# dateseqs = [x[1][1] for x in sorted_term_periodicity_cutoff]
+# clusters = calculations.cluster_time_vectors(terms,dateseqs,entity_candidates,datetime.datetime(2010,12,1),datetime.datetime(2014,7,1),3)
+# infoclusters = []
+# for cluster in clusters.keys():
+#     vecs = clusters[cluster]
+#     info = [sorted_term_periodicity_cutoff[x] for x in vecs]
+#     terms = [x[0] for x in info]
+#     stdevs = sorted([x[1][0] for x in info])
+#     dateseqs = [",".join([str(d) for d in x[1][1]]) for x in info]
+#     intervals = [",".join([str(i) for i in x[1][2]]) for x in info]
+#     infoclusters.append([",".join(terms),stdevs,"---".join(dateseqs),"---".join(intervals)])
+# sorted_info_clusters = sorted(infoclusters,key = lambda x : x[1][0])
+# for clust in sorted_info_clusters:
+#     outfile.write(clust[0] + "\t" + ",".join([str(x) for x in clust[1]]) + "\t" + clust[2] + "\t" + clust[3] + "\n")
+# outfile.close()
 
 
 #for es in event_calendar.entity_sequences.keys():

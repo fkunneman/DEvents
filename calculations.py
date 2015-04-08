@@ -654,3 +654,9 @@ def cluster_time_vectors(terms,sequences,term_candidates,begin_date,end_date,k):
                 cluster_vectors[vector_cluster[i]].append(j)
 
     return cluster_vectors
+
+    def return_pmi(n,f1,f2,f12):
+        p12 = f12/n
+        p1_2 = (f1*f2)/(n*n)
+        return math.log((p12/p1_2),10)
+
