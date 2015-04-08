@@ -666,7 +666,7 @@ def cluster_jp(term_vecs,k):
     cluster_vectors = defaultdict(list)
     vector_neighbours = defaultdict(list)
     terms = sorted(term_vecs.keys())
-    for i in range(len(terms)):
+    for i,term in enumerate(terms):
         vector_cluster[term] = i
         cluster_vectors[i] = [term]
     #generate nearest neighbours
