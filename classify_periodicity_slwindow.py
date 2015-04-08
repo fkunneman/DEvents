@@ -79,7 +79,7 @@ for cluster in clusters.keys():
     infoclusters.append([best_stdev,info])
 sorted_infoclusters = sorted(infoclusters,key = lambda x : x[0])
 for clust in sorted_infoclusters:
-    outfile.write("-------" + str(clust[0]) + "-------")
+    outfile.write("-------" + str(clust[0]) + "-------\n")
     for term in clust[1]:
         outfile.write(term[0] + "\t" + str(term[1]) + "\t" + ",".join([str(x) for x in term[2]]) + "\n")
 outfile.close()

@@ -679,7 +679,11 @@ def cluster_jp(term_vecs,k):
         candidates = vector_neighbours[term]
         clustered = False
         for c in candidates:
+            if re.search("awake",term):
+                print(term,candidates)
             if not c in cluster_vectors[vector_cluster[term]]:
+                if re.search("awake",term):
+                    print(term,c,vector_neighbours[c])
                 if term in vector_neighbours[c]: #cluster
                     prev_clust = vector_cluster[c]
                     cluster_vectors[vector_cluster[term]].extend(cluster_vectors[prev_clust])
