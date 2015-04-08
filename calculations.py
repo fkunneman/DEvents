@@ -660,3 +660,31 @@ def return_pmi(n,f1,f2,f12):
     p1_2 = (f1*f2)/(n*n)
     return math.log((p12/p1_2),10)
 
+def cluster_jp(term_vecs,k):
+    #generate initial clusters
+    vector_cluster = {}
+    cluster_vectors = defaultdict(list)
+    vector_neighbours = defaultdict(list)
+    terms = sorted(term_vecs.keys())
+    for i in range(len(terms)):
+        vector_cluster[term] = i
+        cluster_vectors[i] = [term]
+    #generate nearest neighbours
+    print("extracting nearest neighbours")
+    for term in terms:
+        vector_neighbours[term] = [x[0] for x in sorted(term_vecs[term],key = lambda x : x[1],reverse=True)[:k]]
+    #perform clustering
+    print("clustering")
+    for term in terms:
+        candidates = vector_neighbours[term]
+        clustered = False
+        for c in candidates:
+            if not c in cluster_vectors[vector_clust[term]]:
+                if term in vector_neighbours[c]: #cluster
+                    prev_clust = vector_cluster[c]
+                    cluster_vectors[vector_cluster[term]].extend(cluster_vectors[prev_clust])
+                    for ca in cluster_vectors[prev_clust]:
+                        vector_cluster[ca] = vector_cluster[term]
+                    del cluster_vectors[prev_clust]
+
+    return cluster_vectors
