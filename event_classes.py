@@ -188,7 +188,7 @@ class Calendar:
             interval = True
             if len(sequence.keys()) > 0: #there are one or more earlier entries with the term
                 #check interval
-                interval = time_functions.timerel(event.date,sequence["dates"][-1],unit="day")
+                interval = time_functions.timerel(event.date,sequence["date_info"][0][-1],unit="day")
                 if interval:
                     sequence["intervals"].append(interval)
             if interval:
@@ -204,7 +204,7 @@ class Calendar:
                     len([x for x in sequence["intervals"] if x > 5]) == \
                     len(sequence["intervals"]):
                     stdev = calculations.return_relative_stdev(sequence["intervals"])
-                    self.term_stdev[entity][0] = [stdev,sequence["dates"] + \
+                    self.term_stdev[entity][0] = [stdev,sequence["date_info"][0] + \
                         [event.date],sequence["intervals"]]
                 else:
                     if len(self.term_stdev[entity]) > 0:
