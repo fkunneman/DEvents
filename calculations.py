@@ -831,7 +831,6 @@ def return_calendar_periodicities(sequence):
             periodicities.append(periodicity)
             day_sequence.pop()   
 
-    print("PREFINALIZE",sequence)
     #finalize periodicities
     if len(periodicities) > 0:
         sorted_periodicities = sorted(periodicities,key = lambda x : x[0])
