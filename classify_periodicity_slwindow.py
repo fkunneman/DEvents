@@ -79,9 +79,9 @@ terms = [x[0] for x in sorted_term_periodicity_cutoff]
 term_candidates = {}
 for term in terms:
     term_candidates[term] = term_periodicity[term][3]
-    print(term,term_candidates[term])
+    #print(term,term_candidates[term])
 
-clusters = calculations.cluster_jp(term_candidates,4)
+clusters = calculations.cluster_jp(term_candidates,3)
 infoclusters = []
 for cluster in clusters.keys():
     terms = clusters[cluster]
