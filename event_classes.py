@@ -194,6 +194,8 @@ class Calendar:
                 if interval:
                     sequence["intervals"].append(interval)
             if interval:
+                if entity == "oudjaarsdag":
+                    print("oudjaarsdag BEFORE DATES",event.date,sequence)
                 sequence["dates"].append(event.date)
                 if entity == "oudjaarsdag":
                     print("oudjaarsdag BEFORE UPDATE",event.date,sequence)
