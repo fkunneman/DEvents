@@ -4,6 +4,7 @@ import argparse
 from collections import defaultdict
 import ucto
 import datetime
+import re
 
 import event_classes
 import calculations
@@ -49,7 +50,8 @@ for i,line in enumerate(lines):
                 #     event_calendar.term_counts[entity],event_calendar.term_counts[x],
                 #     event_calendar.cooc_counts[sorted([entity,x])[0]][sorted([entity,x])[1]])] \
                 #     for x in event_calendar.entity_sequences[entity]["entities"]]]
-                print([[x,calculations.return_jaccard(event_calendar.term_counts[entity],event_calendar.term_counts[x],
+                if re.search("superbowl",entity):
+                    print([[x,calculations.return_jaccard(event_calendar.term_counts[entity],event_calendar.term_counts[x],
                     event_calendar.cooc_counts[sorted([entity,x])[0]][sorted([entity,x])[1]])] \
                     for x in event_calendar.entity_sequences[entity]["entities"]])
                 term_periodicity[entity] = [event_calendar.term_stdev[entity][0][0],
