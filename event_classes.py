@@ -186,11 +186,15 @@ class Calendar:
             #append temporal information
             sequence = self.entity_sequences[entity]
             interval = True
-            #if entity == "oudjaarsdag":
-            #    print("oudjaarsdag",event.date,event.date.year,sequence)
+            if entity == "oudjaarsdag":
+                print("oudjaarsdag",event.date,event.date.year,sequence)
             if len(sequence.keys()) > 0: #there are one or more earlier entries with the term
                 #check interval
+                if entity == "oudjaarsdag":
+                    print("oudjaarsdag BEFORE INTERVALCALC",event.date,sequence)
                 interval = time_functions.timerel(event.date,sequence["dates"][-1],unit="day")
+                if entity == "oudjaarsdag":
+                    print("oudjaarsdag BEFORE INTERVALADD",event.date,sequence)
                 if interval:
                     sequence["intervals"].append(interval)
             if interval:
