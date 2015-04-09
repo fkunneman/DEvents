@@ -717,7 +717,7 @@ def score_calendar_periodicity(pattern,entries,total):
     step = min(intervals)
     consistency = intervals.count(step) / len(intervals)
     gaps = []
-    if concistency < 1: #locate gaps
+    if consistency < 1: #locate gaps
         dummy_date = entries[0]
         for i,x in enumerate(intervals):
             if x != step:
