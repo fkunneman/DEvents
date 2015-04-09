@@ -713,7 +713,16 @@ def score_calendar_periodicity(pattern,entries,total):
             sequence_level = len(pattern) - (i+1) 
             break
     sequence = [x[sequence_level] for x in sorted_entries]
-    intervals = [(sequence[i+1]-sequence[i]) for i,x in enumerate(sequence[1:])]
+    intervals = []
+    for i,x in enumerate(sequence[1:]):
+        interval = sequence[i+1]-sequence[i]
+        if interval < 0:
+            if sequence_level == 2: #month
+                interval = abs(sequence[i]-12) + sequence[i+1]
+            elif sequence_level == 3: #weeknr
+                no_weeknrs = datetime.date(sorted_entries[i][1],12,28).isocalendar()[1]
+                interval = abs(sequence[i]-no_weeknrs) + sequence[i+1]
+        intervals = [(sequence[i+1]-sequence[i]) for i,x in enumerate(sequence[1:])]
     step = min(intervals)
     consistency = intervals.count(step) / len(intervals)
     gaps = []
@@ -725,7 +734,6 @@ def score_calendar_periodicity(pattern,entries,total):
                 gap_end = sequence[i+1]
                 gap = gap_start + step
                 while gap < gap_end:
-                    print(step,gap,intervals,sequence,[x[0] for x in entries])
                     gap_date = dummy_date
                     gap_date[sequence_level] = gap
                     gaps.append(gap_date)
