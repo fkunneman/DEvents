@@ -50,10 +50,10 @@ for i,line in enumerate(lines):
                 #     event_calendar.term_counts[entity],event_calendar.term_counts[x],
                 #     event_calendar.cooc_counts[sorted([entity,x])[0]][sorted([entity,x])[1]])] \
                 #     for x in event_calendar.entity_sequences[entity]["entities"]]]
-                if re.search("superbowl",entity):
-                    print([[x,calculations.return_jaccard(event_calendar.term_counts[entity],event_calendar.term_counts[x],
-                    event_calendar.cooc_counts[sorted([entity,x])[0]][sorted([entity,x])[1]])] \
-                    for x in event_calendar.entity_sequences[entity]["entities"]])
+                # if re.search("superbowl",entity):
+                #     print([[x,calculations.return_jaccard(event_calendar.term_counts[entity],event_calendar.term_counts[x],
+                #     event_calendar.cooc_counts[sorted([entity,x])[0]][sorted([entity,x])[1]])] \
+                #     for x in event_calendar.entity_sequences[entity]["entities"]])
                 term_periodicity[entity] = [event_calendar.term_stdev[entity][0][0],
                 event_calendar.term_stdev[entity][0][1],event_calendar.term_stdev[entity][0][2],
                 [[x,calculations.return_jaccard(event_calendar.term_counts[entity],event_calendar.term_counts[x],
@@ -74,11 +74,12 @@ for tp in sorted_term_periodicity:
 #     outfile.write(tp[0] + "\t" + str(tp[1][0]) + "\t" + ",".join([str(x) for x in tp[1][1]]) + "\t" + ",".join([str(x) for x in tp[1][2]]) + "\n")
 # outfile.close()
 
-outfile = open(args.o + "baseline_2014_firsthalf_pmi.txt","w",encoding = "utf-8")
+outfile = open(args.o + "baseline_2014_firsthalf_jaccard.txt","w",encoding = "utf-8")
 terms = [x[0] for x in sorted_term_periodicity_cutoff]
 term_candidates = {}
 for term in terms:
     term_candidates[term] = term_periodicity[term][3]
+    print(term,term_candidates[term])
 
 clusters = calculations.cluster_jp(term_candidates,4)
 infoclusters = []
