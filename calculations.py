@@ -819,10 +819,10 @@ def return_calendar_periodicities(sequence):
             if periodicity[:2] == [1,1]: #total coverage and consistency
                 return [periodicity]
             periodicities.append(periodicity)
-        #check monthly pattern
+        #check weekly pattern
         day_sequence = dates
         while len(day_sequence) > 2:
-            pattern = ["-","v","e","v",day,"v","v"]
+            pattern = ["-","v","v","e","v",weekday,"v"]
             #print("periodicity",pattern,day_sequence)
             periodicity = score_calendar_periodicity(pattern,day_sequence,sequence) #score pattern
             if periodicity[:2] == [1,1]: #total coverage and consistency
