@@ -724,21 +724,25 @@ def score_calendar_periodicity(pattern,entries,total):
                 interval = abs(sequence[i]-no_weeknrs) + sequence[i+1]
         intervals.append(interval)
     step = min(intervals)
-    consistency = intervals.count(step) / len(intervals)
-    gaps = []
-    if consistency < 1: #locate gaps
-        dummy_date = entries[0]
-        for i,x in enumerate(intervals):
-            if x != step:
-                gap_start = sequence[i]
-                gap_end = sequence[i+1]
-                gap = gap_start + step
-                while gap < gap_end:
-                    print(step,gap,intervals,sequence,[x[0] for x in entries])
-                    gap_date = dummy_date
-                    gap_date[sequence_level] = gap
-                    gaps.append(gap_date)
-                    gap += step
+    if step == 0:
+        consistency = 0
+        gaps = []
+    else:
+        consistency = intervals.count(step) / len(intervals)
+        gaps = []
+        if consistency < 1: #locate gaps
+            dummy_date = entries[0]
+            for i,x in enumerate(intervals):
+                if x != step:
+                    gap_start = sequence[i]
+                    gap_end = sequence[i+1]
+                    gap = gap_start + step
+                    while gap < gap_end:
+                        #print(step,gap,intervals,sequence,[x[0] for x in entries])
+                        gap_date = dummy_date
+                        gap_date[sequence_level] = gap
+                        gaps.append(gap_date)
+                        gap += step
     return [numpy.mean([coverage,consistency]),coverage,consistency,len(sequence) + len(gaps),entries,gaps,pattern]
 
 def return_calendar_periodicities(sequence):
