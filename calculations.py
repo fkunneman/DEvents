@@ -706,22 +706,22 @@ def cluster_jp(term_vecs,k):
     return cluster_vectors
 
 def score_calendar_periodicity(pattern,entries,total):
-    coverage = len(entries) / len(total)
+    coverage = len(entries) / total
     sorted_entries = sorted(entries,key = lambda x : x[0])
     for i,level in enumerate(reversed(pattern)):
         if level == "e":
             sequence_level = len(pattern) - (i+1) 
             break
-    sequence = [x[sequence_level] for x in sorted_entries]
+    seq = [x[sequence_level] for x in sorted_entries]
     intervals = []
-    for i,x in enumerate(sequence[1:]):
-        interval = sequence[i+1]-sequence[i]
+    for i,x in enumerate(seq[1:]):
+        interval = seq[i+1]-seq[i]
         if interval < 0:
             if sequence_level == 2: #month
-                interval = abs(sequence[i]-12) + sequence[i+1]
+                interval = abs(seq[i]-12) + seq[i+1]
             elif sequence_level == 3: #weeknr
                 no_weeknrs = datetime.date(sorted_entries[i][1],12,28).isocalendar()[1]
-                interval = abs(sequence[i]-no_weeknrs) + sequence[i+1]
+                interval = abs(seq[i]-no_weeknrs) + seq[i+1]
         intervals.append(interval)
     step = min(intervals)
     #print(step,sequence,intervals)
@@ -735,8 +735,8 @@ def score_calendar_periodicity(pattern,entries,total):
             dummy_date = entries[0]
             for i,x in enumerate(intervals):
                 if x != step:
-                    gap_start = sequence[i]
-                    gap_end = sequence[i+1]
+                    gap_start = seq[i]
+                    gap_end = seq[i+1]
                     gap = gap_start + step
                     while gap < gap_end:
 #                        print(step,gap,intervals,sequence,[x[0] for x in entries])
@@ -744,7 +744,7 @@ def score_calendar_periodicity(pattern,entries,total):
                         gap_date[sequence_level] = gap
                         gaps.append(gap_date)
                         gap += step
-    return [numpy.mean([coverage,consistency]),coverage,consistency,len(sequence) + len(gaps),entries,gaps,pattern]
+    return [numpy.mean([coverage,consistency]),coverage,consistency,len(seq) + len(gaps),entries,gaps,pattern]
 
 def return_calendar_periodicities(sequence):
     periodicities = []
@@ -825,12 +825,13 @@ def return_calendar_periodicities(sequence):
         while len(day_sequence) > 2:
             pattern = ["-","v","v","e","v",weekday,"v"]
             #print("periodicity",pattern,day_sequence)
-            periodicity = score_calendar_periodicity(pattern,day_sequence,sequence) #score pattern
+            periodicity = score_calendar_periodicity(pattern,day_sequence,len(sequence)) #score pattern
             if periodicity[:2] == [1,1]: #total coverage and consistency
                 return [periodicity]
             periodicities.append(periodicity)
             day_sequence.pop()   
 
+    print("PREFINALIZE",sequence)
     #finalize periodicities
     if len(periodicities) > 0:
         sorted_periodicities = sorted(periodicities,key = lambda x : x[0])
