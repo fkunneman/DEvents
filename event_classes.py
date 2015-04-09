@@ -212,7 +212,8 @@ class Calendar:
                         self.term_stdev[entity][0] = [stdev,sequence["dates"] + \
                             [event.date],sequence["intervals"]]
                     else:
-                        del self.term_stdev[entity]
+                        if len(self.term_stdev[entity]) > 0:
+                            del self.term_stdev[entity]
 
 
 
