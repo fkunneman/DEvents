@@ -186,29 +186,29 @@ class Calendar:
             #append temporal information
             sequence = self.entity_sequences[entity]
             interval = True
-            if entity == "oudjaarsdag":
-                print("oudjaarsdag",event.date,event.date.year,sequence)
+            ##if entity == "oudjaarsdag":
+             #   print("oudjaarsdag",event.date,event.date.year,sequence)
             if len(sequence.keys()) > 0: #there are one or more earlier entries with the term
                 #check interval
-                if entity == "oudjaarsdag":
-                    print("oudjaarsdag BEFORE INTERVALCALC",event.date,sequence)
+                #if entity == "oudjaarsdag":
+                #    print("oudjaarsdag BEFORE INTERVALCALC",event.date,sequence)
                 interval = time_functions.timerel(event.date,sequence["dates"][-1],unit="day")
-                if entity == "oudjaarsdag":
-                    print("oudjaarsdag BEFORE INTERVALADD",event.date,sequence)
+                #if entity == "oudjaarsdag":
+                #    print("oudjaarsdag BEFORE INTERVALADD",event.date,sequence)
                 if interval:
                     sequence["intervals"].append(interval)
             if interval:
-                if entity == "oudjaarsdag":
-                    print("oudjaarsdag BEFORE DATES",event.date,sequence)
+                #if entity == "oudjaarsdag":
+                #    print("oudjaarsdag BEFORE DATES",event.date,sequence)
                 sequence["dates"].append(event.date)
-                if entity == "oudjaarsdag":
-                    print("oudjaarsdag BEFORE UPDATE",event.date,sequence)
+                #if entity == "oudjaarsdag":
+                #    print("oudjaarsdag BEFORE UPDATE",event.date,sequence)
                 sequence["date_info"].append([event.date,event.date.year,event.date.month,
                     event.date.isocalendar()[1],event.date.day,event.date.weekday(),
                     int(time_functions.timerel(event.date,datetime.datetime(event.date.year,\
                     event.date.month,1),"day") / 7) + 1])
-                if entity == "oudjaarsdag":
-                    print("oudjaarsdag AFTER UPDATE",event.date,sequence)
+                #if entity == "oudjaarsdag":
+                #    print("oudjaarsdag AFTER UPDATE",event.date,sequence)
                 sequence["events"].append(event)
                 sequence["entities"].extend([x for x in event.entities if x != entity])
                 sequence["entities"] = list(set(sequence["entities"]))
@@ -227,7 +227,11 @@ class Calendar:
                     if len(sequence["intervals"]) >= 2 and not \
                         (len(sequence["intervals"]) > 15 and (sequence["intervals"].count(1) / len(sequence["intervals"])) > 0.3):
                         #print(entity,sequence["intervals"])
+                        if entity == "oudjaarsdag":
+                            print(entity,"BEFORE CALK",sequence["date_info"])
                         periodicities = calculations.return_calendar_periodicities(sequence["date_info"]) 
+                        if entity == "oudjaarsdag":
+                            print(entity,"AFTER CALK",sequence["date_info"])
                         if len(periodicities) > 0:
                             self.term_calper[entity] = periodicities
             #if entity == "oudjaarsdag":
