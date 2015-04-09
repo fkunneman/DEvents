@@ -726,7 +726,7 @@ def score_calendar_periodicity(pattern,entries,total):
                 gap = gap_start + step
                 while gap < gap_end:
                     gap_date = dummy_date
-                    gap_date[level] = gap
+                    gap_date[sequence_level] = gap
                     gaps.append(gap_date)
                     gap += step
     return [numpy.mean([coverage,consistency]),coverage,consistency,len(sequence) + len(gaps),entries,gaps,pattern]
