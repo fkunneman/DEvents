@@ -74,14 +74,14 @@ for tp in sorted_term_periodicity:
 #     outfile.write(tp[0] + "\t" + str(tp[1][0]) + "\t" + ",".join([str(x) for x in tp[1][1]]) + "\t" + ",".join([str(x) for x in tp[1][2]]) + "\n")
 # outfile.close()
 
-outfile = open(args.o + "baseline_2014_firsthalf_jaccard.txt","w",encoding = "utf-8")
+outfile = open(args.o + "baseline_2014_firsthalf_jaccard_k10.txt","w",encoding = "utf-8")
 terms = [x[0] for x in sorted_term_periodicity_cutoff]
 term_candidates = {}
 for term in terms:
     term_candidates[term] = term_periodicity[term][3]
     #print(term,term_candidates[term])
 
-clusters = calculations.cluster_jp(term_candidates,3)
+clusters = calculations.cluster_jp(term_candidates,10)
 infoclusters = []
 for cluster in clusters.keys():
     terms = clusters[cluster]

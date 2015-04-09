@@ -183,6 +183,8 @@ class Calendar:
         # if "boekenbal" in event.entities or "nacht van de theologie" in event.entities:
         #     print(event.entities)
         #append temporal information
+        if "benzine" in event.entities and "subsidie" in event.entities:
+            print(event.date,event.entities)
         for i,entity in enumerate(event.entities):
             self.term_counts[entity] += 1
             #date_terms[event.date].append(entity)
@@ -280,7 +282,8 @@ class Calendar:
                 sequence["events"].append(event)
                 sequence["entities"].extend([x for x in event.entities if x != entity])
                 sequence["entities"] = list(set(sequence["entities"]))
-
+                if entity == "subsidie":
+                    print("subsidie",event.date,sequence["dates"])
 
 
     #def cluster_entities(self):
