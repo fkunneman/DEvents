@@ -212,10 +212,12 @@ class Calendar:
                         del self.term_stdev[entity]
                 #update calender seqs
                 if calc:
-                    if len(sequence["intervals"]) >= 2:
+                    if len(sequence["intervals"]) >= 2 and not \
+                        (len(sequence["intervals"]) > 15 and (sequence["intervals"].count(1) / len(sequence["intervals"])) > 0.3):
+                        print(entity,sequence["intervals"])
                         periodicities = calculations.return_calendar_periodicities(sequence["date_info"]) 
                         if len(periodicities) > 0:
-                            self.calper[entity] = periodicities
+                            self.term_calper[entity] = periodicities
 
 
 
