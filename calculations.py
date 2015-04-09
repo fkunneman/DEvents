@@ -724,7 +724,7 @@ def score_calendar_periodicity(pattern,entries,total):
                 interval = abs(sequence[i]-no_weeknrs) + sequence[i+1]
         intervals.append(interval)
     step = min(intervals)
-    print(step,sequence,intervals)
+    #print(step,sequence,intervals)
     if step == 0:
         consistency = 0
         gaps = []

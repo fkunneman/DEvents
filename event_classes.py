@@ -216,7 +216,7 @@ class Calendar:
                 if calc:
                     if len(sequence["intervals"]) >= 2 and not \
                         (len(sequence["intervals"]) > 15 and (sequence["intervals"].count(1) / len(sequence["intervals"])) > 0.3):
-                        print(entity,sequence["intervals"])
+                        #print(entity,sequence["intervals"])
                         periodicities = calculations.return_calendar_periodicities(sequence["date_info"]) 
                         if len(periodicities) > 0:
                             self.term_calper[entity] = periodicities
