@@ -760,7 +760,7 @@ def return_calendar_periodicities(sequence):
             pattern = ["-","e",month,"v",day,"v","v"] #define pattern
             dates_month = [x for x in dates if x[2] == month]
             #print("periodicity",pattern,dates_month,sequence)
-            periodicity = score_calendar_periodicity(pattern,dates_month,sequence) #score pattern
+            periodicity = score_calendar_periodicity(pattern,dates_month,len(sequence)) #score pattern
             if periodicity[:2] == [1,1]: #total coverage and consistency
                 return [periodicity]
             periodicities.append(periodicity)
@@ -769,7 +769,7 @@ def return_calendar_periodicities(sequence):
         while len(day_sequence) > 2:
             pattern = ["-","v","e","v",day,"v","v"]
             #print("periodicity",pattern,day_sequence)
-            periodicity = score_calendar_periodicity(pattern,day_sequence,sequence) #score pattern
+            periodicity = score_calendar_periodicity(pattern,day_sequence,len(sequence)) #score pattern
             if periodicity[:2] == [1,1]: #total coverage and consistency
                 return [periodicity]
             periodicities.append(periodicity)
@@ -790,7 +790,7 @@ def return_calendar_periodicities(sequence):
                 pattern = ["-","e",month,"v","v",weekday,nr] #define pattern
                 dates_month = [x for x in dates if x[2] == month]
                 #print("periodicity",pattern,dates_month)
-                periodicity = score_calendar_periodicity(pattern,dates_month,sequence) #score pattern
+                periodicity = score_calendar_periodicity(pattern,dates_month,len(sequence)) #score pattern
                 if periodicity[:2] == [1,1]: #total coverage and consistency
                     return [periodicity]
                 periodicities.append(periodicity)
@@ -799,7 +799,7 @@ def return_calendar_periodicities(sequence):
             while len(day_sequence) > 2:
                 pattern = ["-","v","e","v","v",weekday,nr]
                 #print("periodicity",pattern,day_sequence)
-                periodicity = score_calendar_periodicity(pattern,day_sequence,sequence) #score pattern
+                periodicity = score_calendar_periodicity(pattern,day_sequence,len(sequence)) #score pattern
                 if periodicity[:2] == [1,1]: #total coverage and consistency
                     return [periodicity]
                 periodicities.append(periodicity)
@@ -816,7 +816,7 @@ def return_calendar_periodicities(sequence):
             pattern = ["-","e","v",week,"v",weekday,"v"] #define pattern
             dates_week = [x for x in dates if x[3] == week]
             #print("periodicity",pattern,dates_week)
-            periodicity = score_calendar_periodicity(pattern,dates_week,sequence) #score pattern
+            periodicity = score_calendar_periodicity(pattern,dates_week,len(sequence)) #score pattern
             if periodicity[:2] == [1,1]: #total coverage and consistency
                 return [periodicity]
             periodicities.append(periodicity)
