@@ -811,16 +811,19 @@ def return_calendar_periodicities(sequence):
             day_sequence.pop()   
 
     #finalize periodicities
-    sorted_periodicities = sorted(periodicities,key = lambda x : x[0])
-    final_periodicities = [sorted_periodicities[0]]
-    for p in sorted_periodicities:
-        overlap = False
-        dateset = set([x[0] for x in p[4]])
-        for fp in final_periodicities:
-            fp_dates = set([x[0] for x in fp[4]])
-            if len(dateset&fp_dates) > 0:
-                overlap = True
-                break
-        if not overlap:
-            final_periodicities.append(p)
-    return final_periodicities
+    if len(periodicities) > 0:
+        sorted_periodicities = sorted(periodicities,key = lambda x : x[0])
+        final_periodicities = [sorted_periodicities[0]]
+        for p in sorted_periodicities:
+            overlap = False
+            dateset = set([x[0] for x in p[4]])
+            for fp in final_periodicities:
+                fp_dates = set([x[0] for x in fp[4]])
+                if len(dateset&fp_dates) > 0:
+                    overlap = True
+                    break
+            if not overlap:
+                final_periodicities.append(p)
+        return final_periodicities
+    else:
+        return periodicities

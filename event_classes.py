@@ -213,7 +213,9 @@ class Calendar:
                 #update calender seqs
                 if calc:
                     if len(sequence["intervals"]) >= 2:
-                        self.calper[entity] = calculations.return_calendar_periodicities(sequence["date_info"]) 
+                        periodicities = calculations.return_calendar_periodicities(sequence["date_info"]) 
+                        if len(periodicities) > 0:
+                            self.calper[entity] = 
 
 
 
