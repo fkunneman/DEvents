@@ -734,6 +734,7 @@ def score_calendar_periodicity(pattern,entries,total):
                 gap_end = sequence[i+1]
                 gap = gap_start + step
                 while gap < gap_end:
+                    print(step,gap,intervals,sequence,[x[0] for x in entries])
                     gap_date = dummy_date
                     gap_date[sequence_level] = gap
                     gaps.append(gap_date)
