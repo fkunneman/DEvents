@@ -735,12 +735,12 @@ def return_calendar_periodicities(sequence):
     periodicities = []
     #day route
     days = [x[4] for x in sequence]
-    candidate_days = [day in list(set(days)) if days.count(day) > 2]
+    candidate_days = [day for day in list(set(days)) if days.count(day) > 2]
     for day in candidate_days:
         dates = [x for x in sequence if sequence[4] == day] #collect dates
         #check yearly pattern
         months = [x[2] for x in sequence if sequence[4] == day]
-        candidates = [month in list(set(months)) if months.count(month) > 2]
+        candidates = [month for month in list(set(months)) if months.count(month) > 2]
         for month in candidates:
             pattern = ["-","e",month,"v",day,"v","v"] #define pattern
             dates_month = [x for x in dates if x[2] == month]
@@ -759,16 +759,16 @@ def return_calendar_periodicities(sequence):
             day_sequence.pop()
     #nr_weekday route
     nrs = [x[6] for x in sequence]
-    candidate_nrs = [nr in list(set(nrs)) if nrs.count(nr) > 2]
+    candidate_nrs = [nr for nr in list(set(nrs)) if nrs.count(nr) > 2]
     for nr in candidate_nrs:
         nr_dates = [x for x in sequence if sequence[6] == nr]
         weekdays = [x[5] for x in nr_dates]
-        candidate_weekdays = [weekday in list(set(weekdays)) if weekdays.count(weekday) > 2]
+        candidate_weekdays = [weekday for weekday in list(set(weekdays)) if weekdays.count(weekday) > 2]
         for weekday in candidate_weekdays:
             dates = [x for x in nr_dates if x[5] == weekday]
             #check yearly pattern
             months = [x[2] for x in dates]
-            candidates = [month in list(set(months)) if months.count(month) > 2]
+            candidates = [month for month in list(set(months)) if months.count(month) > 2]
             for month in candidates:
                 pattern = ["-","e",month,"v","v",weekday,nr] #define pattern
                 dates_month = [x for x in dates if x[2] == month]
@@ -787,12 +787,12 @@ def return_calendar_periodicities(sequence):
                 day_sequence.pop()
     #weekday route
     weekdays = [x[5] for x in sequence]
-    candidate_weekdays = [weekday in list(set(weekdays)) if weekdays.count(weekday) > 2]
+    candidate_weekdays = [weekday for weekday in list(set(weekdays)) if weekdays.count(weekday) > 2]
     for weekday in candidate_weekdays:
         dates = [x for x in sequence if sequence[5] == weekday] #collect dates
         #check yearly pattern
         weeks = [x[3] for x in sequence if sequence[5] == weekday]
-        candidates = [week in list(set(weeks)) if weeks.count(week) > 2]
+        candidates = [week for week in list(set(weeks)) if weeks.count(week) > 2]
         for week in candidates:
             pattern = ["-","e","v",week,"v",weekday,"v"] #define pattern
             dates_week = [x for x in dates if sequence[3] == week]
