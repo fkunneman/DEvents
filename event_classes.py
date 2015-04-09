@@ -215,7 +215,7 @@ class Calendar:
                     if len(sequence["intervals"]) >= 2:
                         periodicities = calculations.return_calendar_periodicities(sequence["date_info"]) 
                         if len(periodicities) > 0:
-                            self.calper[entity] = 
+                            self.calper[entity] = periodicities
 
 
 
