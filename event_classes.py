@@ -209,6 +209,8 @@ class Calendar:
                         stdev = calculations.return_relative_stdev(sequence["intervals"])
                         self.term_stdev[entity][0] = [stdev,sequence["dates"] + \
                             [event.date],sequence["intervals"]]
+                    else:
+                        del self.term_stdev[entity]
 
 
 
@@ -280,6 +282,8 @@ class Calendar:
                 sequence["events"].append(event)
                 sequence["entities"].extend([x for x in event.entities if x != entity])
                 sequence["entities"] = list(set(sequence["entities"]))
+                # if entity == "subsidie":
+                #     print("subsidie",event.date,sequence["dates"])
 
 
 
