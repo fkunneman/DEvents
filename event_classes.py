@@ -186,6 +186,8 @@ class Calendar:
             #append temporal information
             sequence = self.entity_sequences[entity]
             interval = True
+            if event == "oudjaarsdag":
+                print("oudjaarsdag",event.date,event.date.year)
             if len(sequence.keys()) > 0: #there are one or more earlier entries with the term
                 #check interval
                 interval = time_functions.timerel(event.date,sequence["dates"][-1],unit="day")
@@ -218,6 +220,8 @@ class Calendar:
                         periodicities = calculations.return_calendar_periodicities(sequence["date_info"]) 
                         if len(periodicities) > 0:
                             self.term_calper[entity] = periodicities
+            if event == "oudjaarsdag":
+                print(sequence["date_info"])
 
 
 

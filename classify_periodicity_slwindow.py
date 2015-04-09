@@ -41,7 +41,7 @@ for i,line in enumerate(lines):
     event = event_classes.Event(i,[date,terms,score,tweets])
     event.add_tids(ids)
     if date >= datetime.datetime(2014,1,1) and date <= datetime.datetime(2014,1,31):
-        print(event.date,event.entities,"calper")
+        #print(event.date,event.entities,"calper")
         event_calendar.add_event(event,calc=True)
 
 
