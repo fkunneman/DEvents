@@ -43,6 +43,8 @@ for i,line in enumerate(lines):
     event_calendar.add_event(event)
     if date >= datetime.datetime(2014,1,1) and date <= datetime.datetime(2014,6,30):
         for entity in event.entities:
+            if entity == "subsidie":
+                print(event_calendar.term_stdev[entity])
             if len(event_calendar.term_stdev[entity].keys()) > 0:
                 # term_periodicity[entity] = [event_calendar.term_stdev[entity][0][0],
                 # event_calendar.term_stdev[entity][0][1],event_calendar.term_stdev[entity][0][2],
