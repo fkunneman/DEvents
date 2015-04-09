@@ -660,6 +660,9 @@ def return_pmi(n,f1,f2,f12):
     p1_2 = (f1*f2)/(n*n)
     return math.log((p12/p1_2),10)
 
+def return_jaccard(f1,f2,f12):
+    return (f12/(f1+f2))
+
 def cluster_jp(term_vecs,k):
     #generate initial clusters
     vector_cluster = {}

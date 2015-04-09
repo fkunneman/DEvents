@@ -43,10 +43,15 @@ for i,line in enumerate(lines):
     if date >= datetime.datetime(2014,1,1) and date <= datetime.datetime(2014,6,30):
         for entity in event.entities:
             if len(event_calendar.term_stdev[entity].keys()) > 0:
+                # term_periodicity[entity] = [event_calendar.term_stdev[entity][0][0],
+                # event_calendar.term_stdev[entity][0][1],event_calendar.term_stdev[entity][0][2],
+                # [[x,calculations.return_pmi(event_calendar.num_docs,
+                #     event_calendar.term_counts[entity],event_calendar.term_counts[x],
+                #     event_calendar.cooc_counts[sorted([entity,x])[0]][sorted([entity,x])[1]])] \
+                #     for x in event_calendar.entity_sequences[entity]["entities"]]]
                 term_periodicity[entity] = [event_calendar.term_stdev[entity][0][0],
                 event_calendar.term_stdev[entity][0][1],event_calendar.term_stdev[entity][0][2],
-                [[x,calculations.return_pmi(event_calendar.num_docs,
-                    event_calendar.term_counts[entity],event_calendar.term_counts[x],
+                [[x,calculations.return_jaccard(event_calendar.term_counts[entity],event_calendar.term_counts[x],
                     event_calendar.cooc_counts[sorted([entity,x])[0]][sorted([entity,x])[1]])] \
                     for x in event_calendar.entity_sequences[entity]["entities"]]]
 
