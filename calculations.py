@@ -684,9 +684,17 @@ def cluster_jp(term_vecs,k):
         clustered = False
         if re.search("bevrijding",term):
             print(term,candidates)
+        if re.search("valentijnskaart",term):
+            print(term,candidates)
+        if re.search(r"valentine",term):
+            print(term,candidates)
         for c in candidates:
             if not c in cluster_vectors[vector_cluster[term]] and c in terms:
                 if re.search("bevrijding",term):
+                    print(term,c,vector_neighbours[c])
+                if re.search("valentijnskaart",term):
+                    print(term,c,vector_neighbours[c])
+                if re.search(r"valentine",term):
                     print(term,c,vector_neighbours[c])
                 if term in vector_neighbours[c]: #cluster
                     prev_clust = vector_cluster[c]
