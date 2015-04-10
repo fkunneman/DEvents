@@ -49,7 +49,7 @@ for i,line in enumerate(lines):
     ids = tokens[3].split(", ")
     tweets = tokens[4].split("-----")
     event = event_classes.Event(i,[date,terms,score,tweets])
-    if date >=  and date <= datetime.datetime(2014,12,31):
+    if date >= calc_date and date <= datetime.datetime(2014,12,31):
         print(event.date,event.entities,"calper")
         event_calendar.add_event(event,calc=True)
 
