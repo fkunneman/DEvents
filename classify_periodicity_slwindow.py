@@ -49,11 +49,11 @@ for i,line in enumerate(lines):
     ids = tokens[3].split(", ")
     tweets = tokens[4].split("-----")
     event = event_classes.Event(i,[date,terms,score,tweets])
-    if date >= calc_date and date <= datetime.datetime(2014,2,31):
+    if date >= calc_date and date <= datetime.datetime(2014,2,28):
         print(event.date,event.entities,"calper")
         event_calendar.add_event(event,args.stdev,args.cal)
     else:
-        event_calendar.add_event(event,args.stdev,args.cal)
+        event_calendar.add_event(event,False,False)
 
 if args.cluster:
     event_calendar.cluster_entities_periodicity(0.5)
