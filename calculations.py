@@ -9,6 +9,7 @@ import itertools
 import datetime
 from collections import defaultdict
 import numpy
+import copy
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import time_functions
