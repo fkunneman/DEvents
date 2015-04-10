@@ -11,11 +11,20 @@ import calculations
 import time_functions
 
 """
-
+Experimentation framework for calculating event periodicity from a given stream of events
 """
-parser = argparse.ArgumentParser(description = "")
-parser.add_argument('-i', action = 'store', required = True, help = "The input file")  
+parser = argparse.ArgumentParser(description = "Experimentation framework for calculating " +
+    "event periodicity from a given stream of events")
+parser.add_argument('-i', action = 'store', required = True, help = "The input file")
+parser.add_argument('-s', action = 'store', type = int, nargs = '+', default = [2014,1,1], 
+    help = "The date from which the periodicity of entities will be calculated [YYYY M(M) D(D)]")
 parser.add_argument('-o', action = 'store', required = True, help = "The output directory")
+parser.add_argument('--stdev', action = 'store_true', 
+    help = "Choose to score periodicity by stdev (baseline)")
+parser.add_argument('--cal', action = 'store_true', 
+    help = "Choose to score periodicity with calendar periodicity detection")
+parser.add_argument('--cluster', action = 'store_true', 
+    help = "Choose to cluster periodic entities together")
 args = parser.parse_args() 
 
 date_periodics = defaultdict(list)
@@ -30,8 +39,9 @@ infile = open(args.i,"r",encoding="utf-8")
 lines = infile.readlines()
 infile.close()
 term_periodicity = {}
+calc_date = datetime.datetime(args.s[0],args.s[1],args.s[2])
+print("Processing events")
 for i,line in enumerate(lines):
-    #print(i,"of",len(lines))
     tokens = line.strip().split("\t")
     date = time_functions.return_datetime(tokens[0],setting="vs")
     score = tokens[1]
@@ -39,8 +49,7 @@ for i,line in enumerate(lines):
     ids = tokens[3].split(", ")
     tweets = tokens[4].split("-----")
     event = event_classes.Event(i,[date,terms,score,tweets])
-    event.add_tids(ids)
-    if date >= datetime.datetime(2014,1,1) and date <= datetime.datetime(2014,12,31):
+    if date >=  and date <= datetime.datetime(2014,12,31):
         print(event.date,event.entities,"calper")
         event_calendar.add_event(event,calc=True)
 

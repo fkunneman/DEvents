@@ -776,7 +776,7 @@ def return_calendar_periodicities(sequence):
     days = [x[4] for x in sequence]
     candidate_days = [day for day in list(set(days)) if days.count(day) > 2]
     for day in candidate_days:
-        dates = [x for x in sequence if x[4] == day] #collect dates
+        dates = copy.deepcopy([x for x in sequence if x[4] == day]) #collect dates
         #check yearly pattern
         periodicities.extend(periodicity_procedure(dates,1,[2,[4,day]],"recur",len(sequence)))
         #check monthly pattern
@@ -789,7 +789,7 @@ def return_calendar_periodicities(sequence):
         weekdays = [x[5] for x in nr_dates]
         candidate_weekdays = [wd for wd in list(set(weekdays)) if weekdays.count(wd) > 2]
         for weekday in candidate_weekdays:
-            dates = [x for x in nr_dates if x[5] == weekday]
+            dates = copy.deepcopy([x for x in nr_dates if x[5] == weekday])
             #check yearly pattern
             periodicities.extend(periodicity_procedure(dates,1,[2,[5,weekday],[6,nr]],"recur",
                 len(sequence))) 
@@ -800,7 +800,7 @@ def return_calendar_periodicities(sequence):
     weekdays = [x[5] for x in sequence]
     candidate_weekdays = [wd for wd in list(set(weekdays)) if weekdays.count(wd) > 2]
     for weekday in candidate_weekdays:
-        dates = [x for x in sequence if x[5] == weekday]
+        dates = copy.deepcopy([x for x in sequence if x[5] == weekday])
         #check yearly pattern
         periodicities.extend(periodicity_procedure(dates,1,[3,[5,weekday]],"recur",len(sequence)))
         #check weekly pattern
