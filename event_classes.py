@@ -241,6 +241,7 @@ class Calendar:
         patterns = list(set(patterns))
         for pattern in patterns:
             entities = set(list(pattern_entities[pattern]))
+            print(pattern,entities)
             if len(entities) > 1:
                 # print(">1")
                 indices = [entity_index[x] for x in entities]
@@ -250,9 +251,9 @@ class Calendar:
                     groups.append([index_entity[x] for x in cluster])
             else:
                 groups = []
-            print(pattern)
-            for group in groups:
-                print(group)
+            print(pattern,groups)
+            # for group in groups:
+            #     print(group)
 
 
 
