@@ -40,8 +40,8 @@ for i,line in enumerate(lines):
     tweets = tokens[4].split("-----")
     event = event_classes.Event(i,[date,terms,score,tweets])
     event.add_tids(ids)
-    if date >= datetime.datetime(2014,1,1) and date <= datetime.datetime(2014,1,31):
-        #print(event.date,event.entities,"calper")
+    if date >= datetime.datetime(2014,1,1) and date <= datetime.datetime(2014,12,31):
+        print(event.date,event.entities,"calper")
         event_calendar.add_event(event,calc=True)
 
 
@@ -76,7 +76,6 @@ sorted_periodicities = sorted(entity_periodicity,key = lambda x : x[1][0],revers
 
 outfile = open(args.o + "calper_2014.txt","w",encoding = "utf-8")
 for p in sorted_periodicities:
-    print(p)
     outfile.write("---------------\n" + p[0] + "\t" + "<" + ",".join([str(x) for x in p[1][-1]]) + "\t" + \
         ", ".join([str(x) for x in p[1][1:4]]) + "\t" + " > ".join([str(x[0]) for x in p[1][4]]) + \
         "\t" + ", ".join([str(x[0]) for x in p[1][5]]) + "\n")
