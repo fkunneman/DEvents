@@ -238,8 +238,7 @@ class Calendar:
                 pattern_entities[pattern].append(entity)
         patterns = list(set(patterns))
         for pattern in patterns:
-            entities = [ent for ent in entities if pattern in \
-                [x[-1] for x in self.entity_periodicity["calendar"][ent]]]
+            entities = pattern_entities[pattern]
             if len(entities) > 1:
                 print(">1")
                 indices = [entity_index[x] for x in entities]
