@@ -828,26 +828,26 @@ def return_calendar_periodicities(sequence):
     else:
         return periodicities
 
-def cluster_documents(docs,indices,thresh):
-    pairsims = return_similarities(docs,docs)
+def cluster_documents(vectors,indices,thresh):
+    pairsims = return_similarities(vectors,vectors)
     pairs = [x for x in itertools.combinations(indexes,2)]
     scores = [[[x[0]],[x[1]],pairsims[x[0]][x[1]]] for x in pairs if pairsims[x[0]][x[1]] > thresh]
-    print("pairs scores",pairs,scores)
-    clusts = range(len(docs))
-    cluster_docs = defaultdict(list)
-    doc_cluster = {}
+    #print("pairs scores",pairs,scores)
+    clusts = range(len(vectors))
+    cluster_vectors = defaultdict(list)
+    vector_cluster = {}
     for clust in clusts:
-        cluster_docs[clust] = [clust]
-        doc_cluster[clust] = clust
+        cluster_vectors[clust] = [clust]
+        vector_cluster[clust] = clust
     if len(scores) > 0:
         scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
         for score in scores_sorted:
-            prev_clust = doc_cluster[score[1]]
-            cluster_docs[doc_cluster[score[0]]].extend(cluster_docs[score[1]])
-            for index in cluster_docs[prev_clust]:
-                doc_cluster[index] = doc_cluster[score[0]]
-            del cluster_docs[prev_clust]           
+            prev_clust = vector_cluster[score[1]]
+            cluster_vectors[vector_cluster[score[0]]].extend(cluster_vectors[score[1]])
+            for index in cluster_vectors[prev_clust]:
+                vector_cluster[index] = vector_cluster[score[0]]
+            del cluster_vectors[prev_clust]           
     output = []
-    for cluster in cluster_docs.keys():
+    for cluster in cluster_vectors.keys():
         output.append([indices[x] for x in cluster])
     return output

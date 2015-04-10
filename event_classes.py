@@ -240,11 +240,11 @@ class Calendar:
         for pattern in patterns:
             entities = pattern_entities[pattern]
             if len(entities) > 1:
-                print(">1")
+                # print(">1")
                 indices = [entity_index[x] for x in entities]
-                docs = [documents[i] for i in indices]
-                print("clustering",indices)
-                clusters = calculations.cluster_documents(docs,indices,cluster_threshold)
+                vecs = [vectors[i] for i in indices]
+                # print("clustering",indices)
+                clusters = calculations.cluster_documents(vecs,indices,cluster_threshold)
                 groups = []
                 for cluster in clusters:
                     groups.append([index_entity[x] for x in cluster])
