@@ -751,7 +751,7 @@ def return_calendar_periodicities(sequence,term):
     #day route
     days = [x[4] for x in sequence]
     candidate_days = [day for day in list(set(days)) if days.count(day) > 2]
-    if term = "oudjaarsdag"
+    if term == "oudjaarsdag"
         print("BEFORE DAY",sequence[0])
     for day in candidate_days:
         dates = [x for x in sequence if x[4] == day] #collect dates
@@ -776,7 +776,7 @@ def return_calendar_periodicities(sequence,term):
                 return [periodicity]
             periodicities.append(periodicity)
             day_sequence.pop()
-    if term = "oudjaarsdag"
+    if term == "oudjaarsdag"
         print("AFTER DAY",sequence[0])
     #nr_weekday route
     nrs = [x[6] for x in sequence]
@@ -808,7 +808,7 @@ def return_calendar_periodicities(sequence,term):
                     return [periodicity]
                 periodicities.append(periodicity)
                 day_sequence.pop()
-    if term = "oudjaarsdag"
+    if term == "oudjaarsdag"
         print("AFTER WEEKNR",sequence[0])
     #weekday route
     weekdays = [x[5] for x in sequence]
@@ -836,7 +836,7 @@ def return_calendar_periodicities(sequence,term):
                 return [periodicity]
             periodicities.append(periodicity)
             day_sequence.pop()   
-    if term = "oudjaarsdag"
+    if term == "oudjaarsdag"
         print("AFTER WEEKDAY",sequence[0])
     #finalize periodicities
     if len(periodicities) > 0:
