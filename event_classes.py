@@ -222,8 +222,9 @@ class Calendar:
             index_entity[i] = entity
         documents = []
         for entity in all_entities:
+            print(self.entity_sequences[entity]["events"][0].tweets)
             documents.append([" ".join([y.text for y in x.tweets]) for x in \
-                self.entity_sequences[entity][events]])
+               self.entity_sequences[entity]["events"]])
         vectors = calculations.tfidf_docs(documents)
         #group entities
         entities = self.entity_periodicity["calendar"].keys()
