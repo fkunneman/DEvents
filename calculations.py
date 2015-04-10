@@ -832,6 +832,7 @@ def cluster_documents(docs,indices,thresh):
     pairsims = calculations.return_similarities(docs,docs)
     pairs = [x for x in itertools.combinations(indexes,2)]
     scores = [[[x[0]],[x[1]],pairsims[x[0]][x[1]]] for x in pairs if pairsims[x[0]][x[1]] > thresh]
+    print("pairs scores",pairs,scores)
     clusts = range(len(docs))
     cluster_docs = defaultdict(list)
     doc_cluster = {}

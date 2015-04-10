@@ -213,6 +213,7 @@ class Calendar:
                                 self.entity_periodicity["calendar"][entity] = periodicities
 
     def cluster_entities_periodicity(self,cluster_threshold):
+        print("generating bigdocs")
         #generate bigdocs per entity
         all_entities = self.entity_sequences.keys()
         entity_index = {}
@@ -222,8 +223,10 @@ class Calendar:
             index_entity[i] = entity
         documents = []
         for entity in all_entities:
-            documents.append(" ".join([" ".join(x.tweets) for x in self.entity_sequences[entity]["events"]]))
+            documents.append(" ".join([" ".join(x.tweets) for \
+                x in self.entity_sequences[entity]["events"]]))
         vectors = calculations.tfidf_docs(documents)
+        print("grouping entities")
         #group entities
         entities = self.entity_periodicity["calendar"].keys()
         patterns = []
@@ -234,8 +237,10 @@ class Calendar:
             entities = [ent for ent in entities if pattern in \
                 [x[-1] for x in self.entity_periodicity["calendar"][ent]]]
             if len(entities) > 1:
+                print(">1")
                 indices = [entity_index[x] for x in entities]
                 docs = [documents[i] for i in indexes]
+                print("clustering",indices)
                 clusters = calculations.cluster_documents(docs,indices,cluster_threshold)
                 groups = []
                 for cluster in clusters:
