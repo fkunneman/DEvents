@@ -216,22 +216,34 @@ class Calendar:
         #generate bigdocs per entity
         all_entities = self.entity_sequences.keys()
         entity_index = {}
+        index_entity = {}
         for i,entity in enumerate(all_entities):
             entity_index[entity] = i
-        #documents = calculations.tfidf_docs([" ".join([y.text for y in x.tweets]) for x in self.events])
+            index_entity[i] = entity
+        documents = []
+        for entity in all_entities:
+            documents.append([" ".join([y.text for y in x.tweets]) for x in \
+                self.entity_sequences[entity][events]])
+        vectors = calculations.tfidf_docs(documents)
         #group entities
         entities = self.entity_periodicity["calendar"].keys()
-        pattern_entities = defaultdict(list)
         patterns = []
         for entity in entities:
             patterns.extend([x[-1] for x in self.entity_periodicity["calendar"][entity]])
         patterns = list(set(patterns))
         for pattern in patterns:
-            pattern_entities[pattern] = [ent for ent in entities if pattern in \
+            entities = [ent for ent in entities if pattern in \
                 [x[-1] for x in self.entity_periodicity["calendar"][ent]]]
-        for pattern in patterns:
-            print(pattern,pattern_entities[pattern])
-        quit()
+            if len(entities) > 1:
+                indices = [entity_index[x] for x in entities]
+                docs = [documents[i] for i in indexes]
+                clusters = calculations.cluster_documents(docs,indices,cluster_threshold)
+                groups = []
+                for cluster in clusters:
+                    groups.append([index_entity[x] for x in cluster])
+            else:
+                groups = entities
+            print(pattern,groups)
 
 
 
