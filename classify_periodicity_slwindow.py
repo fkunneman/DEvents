@@ -53,7 +53,7 @@ for i,line in enumerate(lines):
         print(event.date,event.entities,"calper")
         event_calendar.add_event(event,args.stdev,args.cal)
     else:
-        event_calendar.add_event(event)
+        event_calendar.add_event(event,args.stdev,args.cal)
 
 #sort by periodicity
 entity_periodicity = []

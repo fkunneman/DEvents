@@ -772,7 +772,6 @@ def periodicity_procedure(dates,every,level_value,t,l):
 
 def return_calendar_periodicities(sequence):
     periodicities = []
-    print("START",sequence)
     #day route
     days = [x[4] for x in sequence]
     candidate_days = [day for day in list(set(days)) if days.count(day) > 2]
@@ -809,8 +808,7 @@ def return_calendar_periodicities(sequence):
 
     #finalize periodicities
     if len(periodicities) > 0:
-        sorted_periodicities = sorted(periodicities,key = lambda x : x[0])
-        print("SORTED PERIODICITIES",sorted_periodicities)
+        sorted_periodicities = sorted(periodicities,key = lambda x : x[0],reverse=True)
         final_periodicities = [sorted_periodicities[0]]
         for p in sorted_periodicities:
             overlap = False
@@ -822,7 +820,6 @@ def return_calendar_periodicities(sequence):
                     break
             if not overlap:
                 final_periodicities.append(p)
-        print("FINAL PERIODICITIES",final_periodicities)
         return final_periodicities
     else:
         return periodicities
