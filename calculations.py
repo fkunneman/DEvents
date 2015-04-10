@@ -828,49 +828,25 @@ def return_calendar_periodicities(sequence):
     else:
         return periodicities
 
-# def AHC_clustering():
-#     documents = calculations.tfidf_docs([" ".join([y.text for y in x.tweets]) for x in self.events])
-#     pairsims = calculations.return_similarities(documents,documents)
-#     dates = list(set([x.date for x in self.events]))
-#     for date in dates:
-#         events = [x for x in self.events if x.date == date]
-#         indexes = [x.ids[0] for x in events]
-#         pairs = [x for x in itertools.combinations(indexes,2)]
-#         scores = [([x[0]],[x[1]],pairsims[x[0]][x[1]]) for x in pairs if pairsims[x[0]][x[1]] > 0.7]
-#         if len(scores) > 0:
-#             scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
-#             while scores_sorted[0][2] > 0.7: #scores are not static 
-#                 highest_sim = scores_sorted[0] #start with top
-#                 #merge events
-#                 for x in events: #collect the event that matches the id list
-#                     if highest_sim[0] == x.ids:
-#                         event1 = x
-#                     if highest_sim[1] == x.ids:
-#                         event2 = x
-#                 if event1.score > event2.score: #merge to event with highest score
-#                     event1.merge(event2)
-#                     events.remove(event2)
-#                     self.events.remove(event2)
-#                     event = event1
-#                 else:
-#                     event2.merge(event1)
-#                     events.remove(event1)
-#                     self.events.remove(event1)
-#                     event = event2
-#                 all_s = []
-#                 remove_s = []
-#                 event_set = set(event.ids)
-#                 for score in scores: #remove event sets that contain the same event(s)
-#                     if bool(event_set & set(score[0] + score[1])): 
-#                         remove_s.append(score)
-#                 for s in remove_s:
-#                     scores.remove(s)
-#                 for e in events: #add new similarities as mean of the similarity between seperate events
-#                     if not bool(event_set & set(e.ids)):
-#                         sims = [(aa, bb) for aa in event.ids for bb in e.ids]
-#                         mean_sim = numpy.mean([pairsims[x[0]][x[1]] for x in sims])
-#                         scores.append((event.ids,e.ids,mean_sim))
-#                 scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True) #resort scores
-#                 if not len(scores_sorted) > 1:
-#                     break
-#     print("overlap",len(self.events))
+def cluster_documents(docs,indices,thresh):
+    pairsims = calculations.return_similarities(docs,docs)
+    pairs = [x for x in itertools.combinations(indexes,2)]
+    scores = [[[x[0]],[x[1]],pairsims[x[0]][x[1]]] for x in pairs if pairsims[x[0]][x[1]] > thresh]
+    clusts = range(len(docs))
+    cluster_docs = defaultdict(list)
+    doc_cluster = {}
+    for clust in clusts:
+        cluster_docs[clust] = [clust]
+        doc_cluster[clust] = clust
+    if len(scores) > 0:
+        scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
+        for score in scores_sorted:
+            prev_clust = doc_cluster[score[1]]
+            cluster_docs[doc_cluster[score[0]]].extend(cluster_docs[score[1]])
+            for index in cluster_docs[prev_clust]:
+                doc_cluster[index] = doc_cluster[score[0]]
+            del cluster_docs[prev_clust]           
+    output = []
+    for cluster in cluster_docs.keys():
+        output.append([indices[x] for x in cluster])
+    return output
