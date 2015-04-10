@@ -215,14 +215,14 @@ class Calendar:
     def cluster_entities_periodicity(self,cluster_threshold):
         #generate bigdocs per entity
         all_entities = self.entity_sequences.keys()
-
+        #entity_index = 
 
         #group entities
         entities = self.entity_periodicity["calendar"].keys()
         pattern_entities = defaultdict(list)
         patterns = []
         for entity in entities:
-            patterns.extend([x[-1] for x in self.entity_periodicity["calendar"][entity]])
+            patterns.extend([",".join(x[-1]) for x in self.entity_periodicity["calendar"][entity]])
         patterns = list(set(patterns))
         for pattern in patterns:
             pattern_entities[pattern] = [ent for ent in entities if pattern in \
