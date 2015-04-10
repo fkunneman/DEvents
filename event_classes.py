@@ -242,7 +242,7 @@ class Calendar:
             if len(entities) > 1:
                 print(">1")
                 indices = [entity_index[x] for x in entities]
-                docs = [documents[i] for i in indexes]
+                docs = [documents[i] for i in indices]
                 print("clustering",indices)
                 clusters = calculations.cluster_documents(docs,indices,cluster_threshold)
                 groups = []
