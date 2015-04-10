@@ -839,6 +839,7 @@ def cluster_documents(pairsims,indices,thresh):
     if len(scores) > 0:
         scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
         for score in scores_sorted:
+            print(score)
             prev_clust = vector_cluster[score[1]]
             cluster_vectors[vector_cluster[score[0]]].extend(cluster_vectors[score[1]])
             for index in cluster_vectors[prev_clust]:
