@@ -68,7 +68,7 @@ sorted_periodicities = sorted(entity_periodicity,key = lambda x : x[1][0],revers
 
 outfile = open(args.o + "calper_2014_cl.txt","w",encoding = "utf-8")
 for p in sorted_periodicities:
-    outfile.write("---------------\n" + p[0] + "\t" + "<" + ",".join([str(x) for x in p[1][-1]]) + ">\t" + \
+    outfile.write("---------------\n" + p[0] + "\t" + p[1][-1] + "\t" + \
         ", ".join([str(x) for x in p[1][1:5]]) + "\t" + " > ".join([str(x[0]) for x in p[1][5]]) + \
         "\t" + ", ".join([str(x[0]) for x in p[1][6]]) + "\n")
 outfile.close()

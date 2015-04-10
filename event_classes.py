@@ -217,14 +217,14 @@ class Calendar:
         all_entities = self.entity_sequences.keys()
         entity_index = {}
         for i,entity in enumerate(all_entities):
-            entity_index[entity] = i 
+            entity_index[entity] = i
+        #documents = calculations.tfidf_docs([" ".join([y.text for y in x.tweets]) for x in self.events])
         #group entities
         entities = self.entity_periodicity["calendar"].keys()
         pattern_entities = defaultdict(list)
         patterns = []
         for entity in entities:
-            patterns.extend([",".join([str(y) for y in x[-1]]) for x in \
-                self.entity_periodicity["calendar"][entity]])
+            patterns.extend([x[-1] for x in self.entity_periodicity["calendar"][entity]])
         patterns = list(set(patterns))
         for pattern in patterns:
             pattern_entities[pattern] = [ent for ent in entities if pattern in \

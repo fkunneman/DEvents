@@ -744,7 +744,7 @@ def score_calendar_periodicity(pattern,entries,total):
                         gaps.append(gap_date)
                         gap += step
     return [numpy.mean([coverage,consistency]),coverage,consistency,step,
-        len(seq) + len(gaps),entries,gaps,pattern]
+        len(seq) + len(gaps),entries,gaps,"<" + ",".join([str(x) for x in pattern]) + ">"]
 
 def periodicity_procedure(dates,every,level_value,t,l):
     pers = []
