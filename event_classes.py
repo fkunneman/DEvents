@@ -229,7 +229,7 @@ class Calendar:
                         #print(entity,sequence["intervals"])
                         if entity == "oudjaarsdag":
                             print(entity,"BEFORE CALK",sequence["date_info"])
-                        dateinfo = list(sequence["date_info"])
+                        dateinfo = copy.deepcopy(sequence["date_info"])
                         periodicities = calculations.return_calendar_periodicities(dateinfo,entity) 
                         if entity == "oudjaarsdag":
                             print(entity,"AFTER CALK",sequence["date_info"])
