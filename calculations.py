@@ -758,9 +758,7 @@ def periodicity_procedure(dates,every,level_value,t,l):
             for lv in level_value[1:]:
                 pattern[lv[0]] = lv[1] 
             dates_c = copy.deepcopy([x for x in dates if x[level_value[0]] == c])
-            periodicity = score_calendar_periodicity(pattern,dates_c,l) #score pattern
-            if periodicity[:2] == [1,1]: return [periodicity] #total coverage and consistency
-            pers.append(periodicity)
+            pers.append(score_calendar_periodicity(pattern,dates_c,l)) #score pattern
     elif t == "seq":
         unit_sequence = copy.deepcopy(dates)
         while len(unit_sequence) > 2:
@@ -768,9 +766,7 @@ def periodicity_procedure(dates,every,level_value,t,l):
             pattern[every] = "e"
             for lv in level_value:
                 pattern[lv[0]] = lv[1] 
-            periodicity = score_calendar_periodicity(pattern,unit_sequence,l) #score pattern
-            if periodicity[:2] == [1,1]: return [periodicity] #total coverage and consistency
-            pers.append(periodicity)
+            pers.append(score_calendar_periodicity(pattern,unit_sequence,l)) #score pattern
             unit_sequence.pop()
     return pers
 
@@ -782,46 +778,33 @@ def return_calendar_periodicities(sequence):
     for day in candidate_days:
         dates = [x for x in sequence if x[4] == day] #collect dates
         #check yearly pattern
-        new_periodicities = periodicity_procedure(dates,1,[2,[4,day]],"recur",len(sequence))
-        if new_periodicities[0][:2] == [1,1]: return new_periodicities
-        periodicities.extend(new_periodicities) 
+        periodicities.extend(periodicity_procedure(dates,1,[2,[4,day]],"recur",len(sequence)))
         #check monthly pattern
-        new_periodicities = periodicity_procedure(dates,2,[[4,day]],"seq",len(sequence))
-        if new_periodicities[0][:2] == [1,1]: return new_periodicities
-        periodicities.extend(new_periodicities)
+        periodicities.extend(periodicity_procedure(dates,2,[[4,day]],"seq",len(sequence)))
     #nr_weekday route
     nrs = [x[6] for x in sequence]
     candidate_nrs = [nr for nr in list(set(nrs)) if nrs.count(nr) > 2]
     for nr in candidate_nrs:
         nr_dates = [x for x in sequence if x[6] == nr]
         weekdays = [x[5] for x in nr_dates]
-        candidate_weekdays = [weekday for weekday in list(set(weekdays)) if \
-            weekdays.count(weekday) > 2]
+        candidate_weekdays = [wd for wd in list(set(weekdays)) if weekdays.count(wd) > 2]
         for weekday in candidate_weekdays:
             dates = [x for x in nr_dates if x[5] == weekday]
             #check yearly pattern
-            new_periodicities = periodicity_procedure(dates,1,[2,[5,weekday],[6,nr]],"recur",
-                len(sequence))
-            if new_periodicities[0][:2] == [1,1]: return new_periodicities
-            periodicities.extend(new_periodicities)  
+            periodicities.extend(periodicity_procedure(dates,1,[2,[5,weekday],[6,nr]],"recur",
+                len(sequence))) 
             #check monthly pattern
-            new_periodicities = periodicity_procedure(dates,2,[[5,weekday],[6,nr]],"seq",
-                len(sequence))
-            if new_periodicities[0][:2] == [1,1]: return new_periodicities
-            periodicities.extend(new_periodicities)
+            periodicities.extend(periodicity_procedure(dates,2,[[5,weekday],[6,nr]],"seq",
+                len(sequence)))
     #weekday route
     weekdays = [x[5] for x in sequence]
     candidate_weekdays = [wd for wd in list(set(weekdays)) if weekdays.count(wd) > 2]
     for weekday in candidate_weekdays:
         dates = [x for x in sequence if x[5] == weekday]
         #check yearly pattern
-        new_periodicities = periodicity_procedure(dates,1,[3,[5,weekday]],"recur",len(sequence))
-        if new_periodicities[0][:2] == [1,1]: return new_periodicities
-        periodicities.extend(new_periodicities) 
+        periodicities.extend(periodicity_procedure(dates,1,[3,[5,weekday]],"recur",len(sequence)))
         #check weekly pattern
-        new_periodicities = periodicity_procedure(dates,3,[[5,weekday]],"seq",len(sequence))
-        if new_periodicities[0][:2] == [1,1]: return new_periodicities
-        periodicities.extend(new_periodicities)
+        periodicities.extend(periodicity_procedure(dates,3,[[5,weekday]],"seq",len(sequence)))
 
     #finalize periodicities
     if len(periodicities) > 0:
