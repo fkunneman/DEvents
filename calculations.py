@@ -760,7 +760,7 @@ def return_calendar_periodicities(sequence,term):
     if term == "oudjaarsdag":
         print("BEFORE DAY",sequence[0])
     for day in candidate_days:
-        dates = [x for x in sequence if x[4] == day] #collect dates
+        dates = list([x for x in sequence if x[4] == day]) #collect dates
         #check yearly pattern
         months = [x[2] for x in sequence if x[4] == day]
         candidates = [month for month in list(set(months)) if months.count(month) > 2]
@@ -792,7 +792,7 @@ def return_calendar_periodicities(sequence,term):
     nrs = [x[6] for x in sequence]
     candidate_nrs = [nr for nr in list(set(nrs)) if nrs.count(nr) > 2]
     for nr in candidate_nrs:
-        nr_dates = [x for x in sequence if x[6] == nr]
+        nr_dates = list([x for x in sequence if x[6] == nr])
         weekdays = [x[5] for x in nr_dates]
         candidate_weekdays = [weekday for weekday in list(set(weekdays)) if weekdays.count(weekday) > 2]
         for weekday in candidate_weekdays:
@@ -822,7 +822,7 @@ def return_calendar_periodicities(sequence,term):
     weekdays = [x[5] for x in sequence]
     candidate_weekdays = [weekday for weekday in list(set(weekdays)) if weekdays.count(weekday) > 2]
     for weekday in candidate_weekdays:
-        dates = [x for x in sequence if x[5] == weekday] #collect dates
+        dates = list([x for x in sequence if x[5] == weekday]) #collect dates
         #check yearly pattern
         weeks = [x[3] for x in sequence if x[5] == weekday]
         candidates = [week for week in list(set(weeks)) if weeks.count(week) > 2]
