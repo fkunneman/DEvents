@@ -835,7 +835,7 @@ def cluster_documents(pairsims,indices,thresh):
     vector_cluster = {}
     for i,index in enumerate(indices):
         cluster_vectors[i] = [index]
-        vector_cluster[index] = clust
+        vector_cluster[index] = i
     if len(scores) > 0:
         scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
         for score in scores_sorted:

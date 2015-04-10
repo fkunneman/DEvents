@@ -215,14 +215,15 @@ class Calendar:
     def cluster_entities_periodicity(self,cluster_threshold):
         print("generating bigdocs")
         #generate bigdocs per entity
-        all_entities = self.entity_sequences.keys()
+        #all_entities = self.entity_sequences.keys()
+        entities = self.entity_periodicity["calendar"].keys()
         entity_index = {}
         index_entity = {}
-        for i,entity in enumerate(all_entities):
+        for i,entity in enumerate(entities):
             entity_index[entity] = i
             index_entity[i] = entity
         documents = []
-        for entity in all_entities:
+        for entity in entities:
             documents.append(" ".join([" ".join(x.tweets) for \
                 x in self.entity_sequences[entity]["events"]]))
         vectors = calculations.tfidf_docs(documents)
@@ -230,7 +231,6 @@ class Calendar:
         pairsims = calculations.return_similarities(vectors,vectors)
         print("grouping entities")
         #group entities
-        entities = self.entity_periodicity["calendar"].keys()
         pattern_entities = defaultdict(list)
         patterns = []
         for entity in entities:
