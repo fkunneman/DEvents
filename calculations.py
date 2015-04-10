@@ -747,9 +747,9 @@ def score_calendar_periodicity(pattern,entries,total):
         len(seq) + len(gaps),entries,gaps,pattern]
 
 def periodicity_procedure(dates,every,level_value,t,l):
-    units = [x[level_value[0]] for x in dates]
     pers = []
     if t == "recur":
+        units = [x[level_value[0]] for x in dates]
         candidates = [unit for unit in list(set(units)) if units.count(unit) > 2]
         for c in candidates:
             pattern = ["-","v","v","v","v","v","v"]
@@ -757,7 +757,7 @@ def periodicity_procedure(dates,every,level_value,t,l):
             pattern[level_value[0]] = c
             for lv in level_value[1:]:
                 pattern[lv[0]] = lv[1] 
-            dates_c = copy.deepcopy([x for x in dates if x[level] == c])
+            dates_c = copy.deepcopy([x for x in dates if x[level_value[0]] == c])
             periodicity = score_calendar_periodicity(pattern,dates_c,l) #score pattern
             if periodicity[:2] == [1,1]: return [periodicity] #total coverage and consistency
             pers.append(periodicity)
@@ -767,7 +767,7 @@ def periodicity_procedure(dates,every,level_value,t,l):
             pattern = ["-","v","v","v","v","v","v"]
             pattern[every] = "e"
             for lv in level_value:
-                pattern = [lv[0]] = lv[1] 
+                pattern[lv[0]] = lv[1] 
             periodicity = score_calendar_periodicity(pattern,unit_sequence,l) #score pattern
             if periodicity[:2] == [1,1]: return [periodicity] #total coverage and consistency
             pers.append(periodicity)
