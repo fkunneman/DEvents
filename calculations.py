@@ -828,17 +828,14 @@ def return_calendar_periodicities(sequence):
     else:
         return periodicities
 
-def cluster_documents(vectors,indices,thresh):
-    pairsims = return_similarities(vectors,vectors)
+def cluster_documents(pairsims,indices,thresh):
     pairs = [x for x in itertools.combinations(indices,2)]
     scores = [[[x[0]],[x[1]],pairsims[x[0]][x[1]]] for x in pairs if pairsims[x[0]][x[1]] > thresh]
-    #print("pairs scores",pairs,scores)
-    clusts = range(len(vectors))
     cluster_vectors = defaultdict(list)
     vector_cluster = {}
-    for clust in clusts:
-        cluster_vectors[clust] = [clust]
-        vector_cluster[clust] = clust
+    for i,index in enumerate(indices):
+        cluster_vectors[i] = [index]
+        vector_cluster[index] = clust
     if len(scores) > 0:
         scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
         for score in scores_sorted:
