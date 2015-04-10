@@ -226,6 +226,7 @@ class Calendar:
             documents.append(" ".join([" ".join(x.tweets) for \
                 x in self.entity_sequences[entity]["events"]]))
         vectors = calculations.tfidf_docs(documents)
+        #print(len(vectors),vectors)
         print("grouping entities")
         #group entities
         entities = self.entity_periodicity["calendar"].keys()
@@ -242,8 +243,8 @@ class Calendar:
             if len(entities) > 1:
                 # print(">1")
                 indices = [entity_index[x] for x in entities]
-                vecs = [vectors[i] for i in indices]
-                print(len(vecs),vecs)
+                vecs = [list(vectors[i].toarray()[0]) for i in indices]
+                #print(len(vecs),vecs)
                 # print("clustering",indices)
                 clusters = calculations.cluster_documents(vecs,indices,cluster_threshold)
                 groups = []
