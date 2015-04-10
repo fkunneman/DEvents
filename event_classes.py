@@ -229,9 +229,13 @@ class Calendar:
         print("grouping entities")
         #group entities
         entities = self.entity_periodicity["calendar"].keys()
+        pattern_entities = defaultdict(list)
         patterns = []
         for entity in entities:
-            patterns.extend([x[-1] for x in self.entity_periodicity["calendar"][entity]])
+            entity_patterns = [x[-1] for x in self.entity_periodicity["calendar"][entity]]
+            patterns.extend(entity_patterns)
+            for pattern in patterns:
+                pattern_entities[pattern].append(entity)
         patterns = list(set(patterns))
         for pattern in patterns:
             entities = [ent for ent in entities if pattern in \
