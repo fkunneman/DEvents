@@ -705,15 +705,19 @@ def cluster_jp(term_vecs,k):
 
     return cluster_vectors
 
-def score_calendar_periodicity(pattern,entries,total):
+def score_calendar_periodicity(pattern,entries,total,te):
     coverage = len(entries) / total
     sorted_entries = sorted(entries,key = lambda x : x[0])
+    if te == "oudjaarsdag":
+        print("CALC before sequence level",entries)
     for i,level in enumerate(reversed(pattern)):
         if level == "e":
             sequence_level = len(pattern) - (i+1) 
             break
     seq = [x[sequence_level] for x in sorted_entries]
     intervals = []
+    if te == "oudjaarsdag":
+        print("CALC before intervals",entries)
     for i,x in enumerate(seq[1:]):
         interval = seq[i+1]-seq[i]
         if interval < 0:
@@ -724,6 +728,8 @@ def score_calendar_periodicity(pattern,entries,total):
                 interval = abs(seq[i]-no_weeknrs) + seq[i+1]
         intervals.append(interval)
     step = min(intervals)
+    if te == "oudjaarsdag":
+        print("CALC before gaps",entries)
     #print(step,sequence,intervals)
     if step == 0:
         consistency = 0
@@ -762,7 +768,9 @@ def return_calendar_periodicities(sequence,term):
             pattern = ["-","e",month,"v",day,"v","v"] #define pattern
             dates_month = [x for x in dates if x[2] == month]
             #print("periodicity",pattern,dates_month,sequence)
-            periodicity = score_calendar_periodicity(pattern,dates_month,len(sequence)) #score pattern
+            if term == "oudjaarsdag":
+                print("BEFORE PERIODICITY CALC 1",sequence[0])
+            periodicity = score_calendar_periodicity(pattern,dates_month,len(sequence),term) #score pattern
             if periodicity[:2] == [1,1]: #total coverage and consistency
                 return [periodicity]
             periodicities.append(periodicity)
@@ -771,7 +779,9 @@ def return_calendar_periodicities(sequence,term):
         while len(day_sequence) > 2:
             pattern = ["-","v","e","v",day,"v","v"]
             #print("periodicity",pattern,day_sequence)
-            periodicity = score_calendar_periodicity(pattern,day_sequence,len(sequence)) #score pattern
+            if term == "oudjaarsdag":
+                print("BEFORE PERIODICITY CALC 2",sequence[0])
+            periodicity = score_calendar_periodicity(pattern,day_sequence,len(sequence),term) #score pattern
             if periodicity[:2] == [1,1]: #total coverage and consistency
                 return [periodicity]
             periodicities.append(periodicity)
@@ -794,7 +804,7 @@ def return_calendar_periodicities(sequence,term):
                 pattern = ["-","e",month,"v","v",weekday,nr] #define pattern
                 dates_month = [x for x in dates if x[2] == month]
                 #print("periodicity",pattern,dates_month)
-                periodicity = score_calendar_periodicity(pattern,dates_month,len(sequence)) #score pattern
+                periodicity = score_calendar_periodicity(pattern,dates_month,len(sequence),term) #score pattern
                 if periodicity[:2] == [1,1]: #total coverage and consistency
                     return [periodicity]
                 periodicities.append(periodicity)
@@ -803,13 +813,11 @@ def return_calendar_periodicities(sequence,term):
             while len(day_sequence) > 2:
                 pattern = ["-","v","e","v","v",weekday,nr]
                 #print("periodicity",pattern,day_sequence)
-                periodicity = score_calendar_periodicity(pattern,day_sequence,len(sequence)) #score pattern
+                periodicity = score_calendar_periodicity(pattern,day_sequence,len(sequence),term) #score pattern
                 if periodicity[:2] == [1,1]: #total coverage and consistency
                     return [periodicity]
                 periodicities.append(periodicity)
                 day_sequence.pop()
-    if term == "oudjaarsdag":
-        print("AFTER WEEKNR",sequence[0])
     #weekday route
     weekdays = [x[5] for x in sequence]
     candidate_weekdays = [weekday for weekday in list(set(weekdays)) if weekdays.count(weekday) > 2]
@@ -836,8 +844,6 @@ def return_calendar_periodicities(sequence,term):
                 return [periodicity]
             periodicities.append(periodicity)
             day_sequence.pop()   
-    if term == "oudjaarsdag":
-        print("AFTER WEEKDAY",sequence[0])
     #finalize periodicities
     if len(periodicities) > 0:
         sorted_periodicities = sorted(periodicities,key = lambda x : x[0])
