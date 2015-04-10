@@ -743,7 +743,7 @@ def score_calendar_periodicity(pattern,entries,total):
                         gap_date[sequence_level] = gap
                         gaps.append(gap_date)
                         gap += step
-    return [numpy.mean([coverage,consistency]),coverage,consistency,
+    return [numpy.mean([coverage,consistency]),coverage,consistency,step,
         len(seq) + len(gaps),entries,gaps,pattern]
 
 def periodicity_procedure(dates,every,level_value,t,l):
@@ -804,7 +804,11 @@ def return_calendar_periodicities(sequence):
         #check yearly pattern
         periodicities.extend(periodicity_procedure(dates,1,[3,[5,weekday]],"recur",len(sequence)))
         #check weekly pattern
-        periodicities.extend(periodicity_procedure(dates,3,[[5,weekday]],"seq",len(sequence)))
+        years = [x[1] for x in dates]
+        candidate_years = [y for y in list(set(years)) if years.count(y) > 2]
+        for year in candidate_years: #can only be in the same year
+            dates_years = copy.deepcopy([x for x in dates if x[1] == year])
+            periodicities.extend(periodicity_procedure(dates_years,3,[[5,weekday]],"seq",len(sequence)))
 
     #finalize periodicities
     if len(periodicities) > 0:
@@ -812,9 +816,9 @@ def return_calendar_periodicities(sequence):
         final_periodicities = [sorted_periodicities[0]]
         for p in sorted_periodicities:
             overlap = False
-            dateset = set([x[0] for x in p[4]])
+            dateset = set([x[0] for x in p[5]])
             for fp in final_periodicities:
-                fp_dates = set([x[0] for x in fp[4]])
+                fp_dates = set([x[0] for x in fp[5]])
                 if len(dateset&fp_dates) > 0:
                     overlap = True
                     break
@@ -824,70 +828,49 @@ def return_calendar_periodicities(sequence):
     else:
         return periodicities
 
-
-        # months = [x[2] for x in sequence if x[4] == day]
-        # candidates = [month for month in list(set(months)) if months.count(month) > 2]
-        # for month in candidates:
-        #     pattern = ["-","e",month,"v",day,"v","v"] #define pattern
-        #     dates_month = [x for x in dates if x[2] == month]
-        #     periodicity = score_calendar_periodicity(pattern,dates_month,len(sequence)) #score pattern
-        #     if periodicity[:2] == [1,1]: #total coverage and consistency
-        #         return [periodicity]
-        #     periodicities.append(periodicity)
-        # day_sequence = dates
-        # while len(day_sequence) > 2:
-        #     pattern = ["-","v","e","v",day,"v","v"]
-        #     periodicity = score_calendar_periodicity(pattern,day_sequence,len(sequence)) #score pattern
-        #     if periodicity[:2] == [1,1]: #total coverage and consistency
-        #         return [periodicity]
-        #     periodicities.append(periodicity)
-        #     day_sequence.pop()
-   
-
-  
-
-            # day_sequence = dates
-            # while len(day_sequence) > 2:
-            #     pattern = ["-","v","e","v","v",weekday,nr]
-            #     periodicity = score_calendar_periodicity(pattern,day_sequence,len(sequence)) #score pattern
-            #     if periodicity[:2] == [1,1]: #total coverage and consistency
-            #         return [periodicity]
-            #     periodicities.append(periodicity)
-            #     day_sequence.pop()
-
-            # #check yearly pattern
-            # months = [x[2] for x in dates]
-            # candidates = [month for month in list(set(months)) if months.count(month) > 2]
-            # for month in candidates:
-            #     pattern = ["-","e",month,"v","v",weekday,nr] #define pattern
-            #     dates_month = [x for x in dates if x[2] == month]
-            #     periodicity = score_calendar_periodicity(pattern,dates_month,len(sequence)) #score pattern
-            #     if periodicity[:2] == [1,1]: #total coverage and consistency
-            #         return [periodicity]
-            #     periodicities.append(periodicity)
-            #check monthly pattern
-
-        # weeks = [x[3] for x in sequence if x[5] == weekday]
-        # candidates = [week for week in list(set(weeks)) if weeks.count(week) > 2]
-        # for week in candidates:
-        #     pattern = ["-","e","v",week,"v",weekday,"v"] #define pattern
-        #     dates_week = [x for x in dates if x[3] == week]
-        #     periodicity = score_calendar_periodicity(pattern,dates_week,len(sequence)) #score pattern
-        #     if periodicity[:2] == [1,1]: #total coverage and consistency
-        #         return [periodicity]
-        #     periodicities.append(periodicity)
-        # #check weekly pattern
-        # day_sequence = dates
-        # while len(day_sequence) > 2:
-        #     pattern = ["-","v","v","e","v",weekday,"v"]
-        #     periodicity = score_calendar_periodicity(pattern,day_sequence,len(sequence)) #score pattern
-        #     if periodicity[:2] == [1,1]: #total coverage and consistency
-        #         return [periodicity]
-        #     periodicities.append(periodicity)
-        #     day_sequence.pop()   
-
-
-
-
-
-
+# def AHC_clustering():
+#     documents = calculations.tfidf_docs([" ".join([y.text for y in x.tweets]) for x in self.events])
+#     pairsims = calculations.return_similarities(documents,documents)
+#     dates = list(set([x.date for x in self.events]))
+#     for date in dates:
+#         events = [x for x in self.events if x.date == date]
+#         indexes = [x.ids[0] for x in events]
+#         pairs = [x for x in itertools.combinations(indexes,2)]
+#         scores = [([x[0]],[x[1]],pairsims[x[0]][x[1]]) for x in pairs if pairsims[x[0]][x[1]] > 0.7]
+#         if len(scores) > 0:
+#             scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
+#             while scores_sorted[0][2] > 0.7: #scores are not static 
+#                 highest_sim = scores_sorted[0] #start with top
+#                 #merge events
+#                 for x in events: #collect the event that matches the id list
+#                     if highest_sim[0] == x.ids:
+#                         event1 = x
+#                     if highest_sim[1] == x.ids:
+#                         event2 = x
+#                 if event1.score > event2.score: #merge to event with highest score
+#                     event1.merge(event2)
+#                     events.remove(event2)
+#                     self.events.remove(event2)
+#                     event = event1
+#                 else:
+#                     event2.merge(event1)
+#                     events.remove(event1)
+#                     self.events.remove(event1)
+#                     event = event2
+#                 all_s = []
+#                 remove_s = []
+#                 event_set = set(event.ids)
+#                 for score in scores: #remove event sets that contain the same event(s)
+#                     if bool(event_set & set(score[0] + score[1])): 
+#                         remove_s.append(score)
+#                 for s in remove_s:
+#                     scores.remove(s)
+#                 for e in events: #add new similarities as mean of the similarity between seperate events
+#                     if not bool(event_set & set(e.ids)):
+#                         sims = [(aa, bb) for aa in event.ids for bb in e.ids]
+#                         mean_sim = numpy.mean([pairsims[x[0]][x[1]] for x in sims])
+#                         scores.append((event.ids,e.ids,mean_sim))
+#                 scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True) #resort scores
+#                 if not len(scores_sorted) > 1:
+#                     break
+#     print("overlap",len(self.events))

@@ -162,6 +162,7 @@ class Calendar:
     def __init__(self):
         self.entity_sequences = defaultdict(lambda : defaultdict(list))
         self.entity_periodicity = defaultdict(lambda : {})
+        self.entities_periodicity = []
         #= defaultdict(lambda : defaultdict(list))
         #self.entity_calper = {}
         #self.term_counts = defaultdict(int)
@@ -201,7 +202,7 @@ class Calendar:
                         if len([x for x in sequence["intervals"] if x > 5]) == \
                             len(sequence["intervals"]):
                             stdev = calculations.return_relative_stdev(sequence["intervals"])
-                            self.entity_periodicity[entity]["stdev"] = [stdev,sequence["dates"] + \
+                            self.entity_periodicity["stdev"][entity] = [stdev,sequence["dates"] + \
                                 [event.date],sequence["intervals"]]
                     if calc:
                         if not (len(sequence["intervals"]) > 15 and \
@@ -209,98 +210,23 @@ class Calendar:
                             dateinfo = copy.deepcopy(sequence["date_info"])
                             periodicities = calculations.return_calendar_periodicities(dateinfo) 
                             if len(periodicities) > 0:
-                                self.entity_periodicity[entity]["calendar"] = periodicities
+                                self.entity_periodicity["calendar"][entity] = periodicities
+
+    def cluster_entities_periodicity(self,cluster_threshold):
+        #generate bigdocs per entity
 
 
-                # else:
-                #     if len(self.term_stdev[entity]) > 0:
-                #         del self.term_stdev[entity]
-                #update calender seqs
-
-            #if entity == "oudjaarsdag":
-            #    print(sequence["date_info"])
-
-
-
-    #                     if len(sequence["last_periodic"]) > 0:
-    #                         last_periodic = sequence["last_periodic"]
-    #                         index = last_periodic[0]
-    #                         stdev = last_periodic[1]
-    #                         intervals = sequence["intervals"][last_periodic[2]:last_periodic[3]]
-    #                         if last_periodic[3] == len(sequence["intervals"]): #periodicity until last date
-    #                             stdev = calculations.return_relative_stdev(sequence["intervals"])
-    #                             if stdev < 10: #update current sequence
-    #                                 #self.term_stdev[term][index] = [stdev,", ".join([str(x) for x in sequence["merged_dates"][last_periodic[2]:last_periodic[3]+1]]),",".join([str(x) for x in intervals + [merged_interval]])]
-    #                                 self.term_stdev[term][index] = [stdev,sequence["dates"][last_periodic[2]:last_periodic[3]+1] + event.date,intervals + interval]
-    #                                 sequence["last_periodic"] = [index,stdev,last_periodic[2],last_periodic[3]+1]
-    #                         else:
-    #                             if len(sequence["intervals"]) - last_periodic[3] <= 3: #maximum 2 intervals before
-    #                                 #merge intervals in gap (possibly outliers)
-    #                                 stdev = calculations.return_relative_stdev(intervals + [sum(sequence["merged_intervals"][last_periodic[3]:])])
-    #                                 if stdev < 10:
-    #                                     #break gap from dates and intervals
-    #                                     #sequence["merged_dates"] = sequence["merged_dates"][:last_periodic[3]+1] + [event.date]
-    #                                     #sequence["merged_intervals"] = sequence["merged_intervals"][:last_periodic[3]+1] + [sum(sequence["merged_intervals"][last_periodic[3]+1:])]
-    #                                     #update current sequence
-    #                                     self.term_stdev[term][index] = [stdev,sequence["dates"][last_periodic[2]:last_periodic[3]+1] + event.date,intervals + interval]
-    #                                     sequence["last_periodic"] = [index,stdev,last_periodic[2],last_periodic[3]+1]
-    #                                     #continue
-    # #                            intervals = sequence["merged_intervals"][last_periodic[3]:]
-    #                             intervals = sequence["intervals"][last_periodic[3]:]
-    #                             if len(intervals) >= 2: #find best periodicity
-    #                                 scores = []
-    #                                 for i in range(len(intervals[:-1])):
-    #                                     seq = intervals[i:]
-    #                                     scores.append([i,calculations.return_relative_stdev(seq)])
-    #                                 best = sorted(scores,key = lambda x : x[0])[0]
-    #                                 if best[1] < 10:
-    #                                     sequence["last_periodic"] = [index+1,best[1],last_periodic[3]+best[0],len(sequence["intervals"])]
-    #                                     self.term_stdev[term].append([best[1],sequence["dates"][last_periodic[3]+best[0]:] + event.date,sequence["intervals"][last_periodic[3]+best[0]:]])
-    #                     else: #calculate from beginning 
-    #                         intervals = sequence["intervals"]
-    #                         if len(intervals) >= 2: #find best periodicity
-    #                             scores = []
-    #                             for i in range(len(intervals[:-1])):
-    #                                 seq = intervals[i:]
-    #                                 scores.append([i,calculations.return_relative_stdev(seq)])
-    #                             best = sorted(scores,key = lambda x : x[0])[0]
-    #                             if best[1] < 10:
-    #                                 sequence["last_periodic"] = [0,best[1],best[0],len(sequence["intervals"])]
-    #                                 self.term_stdev[term].append([best[1],sequence["dates"][best[0]:],sequence["intervals"][best[0]:]])
-                        # try:      
-                        #     string = self.event_string[event.ids[0]]
-                        # except KeyError:
-                        #     self.event_string[event.ids[0]] = self.strings
-                        #     self.string_events[self.strings].append(event)
-                        #     self.strings += 1
-                #else:
-                    #sequence["events"].append(event)
-                    #sequence["merged_dates"].append(event.date)
+        #group entities
+        entities = self.entity_periodicity["calendar"].keys()
+        pattern_entities = defaultdict(list)
+        patterns = list(set([x[-1] for x in self.entity_periodicity["calendar"][y] for y in entities]))
+        for pattern in patterns:
+            pattern_entities[pattern] = [ent for ent in entities if \
+                self.entity_periodicity["calendar"][ent][-1] == pattern]
+        for pattern in patterns:
+            print(pattern,pattern_entities[pattern])
+        quit()
 
 
 
 
-
-
-    #def cluster_entities(self):
-
-
-
-    #def rank_periodicity(self,date_begin,date_end):
-        #
-
-
-
-
-
-
-
-
-
-
-                    # try:
-                    #     string = self.event_string[event.ids[0]]
-                    # except KeyError:
-                    #     self.event_string[event.ids[0]] = self.strings
-                    #     self.string_events[self.strings].append(event)
-                    #    self.strings += 1

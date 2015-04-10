@@ -49,24 +49,28 @@ for i,line in enumerate(lines):
     ids = tokens[3].split(", ")
     tweets = tokens[4].split("-----")
     event = event_classes.Event(i,[date,terms,score,tweets])
-    if date >= calc_date and date <= datetime.datetime(2014,12,31):
+    if date >= calc_date and date <= datetime.datetime(2014,2,31):
         print(event.date,event.entities,"calper")
         event_calendar.add_event(event,args.stdev,args.cal)
     else:
         event_calendar.add_event(event,args.stdev,args.cal)
 
+if args.cluster:
+    event_calendar.cluster_entities_periodicity(0.5)
+
+
 #sort by periodicity
 entity_periodicity = []
-for entity in event_calendar.entity_periodicity.keys():
-    for periodicity in event_calendar.entity_periodicity[entity]["calendar"]:
+for entity in event_calendar.entity_periodicity["calendar"].keys():
+    for periodicity in event_calendar.entity_periodicity["calendar"][entity]:
         entity_periodicity.append([entity,periodicity])
 sorted_periodicities = sorted(entity_periodicity,key = lambda x : x[1][0],reverse = True)
 
 outfile = open(args.o + "calper_2014_cl.txt","w",encoding = "utf-8")
 for p in sorted_periodicities:
-    outfile.write("---------------\n" + p[0] + "\t" + "<" + ",".join([str(x) for x in p[1][-1]]) + "\t" + \
-        ", ".join([str(x) for x in p[1][1:4]]) + "\t" + " > ".join([str(x[0]) for x in p[1][4]]) + \
-        "\t" + ", ".join([str(x[0]) for x in p[1][5]]) + "\n")
+    outfile.write("---------------\n" + p[0] + "\t" + "<" + ",".join([str(x) for x in p[1][-1]]) + ">\t" + \
+        ", ".join([str(x) for x in p[1][1:5]]) + "\t" + " > ".join([str(x[0]) for x in p[1][5]]) + \
+        "\t" + ", ".join([str(x[0]) for x in p[1][6]]) + "\n")
 outfile.close()
 
 # tps = [[k,term_periodicity[k]] for k in term_periodicity.keys()]
