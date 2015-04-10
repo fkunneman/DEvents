@@ -244,14 +244,15 @@ class Calendar:
             if len(entities) > 1:
                 # print(">1")
                 indices = [entity_index[x] for x in entities]
-                print(indices)
                 clusters = calculations.cluster_documents(pairsims,indices,cluster_threshold)
                 groups = []
                 for cluster in clusters:
                     groups.append([index_entity[x] for x in cluster])
             else:
-                groups = entities
-            print(pattern,groups)
+                groups = []
+            print(pattern,entities)
+            for group in groups:
+                print(group)
 
 
 

@@ -56,7 +56,7 @@ for i,line in enumerate(lines):
         event_calendar.add_event(event,False,False)
 
 if args.cluster:
-    event_calendar.cluster_entities_periodicity(0.5)
+    event_calendar.cluster_entities_periodicity(0.8)
 
 
 #sort by periodicity
