@@ -830,7 +830,7 @@ def return_calendar_periodicities(sequence):
 
 def cluster_documents(pairsims,indices,thresh):
     pairs = [x for x in itertools.combinations(indices,2)]
-    scores = [[[x[0]],[x[1]],pairsims[x[0]][x[1]]] for x in pairs if pairsims[x[0]][x[1]] > thresh]
+    scores = [[x[0],x[1],pairsims[x[0]][x[1]]] for x in pairs if pairsims[x[0]][x[1]] > thresh]
     cluster_vectors = defaultdict(list)
     vector_cluster = {}
     for i,index in enumerate(indices):
@@ -839,7 +839,6 @@ def cluster_documents(pairsims,indices,thresh):
     if len(scores) > 0:
         scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
         for score in scores_sorted:
-            print(score)
             prev_clust = vector_cluster[score[1]]
             cluster_vectors[vector_cluster[score[0]]].extend(cluster_vectors[score[1]])
             for index in cluster_vectors[prev_clust]:
@@ -847,5 +846,5 @@ def cluster_documents(pairsims,indices,thresh):
             del cluster_vectors[prev_clust]           
     output = []
     for cluster in cluster_vectors.keys():
-        output.append([indices[x] for x in cluster])
+        output.append(cluster_vectors[cluster])
     return output
