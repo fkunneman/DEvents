@@ -160,37 +160,31 @@ class Calendar:
     Class containing a set of event (clusters)
     """
     def __init__(self):
-        # self.event_string = {}
-        # self.string_events = defaultdict(list)
-        # self.strings = 0
-        # self.event_pattern = {}
-        # self.pattern_events = defaultdict(list)
-        #self.date_terms = defaultdict(list)
-        # self.periodicities = []
         self.entity_sequences = defaultdict(lambda : defaultdict(list))
-        self.term_stdev = defaultdict(lambda : defaultdict(list))
-        self.term_calper = {}
-        self.term_counts = defaultdict(int)
-        self.cooc_counts = defaultdict(lambda : defaultdict(int))
-        self.num_docs = 0
+        self.entity_periodicity = defaultdict(lambda : {})
+        #= defaultdict(lambda : defaultdict(list))
+        #self.entity_calper = {}
+        #self.term_counts = defaultdict(int)
+        #self.cooc_counts = defaultdict(lambda : defaultdict(int))
+        #self.num_docs = 0
 
     #TODO event merge (but not in any case)
-    def add_event(self,event,calc = False):
+    def add_event(self,event,stdev,calc):
         #make counts
-        self.num_docs += 1
-        combis = itertools.combinations(event.entities,2)
-        for comb in combis:
-            s_comb = sorted(list(comb))
-            self.cooc_counts[s_comb[0]][s_comb[1]] += 1
+        #self.num_docs += 1
+        #combis = itertools.combinations(event.entities,2)
+        #for comb in combis:
+        #    s_comb = sorted(list(comb))
+        #    self.cooc_counts[s_comb[0]][s_comb[1]] += 1
         for i,entity in enumerate(event.entities):
-            self.term_counts[entity] += 1
+        #    self.term_counts[entity] += 1
             #append temporal information
             sequence = self.entity_sequences[entity]
             interval = True
             if len(sequence.keys()) > 0: #there are one or more earlier entries with the term
                 #check interval
                 interval = time_functions.timerel(event.date,sequence["dates"][-1],unit="day")
-                if interval:
+                if interval: #interval is more than zero days
                     sequence["intervals"].append(interval)
             if interval:
                 sequence["dates"].append(event.date)
@@ -202,23 +196,27 @@ class Calendar:
                 sequence["entities"].extend([x for x in event.entities if x != entity])
                 sequence["entities"] = list(set(sequence["entities"]))
                 #update stdev
-                if len(sequence["intervals"]) >= 2 and \
-                    len([x for x in sequence["intervals"] if x > 5]) == \
-                    len(sequence["intervals"]):
-                    stdev = calculations.return_relative_stdev(sequence["intervals"])
-                    self.term_stdev[entity][0] = [stdev,sequence["dates"] + \
-                        [event.date],sequence["intervals"]]
-                else:
-                    if len(self.term_stdev[entity]) > 0:
-                        del self.term_stdev[entity]
+                if len(sequence["intervals"]) >= 2:
+                    if stdev:
+                        if len([x for x in sequence["intervals"] if x > 5]) == \
+                            len(sequence["intervals"]):
+                            stdev = calculations.return_relative_stdev(sequence["intervals"])
+                            self.entity_periodicity[entity]["stdev"] = [stdev,sequence["dates"] + \
+                                [event.date],sequence["intervals"]]
+                    if calc:
+                        if not (len(sequence["intervals"]) > 15 and \
+                            (sequence["intervals"].count(1) / len(sequence["intervals"])) > 0.3):
+                            dateinfo = copy.deepcopy(sequence["date_info"])
+                            periodicities = calculations.return_calendar_periodicities(dateinfo) 
+                            if len(periodicities) > 0:
+                                self.entity_periodicity[entity]["calendar"] = periodicities
+
+
+                # else:
+                #     if len(self.term_stdev[entity]) > 0:
+                #         del self.term_stdev[entity]
                 #update calender seqs
-                if calc:
-                    if len(sequence["intervals"]) >= 2 and not \
-                        (len(sequence["intervals"]) > 15 and (sequence["intervals"].count(1) / len(sequence["intervals"])) > 0.3):
-                        dateinfo = copy.deepcopy(sequence["date_info"])
-                        periodicities = calculations.return_calendar_periodicities(dateinfo) 
-                        if len(periodicities) > 0:
-                            self.term_calper[entity] = periodicities
+
             #if entity == "oudjaarsdag":
             #    print(sequence["date_info"])
 

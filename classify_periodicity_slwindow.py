@@ -51,35 +51,14 @@ for i,line in enumerate(lines):
     event = event_classes.Event(i,[date,terms,score,tweets])
     if date >= calc_date and date <= datetime.datetime(2014,12,31):
         print(event.date,event.entities,"calper")
-        event_calendar.add_event(event,calc=True)
-
-
-        # for entity in event.entities:
-        #     if entity == "subsidie":
-        #         print(event_calendar.term_stdev[entity])
-        #     if len(event_calendar.term_stdev[entity].keys()) > 0:
-        #         # term_periodicity[entity] = [event_calendar.term_stdev[entity][0][0],
-        #         # event_calendar.term_stdev[entity][0][1],event_calendar.term_stdev[entity][0][2],
-        #         # [[x,calculations.return_pmi(event_calendar.num_docs,
-        #         #     event_calendar.term_counts[entity],event_calendar.term_counts[x],
-        #         #     event_calendar.cooc_counts[sorted([entity,x])[0]][sorted([entity,x])[1]])] \
-        #         #     for x in event_calendar.entity_sequences[entity]["entities"]]]
-        #         # if re.search("superbowl",entity):
-        #         #     print([[x,calculations.return_jaccard(event_calendar.term_counts[entity],event_calendar.term_counts[x],
-        #         #     event_calendar.cooc_counts[sorted([entity,x])[0]][sorted([entity,x])[1]])] \
-        #         #     for x in event_calendar.entity_sequences[entity]["entities"]])
-        #         term_periodicity[entity] = [event_calendar.term_stdev[entity][0][0],
-        #         event_calendar.term_stdev[entity][0][1],event_calendar.term_stdev[entity][0][2],
-        #         [[x,calculations.return_jaccard(event_calendar.term_counts[entity],event_calendar.term_counts[x],
-        #             event_calendar.cooc_counts[sorted([entity,x])[0]][sorted([entity,x])[1]])] \
-        #             for x in event_calendar.entity_sequences[entity]["entities"]]]
+        event_calendar.add_event(event,args.stdev,args.cal)
     else:
         event_calendar.add_event(event)
 
 #sort by periodicity
 entity_periodicity = []
-for entity in event_calendar.term_calper.keys():
-    for periodicity in event_calendar.term_calper[entity]:
+for entity in event_calendar.entity_periodicity.keys():
+    for periodicity in event_calendar.entity_periodicity[entity]["calendar"]:
         entity_periodicity.append([entity,periodicity])
 sorted_periodicities = sorted(entity_periodicity,key = lambda x : x[1][0],reverse = True)
 
