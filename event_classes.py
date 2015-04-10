@@ -236,7 +236,7 @@ class Calendar:
         for entity in entities:
             entity_patterns = [x[-1] for x in self.entity_periodicity["calendar"][entity]]
             patterns.extend(entity_patterns)
-            for pattern in patterns:
+            for pattern in entity_patterns:
                 pattern_entities[pattern].append(entity)
         patterns = list(set(patterns))
         for pattern in patterns:
@@ -250,7 +250,7 @@ class Calendar:
                     groups.append([index_entity[x] for x in cluster])
             else:
                 groups = []
-            print(pattern,entities)
+            print(pattern)
             for group in groups:
                 print(group)
 
