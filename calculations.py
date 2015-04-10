@@ -766,7 +766,7 @@ def periodicity_procedure(dates,every,level_value,t,l):
             pattern[every] = "e"
             for lv in level_value:
                 pattern[lv[0]] = lv[1] 
-            pers.append(score_calendar_periodicity(pattern,unit_sequence,l)) #score pattern
+            pers.append(score_calendar_periodicity(pattern,copy.deepcopy(),unit_sequence,l)) #score pattern
             unit_sequence.pop()
     return pers
 
