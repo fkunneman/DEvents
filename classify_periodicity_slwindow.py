@@ -74,7 +74,7 @@ for entity in event_calendar.term_calper.keys():
         entity_periodicity.append([entity,periodicity])
 sorted_periodicities = sorted(entity_periodicity,key = lambda x : x[1][0],reverse = True)
 
-outfile = open(args.o + "calper_2014.txt","w",encoding = "utf-8")
+outfile = open(args.o + "calper_2014_cl.txt","w",encoding = "utf-8")
 for p in sorted_periodicities:
     outfile.write("---------------\n" + p[0] + "\t" + "<" + ",".join([str(x) for x in p[1][-1]]) + "\t" + \
         ", ".join([str(x) for x in p[1][1:4]]) + "\t" + " > ".join([str(x[0]) for x in p[1][4]]) + \

@@ -743,7 +743,36 @@ def score_calendar_periodicity(pattern,entries,total):
                         gap_date[sequence_level] = gap
                         gaps.append(gap_date)
                         gap += step
-    return [numpy.mean([coverage,consistency]),coverage,consistency,len(seq) + len(gaps),entries,gaps,pattern]
+    return [numpy.mean([coverage,consistency]),coverage,consistency,
+        len(seq) + len(gaps),entries,gaps,pattern]
+
+def periodicity_procedure(dates,every,level_value,t,l):
+    units = [x[level_value[0]] for x in dates]
+    pers = []
+    if t == "recur":
+        candidates = [unit for unit in list(set(units)) if units.count(unit) > 2]
+        for c in candidates:
+            pattern = ["-","v","v","v","v","v","v"]
+            pattern[every] = "e"
+            pattern[level_value[0]] = c
+            for lv in level_value[1:]:
+                pattern[lv[0]] = lv[1] 
+            dates_c = copy.deepcopy([x for x in dates if x[level] == c])
+            periodicity = score_calendar_periodicity(pattern,dates_c,l) #score pattern
+            if periodicity[:2] == [1,1]: return [periodicity] #total coverage and consistency
+            pers.append(periodicity)
+    elif t == "seq":
+        unit_sequence = copy.deepcopy(dates)
+        while len(unit_sequence) > 2:
+            pattern = ["-","v","v","v","v","v","v"]
+            pattern[every] = "e"
+            for lv in level_value:
+                pattern = [lv[0]] = lv[1] 
+            periodicity = score_calendar_periodicity(pattern,unit_sequence,l) #score pattern
+            if periodicity[:2] == [1,1]: return [periodicity] #total coverage and consistency
+            pers.append(periodicity)
+            unit_sequence.pop()
+    return pers
 
 def return_calendar_periodicities(sequence):
     periodicities = []
@@ -751,78 +780,49 @@ def return_calendar_periodicities(sequence):
     days = [x[4] for x in sequence]
     candidate_days = [day for day in list(set(days)) if days.count(day) > 2]
     for day in candidate_days:
-        dates = copy.deepcopy([x for x in sequence if x[4] == day]) #collect dates
+        dates = [x for x in sequence if x[4] == day] #collect dates
         #check yearly pattern
-        months = [x[2] for x in sequence if x[4] == day]
-        candidates = [month for month in list(set(months)) if months.count(month) > 2]
-        for month in candidates:
-            pattern = ["-","e",month,"v",day,"v","v"] #define pattern
-            dates_month = [x for x in dates if x[2] == month]
-            periodicity = score_calendar_periodicity(pattern,dates_month,len(sequence)) #score pattern
-            if periodicity[:2] == [1,1]: #total coverage and consistency
-                return [periodicity]
-            periodicities.append(periodicity)
+        new_periodicities = periodicity_procedure(dates,1,[2,[4,day]],"recur",len(sequence))
+        if new_periodicities[0][:2] == [1,1]: return new_periodicities
+        periodicities.extend(new_periodicities) 
         #check monthly pattern
-        day_sequence = dates
-        while len(day_sequence) > 2:
-            pattern = ["-","v","e","v",day,"v","v"]
-            periodicity = score_calendar_periodicity(pattern,day_sequence,len(sequence)) #score pattern
-            if periodicity[:2] == [1,1]: #total coverage and consistency
-                return [periodicity]
-            periodicities.append(periodicity)
-            day_sequence.pop()
+        new_periodicities = periodicity_procedure(dates,2,[[4,day]],"seq",len(sequence))
+        if new_periodicities[0][:2] == [1,1]: return new_periodicities
+        periodicities.extend(new_periodicities)
     #nr_weekday route
     nrs = [x[6] for x in sequence]
     candidate_nrs = [nr for nr in list(set(nrs)) if nrs.count(nr) > 2]
     for nr in candidate_nrs:
-        nr_dates = copy.deepcopy([x for x in sequence if x[6] == nr])
+        nr_dates = [x for x in sequence if x[6] == nr]
         weekdays = [x[5] for x in nr_dates]
-        candidate_weekdays = [weekday for weekday in list(set(weekdays)) if weekdays.count(weekday) > 2]
+        candidate_weekdays = [weekday for weekday in list(set(weekdays)) if \
+            weekdays.count(weekday) > 2]
         for weekday in candidate_weekdays:
             dates = [x for x in nr_dates if x[5] == weekday]
             #check yearly pattern
-            months = [x[2] for x in dates]
-            candidates = [month for month in list(set(months)) if months.count(month) > 2]
-            for month in candidates:
-                pattern = ["-","e",month,"v","v",weekday,nr] #define pattern
-                dates_month = [x for x in dates if x[2] == month]
-                periodicity = score_calendar_periodicity(pattern,dates_month,len(sequence)) #score pattern
-                if periodicity[:2] == [1,1]: #total coverage and consistency
-                    return [periodicity]
-                periodicities.append(periodicity)
+            new_periodicities = periodicity_procedure(dates,1,[2,[5,weekday],[6,nr]],"recur",
+                len(sequence))
+            if new_periodicities[0][:2] == [1,1]: return new_periodicities
+            periodicities.extend(new_periodicities)  
             #check monthly pattern
-            day_sequence = dates
-            while len(day_sequence) > 2:
-                pattern = ["-","v","e","v","v",weekday,nr]
-                periodicity = score_calendar_periodicity(pattern,day_sequence,len(sequence)) #score pattern
-                if periodicity[:2] == [1,1]: #total coverage and consistency
-                    return [periodicity]
-                periodicities.append(periodicity)
-                day_sequence.pop()
+            new_periodicities = periodicity_procedure(dates,2,[[5,weekday],[6,nr]],"seq",
+                len(sequence))
+            if new_periodicities[0][:2] == [1,1]: return new_periodicities
+            periodicities.extend(new_periodicities)
     #weekday route
     weekdays = [x[5] for x in sequence]
-    candidate_weekdays = [weekday for weekday in list(set(weekdays)) if weekdays.count(weekday) > 2]
+    candidate_weekdays = [wd for wd in list(set(weekdays)) if weekdays.count(wd) > 2]
     for weekday in candidate_weekdays:
-        dates = copy.deepcopy([x for x in sequence if x[5] == weekday]) #collect dates
+        dates = [x for x in sequence if x[5] == weekday]
         #check yearly pattern
-        weeks = [x[3] for x in sequence if x[5] == weekday]
-        candidates = [week for week in list(set(weeks)) if weeks.count(week) > 2]
-        for week in candidates:
-            pattern = ["-","e","v",week,"v",weekday,"v"] #define pattern
-            dates_week = [x for x in dates if x[3] == week]
-            periodicity = score_calendar_periodicity(pattern,dates_week,len(sequence)) #score pattern
-            if periodicity[:2] == [1,1]: #total coverage and consistency
-                return [periodicity]
-            periodicities.append(periodicity)
+        new_periodicities = periodicity_procedure(dates,1,[3,[5,weekday]],"recur",len(sequence))
+        if new_periodicities[0][:2] == [1,1]: return new_periodicities
+        periodicities.extend(new_periodicities) 
         #check weekly pattern
-        day_sequence = dates
-        while len(day_sequence) > 2:
-            pattern = ["-","v","v","e","v",weekday,"v"]
-            periodicity = score_calendar_periodicity(pattern,day_sequence,len(sequence)) #score pattern
-            if periodicity[:2] == [1,1]: #total coverage and consistency
-                return [periodicity]
-            periodicities.append(periodicity)
-            day_sequence.pop()   
+        new_periodicities = periodicity_procedure(dates,3,[[5,weekday]],"seq",len(sequence))
+        if new_periodicities[0][:2] == [1,1]: return new_periodicities
+        periodicities.extend(new_periodicities)
+
     #finalize periodicities
     if len(periodicities) > 0:
         sorted_periodicities = sorted(periodicities,key = lambda x : x[0])
@@ -840,3 +840,71 @@ def return_calendar_periodicities(sequence):
         return final_periodicities
     else:
         return periodicities
+
+
+        # months = [x[2] for x in sequence if x[4] == day]
+        # candidates = [month for month in list(set(months)) if months.count(month) > 2]
+        # for month in candidates:
+        #     pattern = ["-","e",month,"v",day,"v","v"] #define pattern
+        #     dates_month = [x for x in dates if x[2] == month]
+        #     periodicity = score_calendar_periodicity(pattern,dates_month,len(sequence)) #score pattern
+        #     if periodicity[:2] == [1,1]: #total coverage and consistency
+        #         return [periodicity]
+        #     periodicities.append(periodicity)
+        # day_sequence = dates
+        # while len(day_sequence) > 2:
+        #     pattern = ["-","v","e","v",day,"v","v"]
+        #     periodicity = score_calendar_periodicity(pattern,day_sequence,len(sequence)) #score pattern
+        #     if periodicity[:2] == [1,1]: #total coverage and consistency
+        #         return [periodicity]
+        #     periodicities.append(periodicity)
+        #     day_sequence.pop()
+   
+
+  
+
+            # day_sequence = dates
+            # while len(day_sequence) > 2:
+            #     pattern = ["-","v","e","v","v",weekday,nr]
+            #     periodicity = score_calendar_periodicity(pattern,day_sequence,len(sequence)) #score pattern
+            #     if periodicity[:2] == [1,1]: #total coverage and consistency
+            #         return [periodicity]
+            #     periodicities.append(periodicity)
+            #     day_sequence.pop()
+
+            # #check yearly pattern
+            # months = [x[2] for x in dates]
+            # candidates = [month for month in list(set(months)) if months.count(month) > 2]
+            # for month in candidates:
+            #     pattern = ["-","e",month,"v","v",weekday,nr] #define pattern
+            #     dates_month = [x for x in dates if x[2] == month]
+            #     periodicity = score_calendar_periodicity(pattern,dates_month,len(sequence)) #score pattern
+            #     if periodicity[:2] == [1,1]: #total coverage and consistency
+            #         return [periodicity]
+            #     periodicities.append(periodicity)
+            #check monthly pattern
+
+        # weeks = [x[3] for x in sequence if x[5] == weekday]
+        # candidates = [week for week in list(set(weeks)) if weeks.count(week) > 2]
+        # for week in candidates:
+        #     pattern = ["-","e","v",week,"v",weekday,"v"] #define pattern
+        #     dates_week = [x for x in dates if x[3] == week]
+        #     periodicity = score_calendar_periodicity(pattern,dates_week,len(sequence)) #score pattern
+        #     if periodicity[:2] == [1,1]: #total coverage and consistency
+        #         return [periodicity]
+        #     periodicities.append(periodicity)
+        # #check weekly pattern
+        # day_sequence = dates
+        # while len(day_sequence) > 2:
+        #     pattern = ["-","v","v","e","v",weekday,"v"]
+        #     periodicity = score_calendar_periodicity(pattern,day_sequence,len(sequence)) #score pattern
+        #     if periodicity[:2] == [1,1]: #total coverage and consistency
+        #         return [periodicity]
+        #     periodicities.append(periodicity)
+        #     day_sequence.pop()   
+
+
+
+
+
+
