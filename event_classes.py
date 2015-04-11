@@ -190,7 +190,7 @@ class Calendar:
             interval = True
             if len(sequence.keys()) > 0: #there are one or more earlier entries with the term
                 #check interval
-                interval = time_functions.timerel(event.date,sequence["dates"][-1],unit="day")
+                interval = time_functions.timerel(event.date,sequence["dates_events"][-1][0],unit="day")
                 if interval: #interval is more than zero days
                     sequence["intervals"].append(interval)
             if interval:
