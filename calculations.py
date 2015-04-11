@@ -831,19 +831,23 @@ def return_calendar_periodicities(sequence):
 def cluster_documents(pairsims,indices,thresh):
     pairs = [x for x in itertools.combinations(indices,2)]
     scores = [[x[0],x[1],pairsims[x[0]][x[1]]] for x in pairs if pairsims[x[0]][x[1]] > thresh]
+    #print(scores)
     cluster_vectors = defaultdict(list)
     vector_cluster = {}
     for i,index in enumerate(indices):
         cluster_vectors[i] = [index]
         vector_cluster[index] = i
+    #print(cluster_vectors) #find out why there are empty clusters
     if len(scores) > 0:
         scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
         for score in scores_sorted:
             prev_clust = vector_cluster[score[1]]
-            cluster_vectors[vector_cluster[score[0]]].extend(cluster_vectors[score[1]])
+            #print("BEFORE MERGE",score[0],score[1],cluster_vectors[vector_cluster[score[0]],cluster_vectors[prev_clust])
+            cluster_vectors[vector_cluster[score[0]]].extend(cluster_vectors[prev_clust])
             for index in cluster_vectors[prev_clust]:
                 vector_cluster[index] = vector_cluster[score[0]]
-            del cluster_vectors[prev_clust]           
+            del cluster_vectors[prev_clust]
+            #print("AFTER MERGE",cluster_vectors[vector_cluster[score[0]]])
     output = []
     for cluster in cluster_vectors.keys():
         output.append(cluster_vectors[cluster])

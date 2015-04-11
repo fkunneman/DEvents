@@ -64,11 +64,13 @@ class Event:
         self.entities = info[1] #list
         self.score = info[2]
         self.tweets = info[3]
-        self.extensions = []
-        self.editions = []
+        self.periodics = []
 
     def add_tids(self,tids):
         self.tids = tids
+
+    def set_periodics(self,events):
+        self.periodics = events
 
     def merge(self,clust):
         self.ids.extend(clust.ids)
@@ -160,9 +162,11 @@ class Calendar:
     Class containing a set of event (clusters)
     """
     def __init__(self):
+        self.events = []
+        self.expected_events = [] #list of (date,eventobj,certainty)
+        self.periodics = [] #dict: pattern,score,entities,events
         self.entity_sequences = defaultdict(lambda : defaultdict(list))
         self.entity_periodicity = defaultdict(lambda : {})
-        self.entities_periodicity = []
         #= defaultdict(lambda : defaultdict(list))
         #self.entity_calper = {}
         #self.term_counts = defaultdict(int)
@@ -171,6 +175,7 @@ class Calendar:
 
     #TODO event merge (but not in any case)
     def add_event(self,event,stdev,calc):
+        self.events.append(event)
         #make counts
         #self.num_docs += 1
         #combis = itertools.combinations(event.entities,2)
@@ -181,6 +186,7 @@ class Calendar:
         #    self.term_counts[entity] += 1
             #append temporal information
             sequence = self.entity_sequences[entity]
+            sequence["dates_events"].append([event.date,event])
             interval = True
             if len(sequence.keys()) > 0: #there are one or more earlier entries with the term
                 #check interval
@@ -188,7 +194,6 @@ class Calendar:
                 if interval: #interval is more than zero days
                     sequence["intervals"].append(interval)
             if interval:
-                sequence["dates"].append(event.date)
                 sequence["date_info"].append([event.date,event.date.year,event.date.month,
                     event.date.isocalendar()[1],event.date.day,event.date.weekday(),
                     int(time_functions.timerel(event.date,datetime.datetime(event.date.year,\
@@ -202,8 +207,9 @@ class Calendar:
                         if len([x for x in sequence["intervals"] if x > 5]) == \
                             len(sequence["intervals"]):
                             stdev = calculations.return_relative_stdev(sequence["intervals"])
-                            self.entity_periodicity["stdev"][entity] = [stdev,sequence["dates"] + \
-                                [event.date],sequence["intervals"]]
+                            self.entity_periodicity["stdev"][entity] = [stdev,
+                            list(set([x[0] for x in sequence["dates_events"]])),[event.date],
+                            sequence["intervals"]]
                     if calc:
                         if not (len(sequence["intervals"]) > 15 and \
                             (sequence["intervals"].count(1) / len(sequence["intervals"])) > 0.3):
@@ -255,6 +261,15 @@ class Calendar:
             # for group in groups:
             #     print(group)
 
-
-
-
+    def predict_events(until_date,threshold):
+        #select above threshold patterns
+        good_periodics = [p for p in self.periodics if p["score"] > threshold]
+        #for each pattern
+        for periodic in good_periodics:
+            last_date = max(sorted([e.date for e in periodic["events"]]))
+            extensions = calculations.extract_future_dates(periodic["pattern"],
+                last_date,until_date) #list of future dates
+            for date in extensions:
+                event = Event("x",[date,periodic["entities"],"-",[]])
+                event.set_periodics(periodic["events"])
+                expected_events.append(event)
