@@ -186,7 +186,6 @@ class Calendar:
         #    self.term_counts[entity] += 1
             #append temporal information
             sequence = self.entity_sequences[entity]
-            sequence["dates_events"].append([event.date,event])
             interval = True
             if len(sequence.keys()) > 0: #there are one or more earlier entries with the term
                 #check interval
@@ -217,6 +216,7 @@ class Calendar:
                             periodicities = calculations.return_calendar_periodicities(dateinfo) 
                             if len(periodicities) > 0:
                                 self.entity_periodicity["calendar"][entity] = periodicities
+            sequence["dates_events"].append([event.date,event])
 
     def cluster_entities_periodicity(self,cluster_threshold):
         print("generating bigdocs")
