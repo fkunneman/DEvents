@@ -246,20 +246,48 @@ class Calendar:
                 pattern_entities[pattern].append(entity)
         patterns = list(set(patterns))
         for pattern in patterns:
-            entities = set(list(pattern_entities[pattern]))
-            print(pattern,entities)
-            if len(entities) > 1:
+            ents = list(set(pattern_entities[pattern]))
+            #print(pattern,ents)
+            if len(ents) > 1:
                 # print(">1")
-                indices = [entity_index[x] for x in entities]
+                indices = [entity_index[x] for x in ents]
                 clusters = calculations.cluster_documents(pairsims,indices,cluster_threshold)
                 groups = []
                 for cluster in clusters:
                     groups.append([index_entity[x] for x in cluster])
             else:
-                groups = []
-            print(pattern,[g for g in groups if len(g) > 1])
-            # for group in groups:
-            #     print(group)
+                groups = [ents]
+            #print(pattern,[g for g in groups if len(g) > 1])
+            for group in groups:
+                if len(group) > 1: #rescore periodicity
+                    all_dates = []
+                    periodic_dates = []
+                    events = []
+                    event_ids = []
+                    for entity in group:
+                        dates_events = self.entity_sequences[entity]["dates_events"]
+                        all_dates.extend([x[0] for x in dates_events])
+                        for e in [x[1] for x in dates_events]:
+                            if not e.ids[0] in event_ids:
+                                event_ids.append(e.ids[0])
+                                events.append(e)
+                        periodic = [x for x in self.entity_periodicity["calendar"][entity] if \
+                            x[7] == pattern][0]
+                        periodic_dates.extend(periodic[5])
+                    events = [x for x in events if x.date in periodic_dates]
+                    listpattern = pattern[1:-1].split(",")
+                    new_periodic = calculations.score_calendar_periodicity(listpattern,
+                        list(set(periodic_dates)),len(list(set(all_dates))))
+                else:
+                    new_periodic = [x for x in self.entity_periodicity["calendar"][group[0]] if \
+                                x[7] == pattern][0]
+                    periodic_dates = new_periodic[5]
+                    events = [x[1] for x in self.entity_sequences[group[0]]["dates_events"] if \
+                        x[1].date in periodic_dates] 
+                self.periodics.append({"score":new_periodic[0],"coverage":new_periodic[1],
+                    "consistency":new_periodic[2],"step":new_periodic[3],"len":new_periodic[4],
+                    "dates":new_periodic[5],"gaps":new_periodic[6],"pattern":pattern,
+                    "events":events,"entities":group})
 
     def predict_events(until_date,threshold):
         #select above threshold patterns
