@@ -732,14 +732,14 @@ def score_calendar_periodicity(pattern,entries,total):
         consistency = intervals.count(step) / len(intervals)
         gaps = []
         if consistency < 1: #locate gaps
-            dummy_date = entries[0]
+            dummy_date = copy.deepcopy(entries[0])
             for i,x in enumerate(intervals):
                 if x != step:
                     gap_start = seq[i]
                     gap_end = seq[i+1]
                     gap = gap_start + step
                     while gap < gap_end:
-                        gap_date = dummy_date
+                        gap_date = copy.deepcopy(dummy_date)
                         gap_date[sequence_level] = gap
                         gaps.append(gap_date)
                         gap += step
