@@ -838,19 +838,21 @@ def cluster_documents(pairsims,indices,thresh):
         cluster_vectors[i] = [index]
         vector_cluster[index] = i
     #print(cluster_vectors) #find out why there are empty clusters
-    print("BEFORE",cluster_vectors)
+    #print("BEFORE",cluster_vectors)
     if len(scores) > 0:
         scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
         for score in scores_sorted:
             #print("MERGE BEFORE",cluster_vectors,vector_cluster)
             prev_clust = vector_cluster[score[1]]
-            print("BEFORE MERGE",score[0],score[1],cluster_vectors[vector_cluster[score[0]]],cluster_vectors[prev_clust])
-            cluster_vectors[vector_cluster[score[0]]].extend(cluster_vectors[prev_clust])
-            for index in cluster_vectors[prev_clust]:
-                vector_cluster[index] = vector_cluster[score[0]]
-            del cluster_vectors[prev_clust]
-            print("AFTER MERGE",cluster_vectors[vector_cluster[score[0]]])
-    print("AFTER",cluster_vectors)
+            merge_clust = vector_cluster[score[0]]
+            if not prev_cust == merge_clust:
+            #print("BEFORE MERGE",score[0],score[1],cluster_vectors[vector_cluster[score[0]]],cluster_vectors[prev_clust])
+                cluster_vectors[merge_clust].extend(cluster_vectors[prev_clust])
+                for index in cluster_vectors[prev_clust]:
+                    vector_cluster[index] = vector_cluster[score[0]]
+                del cluster_vectors[prev_clust]
+            #print("AFTER MERGE",cluster_vectors[vector_cluster[score[0]]])
+    #print("AFTER",cluster_vectors)
     output = []
     for cluster in cluster_vectors.keys():
         output.append(cluster_vectors[cluster])
