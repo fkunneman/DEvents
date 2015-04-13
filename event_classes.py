@@ -274,21 +274,23 @@ class Calendar:
                         periodic = [x for x in self.entity_periodicity["calendar"][entity] if \
                             x[7] == pattern][0]
                         periodic_dates.extend(periodic[5])
-                    events = [x for x in events if x.date in periodic_dates]
                     listpattern = pattern[1:-1].split(",")
                     unique_dates = []
                     unique_periodic_dates = []
                     for pd in periodic_dates:
                         if not pd[0] in unique_dates:
                             unique_periodic_dates.append(pd)
+                            unique_dates.append(pd[0])
+                    events = [x for x in events if x.date in unique_dates]
                     #print(listpattern,periodic_dates,all_dates)
                     new_periodic = calculations.score_calendar_periodicity(listpattern,
                         unique_periodic_dates,len(list(set(all_dates))))
                 else:
                     new_periodic = [x for x in self.entity_periodicity["calendar"][group[0]] if \
                                 x[7] == pattern][0]
+                    unique_dates = list(set([x[0] for x in new_periodic[5]]))
                     events = [x[1] for x in self.entity_sequences[group[0]]["dates_events"] if \
-                        x[1].date in periodic_dates] 
+                        x[1].date in unique_dates] 
                 self.periodics.append({"score":new_periodic[0],"coverage":new_periodic[1],
                     "consistency":new_periodic[2],"step":new_periodic[3],"len":new_periodic[4],
                     "dates":new_periodic[5],"gaps":new_periodic[6],"pattern":pattern,
