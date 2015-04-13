@@ -283,7 +283,7 @@ class Calendar:
                             unique_periodic_dates.append(pd)
                             unique_dates.append(pd[0])
                     events = [x for x in events if x.date in unique_dates]
-                    #print(listpattern,periodic_dates,all_dates)
+                    print(group,listpattern,unique_periodic_dates,len(list(set(all_dates))))                     
                     new_periodic = calculations.score_calendar_periodicity(listpattern,
                         unique_periodic_dates,len(list(set(all_dates))))
                 else:

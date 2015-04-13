@@ -845,7 +845,7 @@ def cluster_documents(pairsims,indices,thresh):
             #print("MERGE BEFORE",cluster_vectors,vector_cluster)
             prev_clust = vector_cluster[score[1]]
             merge_clust = vector_cluster[score[0]]
-            if not prev_cust == merge_clust:
+            if not prev_clust == merge_clust:
             #print("BEFORE MERGE",score[0],score[1],cluster_vectors[vector_cluster[score[0]]],cluster_vectors[prev_clust])
                 cluster_vectors[merge_clust].extend(cluster_vectors[prev_clust])
                 for index in cluster_vectors[prev_clust]:
