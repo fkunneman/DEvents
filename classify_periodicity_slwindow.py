@@ -23,8 +23,8 @@ parser.add_argument('--stdev', action = 'store_true',
     help = "Choose to score periodicity by stdev (baseline)")
 parser.add_argument('--cal', action = 'store_true', 
     help = "Choose to score periodicity with calendar periodicity detection")
-parser.add_argument('--cluster', action = 'store_true', 
-    help = "Choose to cluster periodic entities together")
+parser.add_argument('--cluster', type=float, action = 'store', 
+    help = "Choose a cosim threshold (0-1) to cluster periodic entities together")
 args = parser.parse_args() 
 
 date_periodics = defaultdict(list)
@@ -49,15 +49,26 @@ for i,line in enumerate(lines):
     ids = tokens[3].split(", ")
     tweets = tokens[4].split("-----")
     event = event_classes.Event(i,[date,terms,score,tweets])
-    if date >= calc_date and date <= datetime.datetime(2014,2,28):
+    if date >= calc_date and date <= datetime.datetime(2014,1,31):
         print(event.date,event.entities,"calper")
         event_calendar.add_event(event,args.stdev,args.cal)
     else:
         event_calendar.add_event(event,False,False)
 
 if args.cluster:
-    event_calendar.cluster_entities_periodicity(0.4)
-
+    #perform clustering
+    event_calendar.cluster_entities_periodicity(args.cluster)
+    #write periodics to file
+    outfile = open(args.o + "calper_clustered_" + str(args.cluster) + ".txt")
+    periodics = sorted(self.periodics,key = lambda x : x["score"],reverse = True)
+    for periodic in periodics:
+        outfile.write("---------------\n" + periodic["pattern"] + "\t" + 
+            ", ".join(periodic["entities"]) + "\t" + 
+            ",".join(str(x) for x in [periodic["score"],periodic["coverage"],
+            periodic["consistency"],periodic["step"],periodic["len"]]) + "\t" + 
+            " > ".join([str(x) for x in periodic["dates"]]) + "\n" + 
+            "\n".join([e.tweets[0] for e in periodic["events"]]) + "\n")
+    outfile.close()
 
 #sort by periodicity
 entity_periodicity = []
