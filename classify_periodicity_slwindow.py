@@ -49,7 +49,7 @@ for i,line in enumerate(lines):
     ids = tokens[3].split(", ")
     tweets = tokens[4].split("-----")
     event = event_classes.Event(i,[date,terms,score,tweets])
-    if date >= calc_date and date <= datetime.datetime(2014,1,31):
+    if date >= calc_date and date <= datetime.datetime(2014,12,31):
         print(event.date,event.entities,"calper")
         event_calendar.add_event(event,args.stdev,args.cal)
     else:
@@ -59,7 +59,7 @@ if args.cluster:
     #perform clustering
     event_calendar.cluster_entities_periodicity(args.cluster)
     #write periodics to file
-    outfile = open(args.o + "calper_clustered_" + str(args.cluster) + ".txt")
+    outfile = open(args.o + "calper_clustered_" + str(args.cluster)[2:] + ".txt")
     periodics = sorted(self.periodics,key = lambda x : x["score"],reverse = True)
     for periodic in periodics:
         outfile.write("---------------\n" + periodic["pattern"] + "\t" + 

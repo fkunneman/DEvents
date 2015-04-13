@@ -258,7 +258,7 @@ class Calendar:
             else:
                 groups = [ents]
             #print(pattern,[g for g in groups if len(g) > 1])
-            print(groups)
+            #print(groups)
             for group in groups:
                 if len(group) > 1: #rescore periodicity
                     all_dates = []
@@ -283,11 +283,11 @@ class Calendar:
                             unique_periodic_dates.append(pd)
                             unique_dates.append(pd[0])
                     events = [x for x in events if x.date in unique_dates]
-                    print(group)                     
+                    #print(group)                     
                     new_periodic = calculations.score_calendar_periodicity(listpattern,
                         copy.deepcopy(unique_periodic_dates),len(list(set(all_dates))))
                 else:
-                    print(group)
+                    #print(group)
                     new_periodic = [x for x in self.entity_periodicity["calendar"][group[0]] if \
                                 x[7] == pattern][0]
                     unique_dates = list(set([x[0] for x in new_periodic[5]]))
