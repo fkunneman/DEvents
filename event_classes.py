@@ -283,9 +283,9 @@ class Calendar:
                             unique_periodic_dates.append(pd)
                             unique_dates.append(pd[0])
                     events = [x for x in events if x.date in unique_dates]
-                    print(group,listpattern,unique_periodic_dates,len(list(set(all_dates))))                     
+                    print(group)                     
                     new_periodic = calculations.score_calendar_periodicity(listpattern,
-                        unique_periodic_dates,len(list(set(all_dates))))
+                        copy.deepcopy(unique_periodic_dates),len(list(set(all_dates))))
                 else:
                     print(group)
                     new_periodic = [x for x in self.entity_periodicity["calendar"][group[0]] if \
