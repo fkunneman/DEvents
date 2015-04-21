@@ -725,7 +725,7 @@ def score_calendar_periodicity(pattern,entries,total):
                 interval = abs(seq[i]-no_weeknrs) + seq[i+1]
         intervals.append(interval)
     step = min(intervals)
-    if step == 0:
+    if step == 0 or step > 6:
         consistency = 0
         gaps = []
     else:
@@ -744,7 +744,7 @@ def score_calendar_periodicity(pattern,entries,total):
                         gaps.append(gap_date)
                         gap += step
     return [numpy.mean([coverage,consistency]),coverage,consistency,step,
-        len(seq) + len(gaps),entries,gaps,"<" + ",".join([str(x) for x in pattern]) + ">"]
+        len(seq) + len(gaps),sorted_entries,gaps,"<" + ",".join([str(x) for x in pattern]) + ">"]
 
 def periodicity_procedure(dates,every,level_value,t,l):
     pers = []
@@ -752,22 +752,36 @@ def periodicity_procedure(dates,every,level_value,t,l):
         units = [x[level_value[0]] for x in dates]
         candidates = [unit for unit in list(set(units)) if units.count(unit) > 2]
         for c in candidates:
-            pattern = ["-","v","v","v","v","v","v"]
-            pattern[every] = "e"
-            pattern[level_value[0]] = c
+            pattern = ["v","v","v","v","v","v"]
+            pattern[every-1] = "e"
+            pattern[level_value[0]-1] = c
             for lv in level_value[1:]:
-                pattern[lv[0]] = lv[1] 
+                pattern[lv[0]-1] = lv[1] 
             dates_c = copy.deepcopy([x for x in dates if x[level_value[0]] == c])
             pers.append(score_calendar_periodicity(pattern,dates_c,l)) #score pattern
     elif t == "seq":
         unit_sequence = copy.deepcopy(dates)
+        unit_sequence = sorted(unit_sequence,key = lambda x : x[0])
         while len(unit_sequence) > 2:
-            pattern = ["-","v","v","v","v","v","v"]
-            pattern[every] = "e"
+            pattern = ["v","v","v","v","v","v"]
+            pattern[every-1] = "e"
             for lv in level_value:
-                pattern[lv[0]] = lv[1] 
-            pers.append(score_calendar_periodicity(pattern,copy.deepcopy(unit_sequence),l)) #score pattern
-            unit_sequence.pop()
+                pattern[lv[0]-1] = lv[1]
+            #all possible segments
+            k = range(3,len(unit_sequence))
+            for seqlen in k:
+                #weekly pattern only in same year
+                if pattern[2] != "v":
+                    segments = []
+                    ys = list(set([x[1] for x in unit_sequence]))
+                    for y in ys:
+                        us = copy.deepcopy([x for x in unit_sequence if x[1] == y])
+                        segments.extend([us[i:i+seqlen] for i in xrange(len(us)-seqlen)])
+                else:
+                    segments = [unit_sequence[i:i+seqlen] for i in xrange(len(unit_sequence)-seqlen)]
+                for segment in segments:
+                    pers.append(score_calendar_periodicity(pattern,copy.deepcopy(segment),l)) #score pattern
+            #unit_sequence.pop()
     return pers
 
 def return_calendar_periodicities(sequence):
