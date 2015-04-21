@@ -49,7 +49,8 @@ for i,line in enumerate(lines):
     ids = tokens[3].split(", ")
     tweets = tokens[4].split("-----")
     event = event_classes.Event(i,[date,terms,score,tweets])
-    if date >= calc_date and date <= datetime.datetime(2014,12,31):
+    if date >= calc_date: 
+#and date <= datetime.datetime(2014,12,31):
         print(event.date,event.entities,"calper")
         event_calendar.add_event(event,args.stdev,args.cal)
     else:
@@ -59,14 +60,15 @@ if args.cluster:
     #perform clustering
     event_calendar.cluster_entities_periodicity(args.cluster)
     #write periodics to file
-    outfile = open(args.o + "calper_clustered_" + str(args.cluster)[2:] + ".txt")
-    periodics = sorted(self.periodics,key = lambda x : x["score"],reverse = True)
+    outfile = open(args.o + "calper_clustered_" + str(args.cluster)[2:] + ".txt",
+        "w",encoding="utf-8")
+    periodics = sorted(event_calendar.periodics,key = lambda x : x["score"],reverse = True)
     for periodic in periodics:
         outfile.write("---------------\n" + periodic["pattern"] + "\t" + 
             ", ".join(periodic["entities"]) + "\t" + 
             ",".join(str(x) for x in [periodic["score"],periodic["coverage"],
             periodic["consistency"],periodic["step"],periodic["len"]]) + "\t" + 
-            " > ".join([str(x) for x in periodic["dates"]]) + "\n" + 
+            " > ".join([str(x[0].date()) for x in periodic["dates"]]) + "\n" + 
             "\n".join([e.tweets[0] for e in periodic["events"]]) + "\n")
     outfile.close()
 
