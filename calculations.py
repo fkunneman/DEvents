@@ -728,10 +728,10 @@ def apply_calendar_pattern(pattern,last_date,step):
 
     if not return_date: #yearly or monthly sequence   
         if pattern[3] != "v": #day is filled
-            return_date = datetime.date(year,month,pattern[3])
+            return_date = datetime.datetime(year,month,pattern[3])
         else: 
             if pattern[2] != "v": #week is filled
-                raw_date = datetime.date(year,last_date.month,last_date.day)
+                raw_date = datetime.datetime(year,last_date.month,last_date.day)
                 until_weekday = pattern[4] - raw_date.weekday()
                 if until_weekday < 0:
                     until_weekday = 7 + until_weekday
@@ -739,7 +739,7 @@ def apply_calendar_pattern(pattern,last_date,step):
                 dif = (pattern[2] - raw_date_weekday.isocalendar()[1]) * 7
                 return_date = raw_date_weekday + datetime.timedelta(days=dif)
             else: #weekday
-                raw_date = datetime.date(year,month,1)
+                raw_date = datetime.datetime(year,month,1)
                 until_first_day = pattern[4] - raw_date.weekday()
                 if until_first_day < 0:
                     until_first_day = 7 + until_first_day
@@ -748,7 +748,7 @@ def apply_calendar_pattern(pattern,last_date,step):
                 while index > 0:
                     day += 7
                     index -= 1
-                return_date = datetime.date(year,month,day)
+                return_date = datetime.datetime(year,month,day)
 
     return return_date
 
