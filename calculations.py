@@ -751,6 +751,7 @@ def apply_calendar_pattern(pattern,last_date,step):
                 while index > 0:
                     day += 7
                     index -= 1
+                print(pattern,last_date,year,month,day)
                 return_date = datetime.datetime(year,month,day)
 
     return return_date
