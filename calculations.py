@@ -706,6 +706,52 @@ def cluster_jp(term_vecs,k):
 
     return cluster_vectors
 
+def apply_calendar_pattern(pattern,last_date,step):
+    return_date = False
+    for i,level in enumerate(reversed(pattern)):
+        if level == "e":
+            sequence_level = len(pattern)-(i+1) 
+            break
+    if sequence_level == 0: #year
+        year = last_date.year+step
+        if pattern[1] != "v": #month is filled
+            month = date.month
+    elif sequence_level == 1: #month
+        month = last_date.month + step
+        if month > 12:
+            year = last_date.year+1
+            month = month-12
+        else:
+            year = last_date.year
+    else: #week
+        return_date = last_date + datetime.timedelta(days = 7*step)
+
+    if not return_date: #yearly or monthly sequence   
+        if pattern[3] != "v": #day is filled
+            return_date = datetime.date(year,month,date.day)
+        else: 
+            if pattern[2] != "v": #week is filled
+                raw_date = datetime.date(year,last_date.month,last_date.day)
+                until_weekday = pattern[4] - raw_date.weekday()
+                if until_weekday < 0:
+                    until_weekday = 7 + until_weekday
+                raw_date_weekday = rawdate + datetime.timedelta(days=until_weekday)
+                dif = (pattern[2] - raw_date_weekday.isocalendar()[1]) * 7
+                return_date = raw_date_weekday + datetime.timedelta(days=dif)
+            else: #weekday
+                raw_date = datetime.date(year,month,1)
+                until_first_day = pattern[4] - raw_date.weekday()
+                if until_first_day < 0:
+                    until_first_day = 7 + until_first_day
+                day = 1+until_first_day
+                index = pattern[5]-1
+                while index > 0:
+                    day += 7
+                    index -= 1
+                return_date = datetime.date(year,month,day)
+
+    return return_date
+
 def score_calendar_periodicity(pattern,entries,total):
     coverage = len(entries) / total
     sorted_entries = sorted(entries,key = lambda x : x[0])
@@ -747,12 +793,22 @@ def score_calendar_periodicity(pattern,entries,total):
                 if x != step:
                     gap_start = seq[i]
                     gap_end = seq[i+1]
-                    gap = gap_start + step
+                    gap = copy.deepcopy(gap_start)
                     while gap < gap_end:
-                        gap_date = copy.deepcopy(dummy_date)
-                        gap_date[sequence_level] = gap
-                        gaps.append(gap_date)
-                        gap += step
+                        gap = apply_calendar_pattern(pattern,gap,step)
+                        gaps.append(gap)
+
+                    #     while gap.year < gap_end.year:
+                    #         gap_date = copy.deepcopy(dummy_date)
+                    #         gap_date[sequence_level] = gap
+                    #         gaps.append(gap_date)
+                    #         gap += step
+                    # #gap = gap_start + step
+                    # while gap < gap_end:
+                    #     gap_date = copy.deepcopy(dummy_date)
+                    #     gap_date[sequence_level] = gap
+                    #     gaps.append(gap_date)
+                    #     gap += step
     return [numpy.mean([coverage,consistency]),coverage,consistency,step,
         len(seq) + len(gaps),sorted_entries,gaps,"<" + ",".join([str(x) for x in pattern]) + ">"]
 
