@@ -709,11 +709,11 @@ def cluster_jp(term_vecs,k):
 def score_calendar_periodicity(pattern,entries,total):
     coverage = len(entries) / total
     sorted_entries = sorted(entries,key = lambda x : x[0])
-    #for i,level in enumerate(reversed(pattern)):
-    #    if level == "e":
-    #        sequence_level = len(pattern) - (i+1) 
-    #        break
-    sequence_level = pattern.index("e") + 1
+    for i,level in enumerate(reversed(pattern)):
+        if level == "e":
+            sequence_level = len(pattern)-i 
+            break
+    #sequence_level = pattern.index("e") + 1
     seq = [x[sequence_level] for x in sorted_entries]
     intervals = []
     for i,x in enumerate(seq[1:]):
