@@ -713,18 +713,20 @@ def score_calendar_periodicity(pattern,entries,total):
     #    if level == "e":
     #        sequence_level = len(pattern) - (i+1) 
     #        break
+    sl_unit = ["-",365,30.42,7.02]
     sequence_level = pattern.index("e") + 1
-    seq = [x[sequence_level] for x in sorted_entries]
+    #seq = [x[sequence_level] for x in sorted_entries]
+    seq = [x[0] for x in sorted_entries]
     intervals = []
-    for i,x in enumerate(seq[1:]):
-        interval = seq[i+1]-seq[i]
+    for i,x in enumerate([1:]):
+        interval = int((seq[i+1]-seq[i]).days / sl_unit[sequence_level])
     #    print("INT",interval)
-        if interval < 0: #year difference for week and month
-            if sequence_level == 2: #month
-                interval = abs(seq[i]-12) + seq[i+1]
-            elif sequence_level == 3: #weeknr
-                no_weeknrs = datetime.date(sorted_entries[i][1],12,28).isocalendar()[1]
-                interval = abs(seq[i]-no_weeknrs) + seq[i+1]
+        # if interval < 0: #year difference for week and month
+        #     if sequence_level == 2: #month
+        #         interval = abs(seq[i]-12) + seq[i+1]
+        #     elif sequence_level == 3: #weeknr
+        #         no_weeknrs = datetime.date(sorted_entries[i][1],12,28).isocalendar()[1]
+        #         interval = abs(seq[i]-no_weeknrs) + seq[i+1]
         intervals.append(interval)
     step = min(intervals)
     if step == 0 or step > 6:
@@ -845,7 +847,7 @@ def return_calendar_periodicities(sequence):
     else:
         return periodicities
 
-def cluster_documents(pairsims,indices,thresh):
+def cluster_documents(pairsims,indices,thresh,april=False):
     pairs = [x for x in itertools.combinations(indices,2)]
     scores = [[x[0],x[1],pairsims[x[0]][x[1]]] for x in pairs if pairsims[x[0]][x[1]] > thresh]
     #print(scores)
@@ -858,6 +860,8 @@ def cluster_documents(pairsims,indices,thresh):
     #print("BEFORE",cluster_vectors)
     if len(scores) > 0:
         scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
+        if april:
+            print(scores_sorted)
         for score in scores_sorted:
             #print("MERGE BEFORE",cluster_vectors,vector_cluster)
             prev_clust = vector_cluster[score[1]]
@@ -872,5 +876,6 @@ def cluster_documents(pairsims,indices,thresh):
     #print("AFTER",cluster_vectors)
     output = []
     for cluster in cluster_vectors.keys():
+        print(cluster_vectors[cluster])
         output.append(cluster_vectors[cluster])
     return output

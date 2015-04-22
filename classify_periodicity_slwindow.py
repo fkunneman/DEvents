@@ -51,7 +51,7 @@ for i,line in enumerate(lines):
     event = event_classes.Event(i,[date,terms,score,tweets])
     if date >= calc_date: 
 #and date <= datetime.datetime(2014,12,31):
-        print(event.date,event.entities,"calper")
+        #print(event.date,event.entities,"calper")
         event_calendar.add_event(event,args.stdev,args.cal)
     else:
         event_calendar.add_event(event,False,False)

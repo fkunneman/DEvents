@@ -251,7 +251,9 @@ class Calendar:
             if len(ents) > 1:
                 # print(">1")
                 indices = [entity_index[x] for x in ents]
-                clusters = calculations.cluster_documents(pairsims,indices,cluster_threshold)
+                if "#geengrap" in ents:
+                    print("1 april",ents,indices)
+                clusters = calculations.cluster_documents(pairsims,indices,cluster_threshold,april = True)
                 groups = []
                 for cluster in clusters:
                     groups.append([index_entity[x] for x in cluster])
