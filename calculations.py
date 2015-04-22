@@ -731,7 +731,7 @@ def apply_calendar_pattern(pattern,last_date,step):
             try:
                 return_date = datetime.datetime(year,month,pattern[3])
             except:
-                return_date = datetime.datetime(year,month,pattern[3]-1)
+                return False
         else: 
             if pattern[2] != "v": #week is filled
                 raw_date = datetime.datetime(year,last_date.month,last_date.day)
@@ -799,7 +799,10 @@ def score_calendar_periodicity(pattern,entries,total):
                     gap = copy.deepcopy(gap_start)
                     while gap < gap_end:
                         gap = apply_calendar_pattern(pattern,gap,step)
-                        gaps.append(gap)
+                        if gap:
+                            gaps.append(gap)
+                        else:
+                            break
 
                     #     while gap.year < gap_end.year:
                     #         gap_date = copy.deepcopy(dummy_date)
