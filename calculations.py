@@ -715,7 +715,7 @@ def apply_calendar_pattern(pattern,last_date,step):
     if sequence_level == 0: #year
         year = last_date.year+step
         if pattern[1] != "v": #month is filled
-            month = date.month
+            month = last_date.month
     elif sequence_level == 1: #month
         month = last_date.month + step
         if month > 12:
