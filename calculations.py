@@ -728,7 +728,7 @@ def apply_calendar_pattern(pattern,last_date,step):
 
     if not return_date: #yearly or monthly sequence   
         if pattern[3] != "v": #day is filled
-            return_date = datetime.date(year,month,date.day)
+            return_date = datetime.date(year,month,pattern[3])
         else: 
             if pattern[2] != "v": #week is filled
                 raw_date = datetime.date(year,last_date.month,last_date.day)
