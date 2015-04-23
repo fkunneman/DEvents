@@ -947,6 +947,7 @@ def cluster_documents(pairsims,indices,thresh,april=False):
     #print("AFTER",cluster_vectors)
     output = []
     for cluster in cluster_vectors.keys():
-        print(cluster_vectors[cluster])
+        if april:
+            print(cluster_vectors[cluster])
         output.append(cluster_vectors[cluster])
     return output
