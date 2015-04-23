@@ -304,7 +304,7 @@ class Calendar:
                     "dates":new_periodic[5],"gaps":new_periodic[6],"pattern":pattern,
                     "events":events,"entities":group})
 
-    def predict_events(until_date,threshold):
+    def predict_events(self,until_date,threshold):
         #select above threshold patterns
         good_periodics = [p for p in self.periodics if p["score"] > threshold]
         #for each pattern
@@ -319,7 +319,7 @@ class Calendar:
                 extentions.append(extend_date)
                 extend_date = calculations.apply_calendar_pattern(periodic["pattern"],extend_date,
                     periodic["step"])
-            for date in extensions:
+            for date in extentions:
                 event = Event("x",[date,periodic["entities"],"-",[]])
                 event.set_periodics(periodic["events"])
                 expected_events.append([date,periodic["entities"],periodic["score"],periodic["coverage"],periodic["consistency"]])
