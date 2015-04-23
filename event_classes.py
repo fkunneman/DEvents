@@ -282,7 +282,7 @@ class Calendar:
                         periodic = [x for x in self.entity_periodicity["calendar"][entity] if \
                             x[7] == pattern][0]
                         periodic_dates.extend(periodic[5])
-                    listpattern = pattern[1:-1].split(",")
+                    listpattern = [int(x) for x in pattern[1:-1].split(",")]
                     unique_dates = []
                     unique_periodic_dates = []
                     for pd in periodic_dates:
