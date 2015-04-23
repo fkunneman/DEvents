@@ -214,7 +214,8 @@ class Calendar:
                             (sequence["intervals"].count(1) / len(sequence["intervals"])) > 0.3):
                             dateinfo = copy.deepcopy(sequence["date_info"])
                             periodicities = calculations.return_calendar_periodicities(dateinfo)
-                            print(dateinfo,periodicities)
+ #                           if len(periodicities) > 0:                            
+#                                print(dateinfo,periodicities)
                             if len(periodicities) > 0:
                                 self.entity_periodicity["calendar"][entity] = periodicities
             sequence["dates_events"].append([event.date,event])
@@ -248,6 +249,7 @@ class Calendar:
         patterns = list(set(patterns))
         for pattern in patterns:
             ents = list(set(pattern_entities[pattern]))
+            print(pattern,ents)
             #print(pattern,ents)
             if len(ents) > 1:
                 # print(">1")
