@@ -163,7 +163,7 @@ class Calendar:
     """
     def __init__(self):
         self.events = []
-        self.expected_events = [] #list of (date,eventobj,certainty)
+        self.expected_events = [] #list of (date,entities,score,coverage,consistency)
         self.periodics = [] #dict: pattern,score,entities,events
         self.entity_sequences = defaultdict(lambda : defaultdict(list))
         self.entity_periodicity = defaultdict(lambda : {})
@@ -254,11 +254,7 @@ class Calendar:
             if len(ents) > 1:
                 # print(">1")
                 indices = [entity_index[x] for x in ents]
-                if "#geengrap" in ents:
-                    print("1 april",list(zip(ents,indices)))
-                    clusters = calculations.cluster_documents(pairsims,indices,cluster_threshold,april = True)
-                else:
-                    clusters = calculations.cluster_documents(pairsims,indices,cluster_threshold)
+                clusters = calculations.cluster_documents(pairsims,indices,cluster_threshold)
                 groups = []
                 for cluster in clusters:
                     groups.append([index_entity[x] for x in cluster])
@@ -312,11 +308,18 @@ class Calendar:
         #select above threshold patterns
         good_periodics = [p for p in self.periodics if p["score"] > threshold]
         #for each pattern
+        predict_date_correct = []
+        predict_periodic_correct = []
         for periodic in good_periodics:
             last_date = max(sorted([e.date for e in periodic["events"]]))
-            extensions = calculations.extract_future_dates(periodic["pattern"],
-                last_date,until_date) #list of future dates
+            extentions = []
+            extend_date = calculations.apply_calendar_pattern(periodic["pattern"],last_date,
+                periodic["step"])
+            while extend_date < until_date:
+                extentions.append(extend_date)
+                extend_date = calculations.apply_calendar_pattern(periodic["pattern"],extend_date,
+                    periodic["step"])
             for date in extensions:
                 event = Event("x",[date,periodic["entities"],"-",[]])
                 event.set_periodics(periodic["events"])
-                expected_events.append(event)
+                expected_events.append([date,periodic["entities"],periodic["score"],periodic["coverage"],periodic["consistency"]])

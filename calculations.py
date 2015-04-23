@@ -918,10 +918,8 @@ def return_calendar_periodicities(sequence):
     else:
         return periodicities
 
-def cluster_documents(pairsims,indices,thresh,april=False):
+def cluster_documents(pairsims,indices,thresh):
     pairs = [x for x in itertools.combinations(indices,2)]
-    if april:
-        print([[x[0],x[1],pairsims[x[0]][x[1]]] for x in pairs if pairsims[x[0]][x[1]] > 0])
     scores = [[x[0],x[1],pairsims[x[0]][x[1]]] for x in pairs if pairsims[x[0]][x[1]] > thresh]
     #print(scores)
     cluster_vectors = defaultdict(list)
@@ -933,8 +931,6 @@ def cluster_documents(pairsims,indices,thresh,april=False):
     #print("BEFORE",cluster_vectors)
     if len(scores) > 0:
         scores_sorted = sorted(scores,key = lambda x : x[2],reverse = True)
-        if april:
-            print(scores_sorted)
         for score in scores_sorted:
             #print("MERGE BEFORE",cluster_vectors,vector_cluster)
             prev_clust = vector_cluster[score[1]]
@@ -949,7 +945,5 @@ def cluster_documents(pairsims,indices,thresh,april=False):
     #print("AFTER",cluster_vectors)
     output = []
     for cluster in cluster_vectors.keys():
-        if april:
-            print(cluster_vectors[cluster])
         output.append(cluster_vectors[cluster])
     return output
