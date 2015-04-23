@@ -25,6 +25,9 @@ parser.add_argument('--cal', action = 'store_true',
     help = "Choose to score periodicity with calendar periodicity detection")
 parser.add_argument('--cluster', type=float, action = 'store', 
     help = "Choose a cosim threshold (0-1) to cluster periodic entities together")
+parser.add_argument('--predict', action= 'store', nargs = '+', required=False,
+    help = "choose to predict upcoming editions of an event, at date [1,2,3] up to date [4,5,6] " + 
+        "above threshold [7]")
 args = parser.parse_args() 
 
 date_periodics = defaultdict(list)
@@ -40,6 +43,12 @@ lines = infile.readlines()
 infile.close()
 term_periodicity = {}
 calc_date = datetime.datetime(args.s[0],args.s[1],args.s[2])
+predict = False
+if args.predict:
+    predict_date = datetime.datetime(args.predict[0],args.predict[1],args.predict[2])
+    predict_to_date = datetime.datetime(args.predict[3],args.predict[4],args.predict[5])
+    predict = True
+
 print("Processing events")
 for i,line in enumerate(lines):
     tokens = line.strip().split("\t")
@@ -49,8 +58,18 @@ for i,line in enumerate(lines):
     ids = tokens[3].split(", ")
     tweets = tokens[4].split("-----")
     event = event_classes.Event(i,[date,terms,score,tweets])
-    if date >= calc_date and date <= datetime.datetime(2014,4,3):
-        print(event.date,event.entities,"calper")
+    if date >= calc_date:
+        if predict:
+            print("making predictions")
+            if date == predict_date:
+                predictfile = open(args.o + "calper_predictions.txt","w",encoding="utf-8")
+                event_calendar.cluster_entities_periodicity(args.cluster)
+                event_calendar.predict_events(predict_to_date,args.predict[6])
+                for entry in event_calendar.expected_events:
+                    outfile.write("\t".join([str(entry[0]),", ".join(entry[1]),",".join([entry[2],entry[3],entry[4]])]) + "\n")
+                predict = False
+    #and date <= datetime.datetime(2014,4,3):
+        #print(event.date,event.entities,"calper")
         event_calendar.add_event(event,args.stdev,args.cal)
     else:
         event_calendar.add_event(event,False,False)
