@@ -71,19 +71,20 @@ if args.cluster:
             "\n".join([e.tweets[0] for e in periodic["events"]]) + "\n")
     outfile.close()
 
-#sort by periodicity
-entity_periodicity = []
-for entity in event_calendar.entity_periodicity["calendar"].keys():
-    for periodicity in event_calendar.entity_periodicity["calendar"][entity]:
-        entity_periodicity.append([entity,periodicity])
-sorted_periodicities = sorted(entity_periodicity,key = lambda x : x[1][0],reverse = True)
+else:
+    #sort by periodicity
+    entity_periodicity = []
+    for entity in event_calendar.entity_periodicity["calendar"].keys():
+        for periodicity in event_calendar.entity_periodicity["calendar"][entity]:
+            entity_periodicity.append([entity,periodicity])
+    sorted_periodicities = sorted(entity_periodicity,key = lambda x : x[1][0],reverse = True)
 
-outfile = open(args.o + "calper_2014_cl.txt","w",encoding = "utf-8")
-for p in sorted_periodicities:
-    outfile.write("---------------\n" + p[0] + "\t" + p[1][-1] + "\t" + \
-        ", ".join([str(x) for x in p[1][1:5]]) + "\t" + " > ".join([str(x[0]) for x in p[1][5]]) + \
-        "\t" + ", ".join([str(x[0]) for x in p[1][6]]) + "\n")
-outfile.close()
+    outfile = open(args.o + "calper_2014_cl.txt","w",encoding = "utf-8")
+    for p in sorted_periodicities:
+        outfile.write("---------------\n" + p[0] + "\t" + p[1][-1] + "\t" + \
+            ", ".join([str(x) for x in p[1][1:5]]) + "\t" + " > ".join([str(x[0]) for x in p[1][5]]) + \
+            "\t" + ", ".join([str(x[0]) for x in p[1][6]]) + "\n")
+    outfile.close()
 
 # tps = [[k,term_periodicity[k]] for k in term_periodicity.keys()]
 # sorted_term_periodicity = sorted(tps,key = lambda x : x[1][0])

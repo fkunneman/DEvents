@@ -255,7 +255,7 @@ class Calendar:
                 # print(">1")
                 indices = [entity_index[x] for x in ents]
                 if "#geengrap" in ents:
-                    print("1 april",ents,indices)
+                    print("1 april",zip(ents,indices))
                     clusters = calculations.cluster_documents(pairsims,indices,cluster_threshold,april = True)
                 else:
                     clusters = calculations.cluster_documents(pairsims,indices,cluster_threshold)
