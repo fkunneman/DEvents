@@ -213,7 +213,8 @@ class Calendar:
                         if not (len(sequence["intervals"]) > 15 and \
                             (sequence["intervals"].count(1) / len(sequence["intervals"])) > 0.3):
                             dateinfo = copy.deepcopy(sequence["date_info"])
-                            periodicities = calculations.return_calendar_periodicities(dateinfo) 
+                            periodicities = calculations.return_calendar_periodicities(dateinfo)
+                            print(dateinfo,periodicities)
                             if len(periodicities) > 0:
                                 self.entity_periodicity["calendar"][entity] = periodicities
             sequence["dates_events"].append([event.date,event])
@@ -253,7 +254,9 @@ class Calendar:
                 indices = [entity_index[x] for x in ents]
                 if "#geengrap" in ents:
                     print("1 april",ents,indices)
-                clusters = calculations.cluster_documents(pairsims,indices,cluster_threshold,april = True)
+                    clusters = calculations.cluster_documents(pairsims,indices,cluster_threshold,april = True)
+                else:
+                    clusters = calculations.cluster_documents(pairsims,indices,cluster_threshold)
                 groups = []
                 for cluster in clusters:
                     groups.append([index_entity[x] for x in cluster])
