@@ -349,7 +349,7 @@ class Calendar:
                         score = min([x[1][0] for x in entities_stdev])
                         dates = []
                         for e in entities_stdev:
-                            dates.extend(e[1])
+                            dates.extend(e[1][1])
                         dates = list(set(dates))
                         intervals = calculations.return_intervals(dates)
                         self.periodics.append({"score":score,"len":len(dates),"dates":dates,
