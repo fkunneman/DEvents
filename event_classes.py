@@ -348,9 +348,11 @@ class Calendar:
                         entities_stdev = [[x,self.entity_periodicity["stdev"][x]] for x in group]
                         score = min([x[1][0] for x in entities_stdev])
                         dates = []
-                        for e in entities_stdev:
-                            dates.extend(e[1][1])
+                        for es in entities_stdev:
+                            dates.extend(es[1][1])
+                        print("DBEFORE",dates)
                         dates = list(set(dates))
+                        print("DAFTER",dates)
                         intervals = calculations.return_intervals(dates)
                         self.periodics.append({"score":score,"len":len(dates),"dates":dates,
                             "intervals":intervals,"entities":group})
