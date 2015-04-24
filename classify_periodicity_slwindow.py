@@ -65,7 +65,7 @@ for i,line in enumerate(lines):
                 event_calendar.cluster_entities_periodicity(args.cluster)
                 event_calendar.predict_events(predict_to_date,0.25)
                 for entry in event_calendar.expected_events:
-                    outfile.write("\t".join([str(entry[0]),", ".join(entry[1]),",".join([entry[2],entry[3],entry[4]])]) + "\n")
+                    predictfile.write("\t".join([str(entry[0]),", ".join(entry[1]),",".join([str(x) for x in [entry[2],entry[3],entry[4]]])]) + "\n")
                 predict = False
                 predictfile.close()
     #and date <= datetime.datetime(2014,4,3):
