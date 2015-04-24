@@ -350,16 +350,14 @@ class Calendar:
                         dates = []
                         for es in entities_stdev:
                             dates.extend(es[1][1])
-                        print("DBEFORE",dates)
-                        dates = list(set(dates))
-                        print("DAFTER",dates)
-                        intervals = calculations.return_intervals(dates)
+                        dates = sorted(list(set(dates)))
+                        intervals = calculations.return_intervals(copy.deepcopy(dates))
                         self.periodics.append({"score":score,"len":len(dates),"dates":dates,
                             "intervals":intervals,"entities":group})
                     else:
                         e = self.entity_periodicity["stdev"][group[0]]
                         self.periodics.append({"score":e[0],"len":len(e[1]),
-                            "dates":e[1],
+                            "dates":sorted(e[1]),
                             "intervals":e[2],"entities":group})
 
     def predict_events(self,until_date,threshold):
