@@ -738,7 +738,7 @@ def apply_calendar_pattern(pattern,last_date,step):
                 until_weekday = pattern[4] - raw_date.weekday()
                 if until_weekday < 0:
                     until_weekday = 7 + until_weekday
-                raw_date_weekday = rawdate + datetime.timedelta(days=until_weekday)
+                raw_date_weekday = raw_date + datetime.timedelta(days=until_weekday)
                 dif = (pattern[2] - raw_date_weekday.isocalendar()[1]) * 7
                 return_date = raw_date_weekday + datetime.timedelta(days=dif)
             else: #weekday
