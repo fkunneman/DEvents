@@ -353,7 +353,7 @@ class Calendar:
                         self.periodics.append({"score":score,"len":len(dates),"dates":dates,
                             "intervals":intervals,"entities":group})
                     else:
-                        e = self.entity_periodicty["stdev"][group[0]]
+                        e = self.entity_periodicity["stdev"][group[0]]
                         self.periodics.append({"score":e[0],"len":len(e[1]),
                             "dates":e[1],
                             "intervals":e[2],"entities":group})
