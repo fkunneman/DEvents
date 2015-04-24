@@ -320,7 +320,7 @@ class Calendar:
                         "events":events,"entities":group})
         #stdev
         else:
-            candidates = self.entity_periodicity["stdev"].keys()
+            candidates = list(self.entity_periodicity["stdev"].keys())
             while len(candidates) > 0:
                 candidate = candidates[0]
                 cdates = set([x[0] for x in self.entity_periodicity["stdev"][candidate][1]])

@@ -74,8 +74,8 @@ for i,line in enumerate(lines):
         event_calendar.add_event(event,args.stdev,args.cal)
     else:
         event_calendar.add_event(event,False,False)
-#    if date == datetime.datetime(2014,2,1):
-#        break
+    if date == datetime.datetime(2014,2,1):
+        break
 
 if args.cluster:
     #perform clustering
