@@ -763,7 +763,7 @@ def score_calendar_periodicity(pattern,entries,total):
     sorted_entries = sorted(entries,key = lambda x : x[0])
     for i,level in enumerate(reversed(pattern)):
         if level == "e":
-            sequence_level = len(pattern)-i 
+            sequence_level = len(pattern)-(i+1) 
             break
     #sequence_level = pattern.index("e") + 1
 #    seq = [x[sequence_level] for x in sorted_entries]
@@ -771,7 +771,7 @@ def score_calendar_periodicity(pattern,entries,total):
     #    if level == "e":
     #        sequence_level = len(pattern) - (i+1) 
     #        break
-    sl_unit = ["-",365,30.42,7.02]
+    sl_unit = [365,30.42,7.02]
 #    sequence_level = pattern.index("e") + 1
     #seq = [x[sequence_level] for x in sorted_entries]
     seq = [x[0] for x in sorted_entries]
@@ -786,6 +786,7 @@ def score_calendar_periodicity(pattern,entries,total):
         #         no_weeknrs = datetime.date(sorted_entries[i][1],12,28).isocalendar()[1]
         #         interval = abs(seq[i]-no_weeknrs) + seq[i+1]
         intervals.append(interval)
+    print(intervals,pattern,seq)
     step = min(intervals)
     if step == 0 or step > 6:
         consistency = 0
