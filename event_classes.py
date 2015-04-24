@@ -206,7 +206,7 @@ class Calendar:
                             len(sequence["intervals"]):
                             stdev = calculations.return_relative_stdev(sequence["intervals"])
                             self.entity_periodicity["stdev"][entity] = [stdev,
-                                list(set([x[0] for x in sequence["dates_events"]])),sequence["intervals"]]
+                                list(set([x[0] for x in sequence["dates_events"] + [[event.date,event]]])),sequence["intervals"]]
                     if calc:
                         if not (len(sequence["intervals"]) > 15 and \
                             (sequence["intervals"].count(1) / len(sequence["intervals"])) > 0.3):
