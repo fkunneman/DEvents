@@ -323,12 +323,12 @@ class Calendar:
             candidates = list(self.entity_periodicity["stdev"].keys())
             while len(candidates) > 0:
                 candidate = candidates[0]
-                cdates = set([x[0] for x in self.entity_periodicity["stdev"][candidate][1]])
+                cdates = set(self.entity_periodicity["stdev"][candidate][1])
                 mean_intervals = numpy.mean(self.entity_periodicity["stdev"][candidate][-1])
                 group_candidates = [x for x in candidates if len(list(cdates & \
-                    set([x[0] for x in self.entity_periodicity["stdev"][x][1]]))) > 2 and (len(list(cdates & \
-                    set([x[0] for x in self.entity_periodicity["stdev"][x][1]]))) / len(cdates)) > 0.5 and \
-                    (len(list(cdates & set([x[0] for x in self.entity_periodicity["stdev"][x][1]]))) / \
+                    set(self.entity_periodicity["stdev"][x][1]))) > 2 and (len(list(cdates & \
+                    set(self.entity_periodicity["stdev"][x][1]))) / len(cdates)) > 0.5 and \
+                    (len(list(cdates & set(self.entity_periodicity["stdev"][x][1]))) / \
                         len(self.entity_periodicity["stdev"][x][1])) > 0.5 and \
                     abs(numpy.mean(self.entity_periodicity["stdev"][x][-1]) - mean_intervals) < 10] 
                 #make group
@@ -347,7 +347,7 @@ class Calendar:
                         score = min([x[1][0] for x in entities_stdev])
                         dates = []
                         for e in entities_stdev:
-                            dates.extend(e[1][0])
+                            dates.extend(e[1])
                         dates = list(set(dates))
                         intervals = calculations.return_intervals(dates)
                         self.periodics.append({"score":score,"len":len(dates),"dates":dates,
@@ -355,7 +355,7 @@ class Calendar:
                     else:
                         e = self.entity_periodicty["stdev"][group[0]]
                         self.periodics.append({"score":e[0],"len":len(e[1]),
-                            "dates":[x[0] for x in e[1]],
+                            "dates":e[1],
                             "intervals":e[2],"entities":group})
 
     def predict_events(self,until_date,threshold):
