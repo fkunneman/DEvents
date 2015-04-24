@@ -313,6 +313,10 @@ class Calendar:
         for periodic in good_periodics:
             last_date = max(sorted([e.date for e in periodic["events"]]))
             extentions = []
+            pattern = pattern[1:-1].split(",")
+            for i,lp in enumerate(pattern):
+                if re.search(r"\d",lp):
+                    pattern[i] = int(lp)
             extend_date = calculations.apply_calendar_pattern(periodic["pattern"],last_date,
                 periodic["step"])
             while extend_date < until_date:
