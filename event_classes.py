@@ -333,6 +333,8 @@ class Calendar:
                     abs(numpy.mean(self.entity_periodicity["stdev"][x][-1]) - mean_intervals) < 10] 
                 #make group
                 ents = [candidate] + group_candidates
+                for ent in ents:
+                    candidates.remove(ent)
                 if len(ents) > 1:
                     groups = []
                     indices = [entity_index[x]["all"] for x in ents]
