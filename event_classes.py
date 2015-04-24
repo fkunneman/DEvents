@@ -207,8 +207,7 @@ class Calendar:
                             len(sequence["intervals"]):
                             stdev = calculations.return_relative_stdev(sequence["intervals"])
                             self.entity_periodicity["stdev"][entity] = [stdev,
-                            list(set([x[0] for x in sequence["dates_events"]])),[event.date],
-                            sequence["intervals"]]
+                            list(set([x[0] for x in sequence["dates_events"]])),sequence["intervals"]]
                     if calc:
                         if not (len(sequence["intervals"]) > 15 and \
                             (sequence["intervals"].count(1) / len(sequence["intervals"])) > 0.3):
@@ -328,23 +327,24 @@ class Calendar:
         numper = len(good_periodics)
         for t,periodic in enumerate(good_periodics):
             print(t,"of",numper)
-            last_date = max(sorted([e.date for e in periodic["events"]]))
-            extentions = []
-            pattern = periodic["pattern"][1:-1].split(",")
-            for i,lp in enumerate(pattern):
-                if re.search(r"\d",lp):
-                    pattern[i] = int(lp)
-            extend_date = calculations.apply_calendar_pattern(pattern,last_date,
-                periodic["step"])
-            if extend_date:
-                print(periodic["entities"],last_date,extend_date,pattern,periodic["step"])
-                while extend_date < until_date:
-                    extentions.append(extend_date)
-                    extend_date = calculations.apply_calendar_pattern(pattern,extend_date,
-                        periodic["step"])
-                    if not extend_date:
-                        break
-                for date in extentions:
-                    event = Event("x",[date,periodic["entities"],"-",[]])
-                    event.set_periodics(periodic["events"])
-                    self.expected_events.append([date,periodic["entities"],periodic["score"],periodic["coverage"],periodic["consistency"]])
+            if periodic["step"] > 0 and periodic["step"] <= 6:
+                last_date = max(sorted([e.date for e in periodic["events"]]))
+                extentions = []
+                pattern = periodic["pattern"][1:-1].split(",")
+                for i,lp in enumerate(pattern):
+                    if re.search(r"\d",lp):
+                        pattern[i] = int(lp)
+                extend_date = calculations.apply_calendar_pattern(pattern,last_date,
+                    periodic["step"])
+                if extend_date:
+                    print(periodic["entities"],last_date,extend_date,pattern,periodic["step"])
+                    while extend_date < until_date:
+                        extentions.append(extend_date)
+                        extend_date = calculations.apply_calendar_pattern(pattern,extend_date,
+                            periodic["step"])
+                        if not extend_date:
+                            break
+                    for date in extentions:
+                        event = Event("x",[date,periodic["entities"],"-",[]])
+                        event.set_periodics(periodic["events"])
+                        self.expected_events.append([date,periodic["entities"],periodic["score"],periodic["coverage"],periodic["consistency"]])
