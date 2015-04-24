@@ -78,7 +78,7 @@ if args.cluster:
     #perform clustering
     event_calendar.cluster_entities_periodicity(args.cluster)
     #write periodics to file
-    outfile = open(args.o + "calper_clustered_" + str(args.cluster)[2:] + ".txt",
+    outfile = open(args.o + "calper_clusteredpattern_" + str(args.cluster)[2:] + ".txt",
         "w",encoding="utf-8")
     periodics = sorted(event_calendar.periodics,key = lambda x : x["score"],reverse = True)
     for periodic in periodics:

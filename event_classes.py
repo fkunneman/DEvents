@@ -337,6 +337,7 @@ class Calendar:
             extend_date = calculations.apply_calendar_pattern(pattern,last_date,
                 periodic["step"])
             if extend_date:
+                print(periodic["entities"],last_date,extend_date,pattern,periodic["step"])
                 while extend_date < until_date:
                     extentions.append(extend_date)
                     extend_date = calculations.apply_calendar_pattern(pattern,extend_date,
