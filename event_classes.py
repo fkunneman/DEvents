@@ -164,7 +164,6 @@ class Calendar:
     def __init__(self):
         self.events = []
         self.expected_events = [] #list of (date,entities,score,coverage,consistency)
-        self.periodics = [] #dict: pattern,score,entities,events
         self.entity_sequences = defaultdict(lambda : defaultdict(list))
         self.entity_periodicity = defaultdict(lambda : {})
         #= defaultdict(lambda : defaultdict(list))
@@ -220,6 +219,7 @@ class Calendar:
             sequence["dates_events"].append([event.date,event])
 
     def cluster_entities_periodicity(self,cluster_threshold,calper = True):
+        self.periodics = [] #dict: pattern,score,entities,events
         print("generating bigdocs")
         #generate bigdocs per entity
         all_entities = self.entity_sequences.keys()

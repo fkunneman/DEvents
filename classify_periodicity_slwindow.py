@@ -74,6 +74,8 @@ for i,line in enumerate(lines):
         event_calendar.add_event(event,args.stdev,args.cal)
     else:
         event_calendar.add_event(event,False,False)
+    if date == datetime.datetime(2014,2,1):
+        break
 
 if args.cluster:
     #perform clustering
@@ -92,7 +94,7 @@ if args.cluster:
                 "\n".join([e.tweets[0] for e in periodic["events"]]) + "\n")
         outfile.close()
     else:
-         outfile = open(args.o + "stdev_clustered_" + str(args.cluster)[2:] + ".txt",
+        outfile = open(args.o + "stdev_clustered_" + str(args.cluster)[2:] + ".txt",
             "w",encoding="utf-8")
         periodics = sorted(event_calendar.periodics,key = lambda x : x["score"])
         for periodic in periodics:
