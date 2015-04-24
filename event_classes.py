@@ -239,10 +239,9 @@ class Calendar:
             #make document
             documents.append(" ".join([" ".join(x.tweets) for \
                 x in self.entity_sequences[entity]["events"]]))            
-
         #entities with periodicity pattern
         for entity in entities:
-            periodicities = calculations.return_calendar_periodicities(dateinfo)
+            periodicities = self.entity_periodicity["calendar"][entity]
             for per in periodicities:
                 #assign index
                 pattern = per[-1]
