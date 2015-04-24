@@ -777,7 +777,10 @@ def score_calendar_periodicity(pattern,entries,total):
     seq = [x[0] for x in sorted_entries]
     intervals = []
     for i,x in enumerate(seq[1:]):
-        interval = int((seq[i+1]-seq[i]).days / sl_unit[sequence_level])
+        if sequence_level == 0: #year
+            interval = seq[i+1].year - seq[i].year
+        else:
+            interval = int(round((seq[i+1]-seq[i]).days / sl_unit[sequence_level],0))
     #    print("INT",interval)
         # if interval < 0: #year difference for week and month
         #     if sequence_level == 2: #month
@@ -786,7 +789,7 @@ def score_calendar_periodicity(pattern,entries,total):
         #         no_weeknrs = datetime.date(sorted_entries[i][1],12,28).isocalendar()[1]
         #         interval = abs(seq[i]-no_weeknrs) + seq[i+1]
         intervals.append(interval)
-    print(intervals,pattern,seq)
+    #print(intervals,pattern,seq)
     step = min(intervals)
     if step == 0 or step > 6:
         consistency = 0
