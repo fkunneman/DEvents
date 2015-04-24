@@ -225,15 +225,34 @@ class Calendar:
         #generate bigdocs per entity
         all_entities = self.entity_sequences.keys()
         entities = self.entity_periodicity["calendar"].keys()
-        entity_index = {}
+        entities_nopattern = list(set(all_entities)-set(entities))
+        entity_index = defaultdict(lambda : {})
         index_entity = {}
-        for i,entity in enumerate(all_entities):
-            entity_index[entity] = i
-            index_entity[i] = entity
         documents = []
-        for entity in all_entities:
+        i = 0
+        #entities without periodicity pattern
+        for entity in entities_nopattern:
+            #assign index
+            entity_index[entity]["all"] = i
+            index_entity[i] = [entity,"all"]
+            i += 1
+            #make document
             documents.append(" ".join([" ".join(x.tweets) for \
-                x in self.entity_sequences[entity]["events"]]))
+                x in self.entity_sequences[entity]["events"]]))            
+
+        #entities with periodicity pattern
+        for entity in entities:
+            periodicities = calculations.return_calendar_periodicities(dateinfo)
+            for per in periodicities:
+                #assign index
+                pattern = per[-1]
+                entity_index[entity][pattern] = i
+                index_entity[i] = [entity,pattern]
+                i += 1
+                #make document
+                dates = [x[0] for x in per[5]]
+                documents.append(" ".join([" ".join(x.tweets) for \
+                    x in self.entity_sequences[entity]["events"] if x.date in dates]))                  
         vectors = calculations.tfidf_docs(documents)
         print("calculating similarities")
         pairsims = calculations.return_similarities(vectors,vectors)
@@ -249,15 +268,12 @@ class Calendar:
         patterns = list(set(patterns))
         for pattern in patterns:
             ents = list(set(pattern_entities[pattern]))
-            #print(pattern,ents)
-            #print(pattern,ents)
             if len(ents) > 1:
-                # print(">1")
-                indices = [entity_index[x] for x in ents]
+                indices = [entity_index[x][pattern] for x in ents]
                 clusters = calculations.cluster_documents(pairsims,indices,cluster_threshold)
                 groups = []
                 for cluster in clusters:
-                    groups.append([index_entity[x] for x in cluster])
+                    groups.append([index_entity[x][0] for x in cluster])
             else:
                 groups = [ents]
             #print(pattern,[g for g in groups if len(g) > 1])
@@ -310,20 +326,25 @@ class Calendar:
         #for each pattern
         predict_date_correct = []
         predict_periodic_correct = []
-        for periodic in good_periodics:
+        numper = len(good_periodics)
+        for t,periodic in enumerate(good_periodics):
+            print(t,"of",numper)
             last_date = max(sorted([e.date for e in periodic["events"]]))
             extentions = []
-            pattern = pattern[1:-1].split(",")
+            pattern = periodic["pattern"][1:-1].split(",")
             for i,lp in enumerate(pattern):
                 if re.search(r"\d",lp):
                     pattern[i] = int(lp)
-            extend_date = calculations.apply_calendar_pattern(periodic["pattern"],last_date,
+            extend_date = calculations.apply_calendar_pattern(pattern,last_date,
                 periodic["step"])
-            while extend_date < until_date:
-                extentions.append(extend_date)
-                extend_date = calculations.apply_calendar_pattern(periodic["pattern"],extend_date,
-                    periodic["step"])
-            for date in extentions:
-                event = Event("x",[date,periodic["entities"],"-",[]])
-                event.set_periodics(periodic["events"])
-                expected_events.append([date,periodic["entities"],periodic["score"],periodic["coverage"],periodic["consistency"]])
+            if extend_date:
+                while extend_date < until_date:
+                    extentions.append(extend_date)
+                    extend_date = calculations.apply_calendar_pattern(pattern,extend_date,
+                        periodic["step"])
+                    if not extend_date:
+                        break
+                for date in extentions:
+                    event = Event("x",[date,periodic["entities"],"-",[]])
+                    event.set_periodics(periodic["events"])
+                    self.expected_events.append([date,periodic["entities"],periodic["score"],periodic["coverage"],periodic["consistency"]])
