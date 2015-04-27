@@ -17,6 +17,7 @@ args = parser.parse_args()
 eventsfile = open(args.i,"r",encoding="utf-8")
 predictfile = open(args.p,"r",encoding="utf-8")
 
+print("generating dicts")
 #generate term_dates dict from file
 term_dates = defaultdict(list)
 for line in eventsfile.readlines():
@@ -42,6 +43,7 @@ for line in predictfile.readlines():
     consistency = float(fields[13])
     terms_predictions[terms].append((predict_date,pattern,score,coverage,consistency))
 
+print("scoring predictions")
 #match predictions with occurrences and list scores and accuracies
 resultsfile = open(args.o + "results.txt","w",encoding = "utf-8")
 scores_raw = open(args.o + "scores_raw.txt","w",encoding = "utf-8")
@@ -50,8 +52,9 @@ consistency_raw = open(args.o + "consistency_raw.txt","w",encoding = "utf-8")
 score_accuracies = []
 coverage_accuracies = []
 consistency_accuracies = []
+print("assessment")
 for term in terms_predictions.keys():
-    predictions = term_predictions[term]
+    predictions = terms_predictions[term]
     dates = term_dates[term]
     for prediction in predictions:
         prdate = prediction[0]
@@ -75,6 +78,7 @@ def score_accuracy(data):
         thresh -= 0.1
     return outlist
 
+print("accuracy plots"))
 accuracies_score = score_accuracy(score_accuracies)
 accuracies_coverage = score_accuracy(coverage_accuracies)
 accuracies_consistency = score_accuracy(consistency_accuracies)
