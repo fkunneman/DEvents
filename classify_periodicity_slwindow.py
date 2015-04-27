@@ -67,8 +67,8 @@ for i,line in enumerate(lines):
                 for entry in event_calendar.expected_events:
                     predictfile.write("\t".join([", ".join(entry[0]),entry[1],
                         ", ".join([str(x) for x in [entry[2:]]])]) + "\n")
-                predict = False
                 predictfile.close()
+                quit()
     #and date <= datetime.datetime(2014,4,3):
         print(event.date,event.entities,"calper")
         event_calendar.add_event(event,args.stdev,args.cal)
