@@ -58,7 +58,7 @@ coverage_accuracies = []
 consistency_accuracies = []
 print("assessment")
 for term in terms_predictions.keys():
-    predictions = terms_predictions[term]
+    predictions_sorted = sorted(terms_predictions[term],key = lambda x : x[0])
     if re.search("_",term):
         dates = []
         ts = term.split("_")
@@ -75,16 +75,17 @@ for term in terms_predictions.keys():
         # for t in ts:
         #     dates.extend(term_dates[t])
     dates = list(set(dates))
-    for prediction in predictions:
-        prdate = prediction[0]
-        if prdate in dates:
-            assessment = "Correct"
-        else:
-            assessment = "False"
-        resultsfile.write("\t".join([term,prediction[1],str(prdate),assessment]) + "\n")
-        score_accuracies.append([term,prediction[2],assessment])
-        coverage_accuracies.append([term,prediction[3],assessment])
-        consistency_accuracies.append([term,prediction[4],assessment])
+    prediction = perdictions_sorted[0]
+    # for prediction in predictions:
+    prdate = prediction[0]
+    if prdate in dates:
+        assessment = "Correct"
+    else:
+        assessment = "False"
+    resultsfile.write("\t".join([term,prediction[1],str(prdate),assessment]) + "\n")
+    score_accuracies.append([term,prediction[2],assessment])
+    coverage_accuracies.append([term,prediction[3],assessment])
+    consistency_accuracies.append([term,prediction[4],assessment])
 resultsfile.close()
 
 def score_accuracy(data,pr=False):
