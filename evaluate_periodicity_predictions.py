@@ -29,10 +29,8 @@ for line in eventsfile.readlines():
         dates_raw = tokens[3].split(" > ")
         for date in dates_raw:
             entries = date.split("-")
-            term_dates["_".join(sorted(terms))].append(datetime.datetime(int(entries[0]),int(entries[1]),int(entries[2])))
-            for t in terms:
-                term_dates[t].append(datetime.datetime(int(entries[0]),int(entries[1]),int(entries[2])))
-        term_dates[terms] = list(set(term_dates[terms]))
+            for term in terms:
+                term_dates[term].append(datetime.datetime(int(entries[0]),int(entries[1]),int(entries[2])))
 
 #generate term_predictions dict from file
 terms_predictions = defaultdict(list)
@@ -61,17 +59,22 @@ consistency_accuracies = []
 print("assessment")
 for term in terms_predictions.keys():
     predictions = terms_predictions[term]
-    dates = term_dates[term]
     if re.search("-",term):
+        dates = []
         ts = term.split("_")
-        i = len(ts) - 1
-        while i >= 2:
-            for combination in itertools.combinations(ts,i):
-                dates.extend("_".join(sorted(combination)))
-            i -= 1
-        for t in ts:
-            dates.extend(term_dates[t])
-        dates = list(set(dates))
+        for term in ts:
+            dates.extend(term_dates[term])
+    else:
+        dates = term_dates[term]
+
+        # i = len(ts) - 1
+        # while i >= 2:
+        #     for combination in itertools.combinations(ts,i):
+        #         dates.extend(term_dates["_".join(sorted(combination))])
+        #     i -= 1
+        # for t in ts:
+        #     dates.extend(term_dates[t])
+    dates = list(set(dates))
     for prediction in predictions:
         prdate = prediction[0]
         if prdate in dates:
