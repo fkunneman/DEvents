@@ -3,6 +3,8 @@
 import argparse
 from collections import defaultdict
 import datetime
+import re
+import itertools
 
 """
 File to evaluate the quality of event predictions
@@ -23,11 +25,13 @@ term_dates = defaultdict(list)
 for line in eventsfile.readlines():
     if line[0] == "<":
         tokens = line.strip().split("\t")
-        terms = "_".join(sorted(tokens[1].split(", ")))
+        terms = tokens[1].split(", ")
         dates_raw = tokens[3].split(" > ")
         for date in dates_raw:
             entries = date.split("-")
-            term_dates[terms].append(datetime.datetime(int(entries[0]),int(entries[1]),int(entries[2])))
+            term_dates["_".join(sorted(terms))].append(datetime.datetime(int(entries[0]),int(entries[1]),int(entries[2])))
+            for t in terms:
+                term_dates[t].append(datetime.datetime(int(entries[0]),int(entries[1]),int(entries[2])))
         term_dates[terms] = list(set(term_dates[terms]))
 
 #generate term_predictions dict from file
@@ -58,6 +62,16 @@ print("assessment")
 for term in terms_predictions.keys():
     predictions = terms_predictions[term]
     dates = term_dates[term]
+    if re.search("-",term):
+        ts = term.split("_")
+        i = len(ts) - 1
+        while i >= 2:
+            for combination in itertools.combinations(ts,i):
+                dates.extend("_".join(sorted(combination)))
+            i -= 1
+        for t in ts:
+            dates.extend(term_dates[t])
+        dates = list(set(dates))
     for prediction in predictions:
         prdate = prediction[0]
         if prdate in dates:
@@ -101,7 +115,3 @@ coverage_raw.close()
 for accuracy in accuracies_consistency:
     consistency_raw.write(" ".join(accuracy) + "\n")
 consistency_raw.close()
-    
-
-
-
