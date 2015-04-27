@@ -59,7 +59,7 @@ consistency_accuracies = []
 print("assessment")
 for term in terms_predictions.keys():
     predictions = terms_predictions[term]
-    if re.search("-",term):
+    if re.search("_",term):
         dates = []
         ts = term.split("_")
         for term in ts:
