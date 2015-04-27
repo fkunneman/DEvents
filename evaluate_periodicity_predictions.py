@@ -43,6 +43,8 @@ for line in predictfile.readlines():
     consistency = float(fields[13])
     terms_predictions[terms].append((predict_date,pattern,score,coverage,consistency))
 
+print(terms_predictions["#recordstoreday"],term_dates["#recordstoreday"])
+
 print("scoring predictions")
 #match predictions with occurrences and list scores and accuracies
 resultsfile = open(args.o + "results.txt","w",encoding = "utf-8")
@@ -62,25 +64,30 @@ for term in terms_predictions.keys():
             assessment = "Correct"
         else:
             assessment = "False"
-        resultsfile.write("\t".join([term,prediction[1],str(prdate),assessment]))
+        resultsfile.write("\t".join([term,prediction[1],str(prdate),assessment]) + "\n")
         score_accuracies.append([term,prediction[2],assessment])
         coverage_accuracies.append([term,prediction[3],assessment])
         consistency_accuracies.append([term,prediction[4],assessment])
 resultsfile.close()
 
-def score_accuracy(data):
+def score_accuracy(data,pr=False):
     outlist = []
     thresh = 1.0
     while thresh >= 0:
         above_thresh = [x for x in data if x[1] >= thresh]
+        if thresh == 1.0 and pr:
+            print(above_thresh)
         accuracy = len([s for s in above_thresh if s[2] == "Correct"]) / len(above_thresh)
         outlist.append([str(thresh),str(accuracy)])
         thresh -= 0.1
     return outlist
 
-print("accuracy plots"))
-accuracies_score = score_accuracy(score_accuracies)
+print("accuracy plots")
+print("score")
+accuracies_score = score_accuracy(score_accuracies,pr=True)
+print("coverage")
 accuracies_coverage = score_accuracy(coverage_accuracies)
+print("consistency")
 accuracies_consistency = score_accuracy(consistency_accuracies)
 
 for accuracy in accuracies_score:
@@ -92,7 +99,7 @@ for accuracy in accuracies_coverage:
 coverage_raw.close()
 
 for accuracy in accuracies_consistency:
-    concistency_raw.write(" ".join(accuracy) + "\n")
+    consistency_raw.write(" ".join(accuracy) + "\n")
 consistency_raw.close()
     
 
