@@ -101,11 +101,11 @@ def score_accuracy(data,pr=False):
 
 print("accuracy plots")
 print("score")
-accuracies_score = score_accuracy(score_accuracies,pr=True)
+accuracies_score = score_accuracy(score_accuracies)
 print("coverage")
 accuracies_coverage = score_accuracy(coverage_accuracies)
 print("consistency")
-accuracies_consistency = score_accuracy(consistency_accuracies)
+accuracies_consistency = score_accuracy(consistency_accuracies,pr=True)
 
 for accuracy in accuracies_score:
     scores_raw.write(" ".join(accuracy) + "\n")
