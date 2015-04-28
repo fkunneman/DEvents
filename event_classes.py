@@ -356,7 +356,6 @@ class Calendar:
                         event_ids = []
                         for entity in group:
                             dates_events = self.entity_sequences[entity]["dates_events"]
-                            all_dates.extend([x[0] for x in dates_events])
                             for e in [x[1] for x in dates_events]:
                                 if not e.ids[0] in event_ids:
                                     event_ids.append(e.ids[0])
