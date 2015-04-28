@@ -327,9 +327,9 @@ class Calendar:
                 mean_intervals = numpy.mean(self.entity_periodicity["stdev"][candidate][-1])
                 group_candidates = [x for x in candidates[1:] if len(list(cdates & \
                     set(self.entity_periodicity["stdev"][x][1]))) > 2 and (len(list(cdates & \
-                    set(self.entity_periodicity["stdev"][x][1]))) / len(cdates)) > 0.5 and \
+                    set(self.entity_periodicity["stdev"][x][1]))) / len(cdates)) > 0.9 and \
                     (len(list(cdates & set(self.entity_periodicity["stdev"][x][1]))) / \
-                        len(self.entity_periodicity["stdev"][x][1])) > 0.5 and \
+                        len(self.entity_periodicity["stdev"][x][1])) > 0.9 and \
                     abs(numpy.mean(self.entity_periodicity["stdev"][x][-1]) - mean_intervals) < 10] 
                 #make group
                 ents = [candidate] + group_candidates
