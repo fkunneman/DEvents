@@ -352,12 +352,22 @@ class Calendar:
                             dates.extend(es[1][1])
                         dates = sorted(list(set(dates)))
                         intervals = calculations.return_intervals(copy.deepcopy(dates))
+                        events = []
+                        event_ids = []
+                        for entity in group:
+                            dates_events = self.entity_sequences[entity]["dates_events"]
+                            all_dates.extend([x[0] for x in dates_events])
+                            for e in [x[1] for x in dates_events]:
+                                if not e.ids[0] in event_ids:
+                                    event_ids.append(e.ids[0])
+                                    events.append(e)
                         self.periodics.append({"score":score,"len":len(dates),"dates":dates,
-                            "intervals":intervals,"entities":group})
+                            "events":events,"intervals":intervals,"entities":group})
                     else:
                         e = self.entity_periodicity["stdev"][group[0]]
+                        events = [x[1] for x in self.entity_sequences[group[0]]["dates_events"]] 
                         self.periodics.append({"score":e[0],"len":len(e[1]),
-                            "dates":sorted(e[1]),
+                            "dates":sorted(e[1]),"events":events,
                             "intervals":e[2],"entities":group})
 
     def predict_events(self,until_date,threshold):

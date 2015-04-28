@@ -101,7 +101,8 @@ if args.cluster:
             outfile.write("---------------\n" + str(periodic["score"]) + "\t" + 
                 ", ".join(periodic["entities"]) + "\t" + 
                 " > ".join([str(x) for x in periodic["dates"]]) + "\t" +
-                "-".join([str(x) for x in periodic["intervals"]]) + "\n")
+                "-".join([str(x) for x in periodic["intervals"]]) + "\n" + 
+                "\n".join([e.tweets[0] for e in periodic["events"]]) + "\n")
         outfile.close()       
 
 # else:
