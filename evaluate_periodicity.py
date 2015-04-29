@@ -208,16 +208,22 @@ if args.k:
     week_plot = open(args.o + "week_plot_raw.txt","w",encoding="utf-8")
     week_periodics = count_calendarfeat(filtered_periodics_patternlists,2) 
     num_periodics = len(week_periodics[1])
-    for week in sorted(week_periodics[0].keys()):
+    last = 0
+    for week in sorted([int(x) for x in week_periodics[0].keys()]):
+        while week - last > 1:
+            last += 1
+            week_plot.write(str(last) + "\t0.0\n")
+        week = str(week)
         week_plot.write(week + "\t" + \
             str(len(week_periodics[0][week]) / num_periodics) + "\n")
+        last += 1
     week_plot.close()
     print("Enlisting week periodics")
     week_file = open(args.o + "week_periodics.txt","w",encoding="utf-8")
-    week_periodics = []
+    week_periodics_el = []
     for w in week_periodics[0].keys():
-        week_periodics.extend(week_periodics[0][w])
-    sorted_week_periodics = sorted(week_periodics,key = lambda k : k[2],reverse = True)
+        week_periodics_el.extend(week_periodics[0][w])
+    sorted_week_periodics = sorted(week_periodics_el,key = lambda k : k[2],reverse = True)
     for wp in sorted_week_periodics:
         week_file.write("\t".join([str(x) for x in wp]) + "\n")
     week_file.close()
