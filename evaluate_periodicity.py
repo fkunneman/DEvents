@@ -134,9 +134,9 @@ def count_calendarfeat(d,i):
 if args.k:
     print("Extracting full periodics")
     #make raw files for plots based on different pattern features
-    periodics = assessments_periodics["1.0"]
+    periodics = [p for p in score_periodics.values() if p[1] == ["1.0"]]
     #remove doubles
-    double_periodics = assessments_periodics["Dubbel"]
+    double_periodics = [p for p in score_periodics.values() if p[1] == ["Dubbel"]]
     double_entities = []
     for dp in double_periodics:
         double_entities.extend(dp[0])
