@@ -184,7 +184,7 @@ if args.k:
     monthday_plot.close()
     print("enlisting date periodics")
     date_file = open(args.o + "date_periodics.txt","w",encoding="utf-8")
-    print(monthday_periodics[0][0])
+    print(monthday_periodics)
     date_periodics = [x for x in monthday_periodics[0] if re.search(r"\d",x[3][1])]
     sorted_date_periodics = sorted(date_periodics,key = lambda k : k[2],reverse = True)
     for dp in sorted_date_periodics:
