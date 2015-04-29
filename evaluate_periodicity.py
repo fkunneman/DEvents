@@ -233,8 +233,8 @@ if args.k:
     periodics_index = [p for p in filtered_periodics_patternlists if re.search(r"\d",p[3][5])]
     weekday_index_periodics = defaultdict(lambda : defaultdict(list))
     for pi in periodics_index:
-        index = pw[3][5]
-        weekday = pw[3][4]
+        index = pi[3][5]
+        weekday = pi[3][4]
         weekday_index_periodics[index][weekday].append(pi)
     for weekday in sorted(weekday_index_periodics.keys()):
         last = -1
