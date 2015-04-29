@@ -48,10 +48,11 @@ for line in infile.readlines()[1:]:
     periodic = [entities,assessment,score,pattern]
     assessments_periodics[assessment] += 1
     score_periodics[score].append(periodic)
-    all_periodics.append(periodic)
     if len(columns) > 8:
         if columns[8] == "Dubbel" or columns[8] == "dubbel":
             assessments_periodics["Dubbel"] += 1 
+            periodic[1] = "dubbel"
+    all_periodics.append(periodic)
     n_periodics += 1
 
 if args.d: #link dates to terms
@@ -126,10 +127,10 @@ if args.w:
 
 def count_calendarfeat(d,i):
     periodics_cat = [p for p in d if re.search(r"\d",p[3][i])]
-    cat_periodics = defaultdict(list)
+    cat_periodics = defaultdict(int)
     for pc in periodics_cat:
-        cat = pw[3][i]
-        cat_periodics[i] += 1
+        cat = pc[3][i]
+        cat_periodics[cat] += 1
     return [cat_periodics,periodics_cat]
 
 if args.k:
@@ -137,19 +138,22 @@ if args.k:
     #make raw files for plots based on different pattern features
     periodics = [p for p in all_periodics if p[1] == "1.0"]
     #remove doubles
-    double_periodics = [p for p in all_periodics if p[1] == "Dubbel" or p[1] == "Dubbel"]
-    double_entities = []
-    for dp in double_periodics:
-        double_entities.extend(dp[0])
-    filtered_periodics = []
-    for p in periodics:
-        for c in p[0]:
-            if not c in double_entities: #possible candidates
-                filtered_periodics.append(p)
-    print(len(periodics),"confirmed periodics, ",len(double_periodics),"double periodics, ",
-        len(filtered_periodics),"final periodics")
+#    double_periodics = [p for p in all_periodics if p[1] == "Dubbel" or p[1] == "Dubbel"]
+#    double_entities = []
+#    for dp in double_periodics:
+#        double_entities.extend(dp[0])
+#    filtered_periodics = []
+#    for p in periodics:
+#        double = False
+#        for c in p[0]:
+#            if c in double_entities: #possible candidates
+#                double = True
+#        if not double:
+#            filtered_periodics.append(p)
+#    print(len(periodics),"confirmed periodics, ",len(double_periodics),"double periodics, ",
+#        len(filtered_periodics),"final periodics")
     filtered_periodics_patternlists = []
-    for p in filtered_periodics:
+    for p in periodics:
         p[3] = p[3][1:-1].split(",")
         filtered_periodics_patternlists.append(p)
     #weekdays
@@ -161,7 +165,7 @@ if args.k:
     num_periodics = len(weekday_periodics[1])
     for weekday in sorted(weekday_periodics[0].keys()):
         weekday_plot.write(wd_dict[weekday] + "\t" + \
-            str(len(weekday_periodics[0][weekday]) / num_periodics) + "\n")
+            str(weekday_periodics[0][weekday] / num_periodics) + "\n")
     weekday_plot.close()
     #monthdays
     print("Plotting monthdays")
@@ -174,11 +178,12 @@ if args.k:
             monthday_plot.write(str(last + 1) + "\t0.0\n")
             last += 1
         monthday_plot.write(monthday + "\t" + 
-            str(len(monthday_periodics[0][monthday]) / num_periodics) + "\n")
+            str(monthday_periodics[0][monthday] / num_periodics) + "\n")
         last += 1
     monthday_plot.close()
     print("enlisting date periodics")
     date_file = open(args.o + "date_periodics.txt","w",encoding="utf-8")
+    print(monthday_periodics[0][0])
     date_periodics = [x for x in monthday_periodics[0] if re.search(r"\d",x[3][1])]
     sorted_date_periodics = sorted(date_periodics,key = lambda k : k[2],reverse = True)
     for dp in sorted_date_periodics:
@@ -194,7 +199,7 @@ if args.k:
     num_periodics = len(month_periodics[1])
     for month in sorted(month_periodics[0].keys()):
         month_plot.write(month_dict[month] + "\t" + \
-            str(len(month_periodics[0][month]) / num_periodics) + "\n")
+            str(month_periodics[0][month] / num_periodics) + "\n")
     month_plot.close()
     #weeks
     print("Plotting weeks")
@@ -227,7 +232,7 @@ if args.k:
                 last += 1
                 weekday_index_plot.write(wd_dict[weekday] + "_" + str(last) + "\t0.0\n")
             weekday_index_plot.write(wd_dict[weekday] + "-" + index + "\t" + \
-                str(len(weekday_index_periodics[weekday][index]) / len(periodics_index)) + "\n")
+                str(weekday_index_periodics[weekday][index] / len(periodics_index)) + "\n")
     weekday_index_plot.close()
     print("enlisting weekday index periodics")
     weekday_index_file = open(args.o + "weekday_index_periodics.txt","w",encoding="utf-8")
