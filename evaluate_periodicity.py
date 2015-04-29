@@ -42,7 +42,8 @@ for line in infile.readlines():
     assessment = column[args.a]
     score = float(column[args.s])
     entities = column[args.e].split(", ") 
-    pattern = [column[i] for i in args.p]
+    #pattern = [column[i] for i in args.p]
+    pattern = column[args.p]
     periodic = [entities,assessment,score,pattern]
     assessment_periodics[assessment] += 1
     score_periodics[score].append(periodic)
