@@ -122,7 +122,7 @@ if args.w:
                 for date in sorted(date_tweets.keys()):
                     outfile.write("*******\n" + date + "\n")
                     tweets = list(set(date_tweets[date]))
-                    outfile.write("\n".join(tweets) + "\n")
+                    outfile.write("\n".join([t for t in tweets if not t == "\n"]) + "\n")
     outfile.close()
 
 def count_calendarfeat(d,i):
@@ -173,11 +173,11 @@ if args.k:
     monthday_periodics = count_calendarfeat(filtered_periodics_patternlists,3)
     num_periodics = len(monthday_periodics[1])
     last = 0
-    for monthday in sorted(monthday_periodics[0].keys()):
-        while int(monthday) - last > 1:
-            monthday_plot.write(str(last + 1) + "\t0.0\n")
+    for monthday in sorted([int(x) for x in monthday_periodics[0].keys()]):
+        while monthday - last > 1:
             last += 1
-        monthday_plot.write(monthday + "\t" + 
+            monthday_plot.write(str(last) + "\t0.0\n")
+        monthday_plot.write(str(monthday) + "\t" + 
             str(len(monthday_periodics[0][monthday]) / num_periodics) + "\n")
         last += 1
     monthday_plot.close()
