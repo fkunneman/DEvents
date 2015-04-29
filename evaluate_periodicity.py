@@ -34,7 +34,7 @@ args = parser.parse_args()
 print("Reading in assessment file")
 assessments_periodics = defaultdict(int)
 score_periodics = defaultdict(list)
-
+all_periodics = []
 n_periodics = 0
 infile = open(args.i,"r",encoding="utf-8")
 for line in infile.readlines()[1:]:
@@ -48,6 +48,7 @@ for line in infile.readlines()[1:]:
     periodic = [entities,assessment,score,pattern]
     assessments_periodics[assessment] += 1
     score_periodics[score].append(periodic)
+    all_periodics.append(periodic)
     if len(columns) > 8:
         if columns[8] == "Dubbel" or columns[8] == "dubbel":
             assessments_periodics["Dubbel"] += 1 
@@ -134,10 +135,9 @@ def count_calendarfeat(d,i):
 if args.k:
     print("Extracting full periodics")
     #make raw files for plots based on different pattern features
-    print(score_periodics.values())
-    periodics = [p for p in score_periodics.values() if p[1] == ["1.0"]]
+    periodics = [p for p in all_periodics if p[1] == "1.0"]
     #remove doubles
-    double_periodics = [p for p in score_periodics.values() if p[1] == ["Dubbel"]]
+    double_periodics = [p for p in all_periodics if p[1] == "Dubbel" or p[1] == "Dubbel"]
     double_entities = []
     for dp in double_periodics:
         double_entities.extend(dp[0])
