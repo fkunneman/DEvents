@@ -185,7 +185,9 @@ if args.k:
     print("enlisting date periodics")
     date_file = open(args.o + "date_periodics.txt","w",encoding="utf-8")
     print(monthday_periodics)
-    date_periodics = [x for x in monthday_periodics[0] if re.search(r"\d",x[3][1])]
+    date_periodics = []
+    for m in monthday_periodics[0].keys():
+        date_periodics.extend([x for x in monthday_periodics[0][m] if re.search(r"\d",x[3][1])])
     sorted_date_periodics = sorted(date_periodics,key = lambda k : k[2],reverse = True)
     for dp in sorted_date_periodics:
         date_file.write("\t".join([str(x) for x in dp]) + "\n")
@@ -213,6 +215,9 @@ if args.k:
     week_plot.close()
     print("Enlisting week periodics")
     week_file = open(args.o + "week_periodics.txt","w",encoding="utf-8")
+    week_periodics = []
+    for w in week_periodics[0].keys():
+        week_periodics.extend(week_periodics[0][w])
     sorted_week_periodics = sorted(week_periodics,key = lambda k : k[2],reverse = True)
     for wp in sorted_week_periodics:
         week_file.write("\t".join([str(x) for x in wp]) + "\n")
