@@ -177,7 +177,8 @@ if args.k:
         while monthday - last > 1:
             last += 1
             monthday_plot.write(str(last) + "\t0.0\n")
-        monthday_plot.write(str(monthday) + "\t" + 
+        monthday = str(monthday)
+        monthday_plot.write(monthday + "\t" + 
             str(len(monthday_periodics[0][monthday]) / num_periodics) + "\n")
         last += 1
     monthday_plot.close()
