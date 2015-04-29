@@ -127,10 +127,10 @@ if args.w:
 
 def count_calendarfeat(d,i):
     periodics_cat = [p for p in d if re.search(r"\d",p[3][i])]
-    cat_periodics = defaultdict(int)
+    cat_periodics = defaultdict(list)
     for pc in periodics_cat:
         cat = pc[3][i]
-        cat_periodics[cat] += 1
+        cat_periodics[cat].append(pc)
     return [cat_periodics,periodics_cat]
 
 if args.k:
@@ -165,7 +165,7 @@ if args.k:
     num_periodics = len(weekday_periodics[1])
     for weekday in sorted(weekday_periodics[0].keys()):
         weekday_plot.write(wd_dict[weekday] + "\t" + \
-            str(weekday_periodics[0][weekday] / num_periodics) + "\n")
+            str(len(weekday_periodics[0][weekday]) / num_periodics) + "\n")
     weekday_plot.close()
     #monthdays
     print("Plotting monthdays")
@@ -178,7 +178,7 @@ if args.k:
             monthday_plot.write(str(last + 1) + "\t0.0\n")
             last += 1
         monthday_plot.write(monthday + "\t" + 
-            str(monthday_periodics[0][monthday] / num_periodics) + "\n")
+            str(len(monthday_periodics[0][monthday]) / num_periodics) + "\n")
         last += 1
     monthday_plot.close()
     print("enlisting date periodics")
@@ -199,7 +199,7 @@ if args.k:
     num_periodics = len(month_periodics[1])
     for month in sorted(month_periodics[0].keys()):
         month_plot.write(month_dict[month] + "\t" + \
-            str(month_periodics[0][month] / num_periodics) + "\n")
+            str(len(month_periodics[0][month]) / num_periodics) + "\n")
     month_plot.close()
     #weeks
     print("Plotting weeks")
@@ -224,7 +224,7 @@ if args.k:
     for pi in periodics_index:
         index = pw[3][5]
         weekday = pw[3][4]
-        weekday_index_periodics[index][weekday] += 1
+        weekday_index_periodics[index][weekday].append(pi)
     for weekday in sorted(weekday_index_periodics.keys()):
         last = -1
         for index in sorted(weekday_index_periodics[weekday].keys()):
@@ -232,7 +232,7 @@ if args.k:
                 last += 1
                 weekday_index_plot.write(wd_dict[weekday] + "_" + str(last) + "\t0.0\n")
             weekday_index_plot.write(wd_dict[weekday] + "-" + index + "\t" + \
-                str(weekday_index_periodics[weekday][index] / len(periodics_index)) + "\n")
+                str(len(weekday_index_periodics[weekday][index]) / len(periodics_index)) + "\n")
     weekday_index_plot.close()
     print("enlisting weekday index periodics")
     weekday_index_file = open(args.o + "weekday_index_periodics.txt","w",encoding="utf-8")
