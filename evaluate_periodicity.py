@@ -146,8 +146,8 @@ if args.k:
         for c in p[0]:
             if not c in double_entities: #possible candidates
                 filtered_periodics.append(p)
-    print(len(periodics,"confirmed periodics, ",len(double_periodics),"double periodics, ",
-        len(filtered_periodics),"final periodics"))
+    print(len(periodics),"confirmed periodics, ",len(double_periodics),"double periodics, ",
+        len(filtered_periodics),"final periodics")
     filtered_periodics_patternlists = []
     for p in filtered_periodics:
         p[3] = p[3][1:-1].split(",")
