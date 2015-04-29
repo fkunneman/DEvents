@@ -115,7 +115,7 @@ if args.w:
                 for term in terms:
                     dates = term_pattern_dates[term][pattern]
                     for date in dates:
-                        date_tweets.extend(term_date_tweets[term][date])
+                        date_tweets[date].extend(term_date_tweets[term][date])
                 outfile.write("----------\n" + pattern + "\t" + ", ".join(terms) + "\n")
                 for date in sorted(date_tweets.keys()):
                     outfile.write("*******\n" + date + "\n")
