@@ -20,7 +20,7 @@ parser.add_argument('-s', action = 'store', type = int, required = True,
     help = "The column with the score")
 parser.add_argument('-e', action = 'store', type = int, required = True, 
     help = "The column with the entities")
-parser.add_argument('-p', action = 'store', type = int, nargs = '+', required = True, 
+parser.add_argument('-p', action = 'store', type = int, required = True, 
     help = "The columns with the pattern information")
 parser.add_argument('-k', action = 'store_true', 
     help = "choose to categorize periodics into calendar characteristics (only applies if the " +
@@ -37,19 +37,20 @@ score_periodics = defaultdict(list)
 
 n_periodics = 0
 infile = open(args.i,"r",encoding="utf-8")
-for line in infile.readlines():
+for line in infile.readlines()[1:]:
     columns = line.strip().split("\t")
     assessment = columns[args.a]
+    #print(columns[args.s])
     score = float(columns[args.s])
     entities = columns[args.e].split(", ") 
     #pattern = [column[i] for i in args.p]
     pattern = columns[args.p]
     periodic = [entities,assessment,score,pattern]
-    assessment_periodics[assessment] += 1
+    assessments_periodics[assessment] += 1
     score_periodics[score].append(periodic)
     if len(columns) > 8:
         if columns[8] == "Dubbel" or columns[8] == "dubbel":
-            assessment_periodics["Dubbel"] += 1 
+            assessments_periodics["Dubbel"] += 1 
     n_periodics += 1
 
 if args.d: #link dates to terms
@@ -83,9 +84,9 @@ print("writing results")
 resultsout = open(args.o + "results.txt","w",encoding="utf-8")
 for assessment in sorted(assessments_periodics.keys()):
     num_as = assessments_periodics[assessment]
-    resultout.write(assessment + ": " + str(num_as) + "/" + str(n_periodics) + " (" + \
+    resultsout.write(assessment + ": " + str(num_as) + "/" + str(n_periodics) + " (" + \
         str(num_as/n_periodics) + ")\n")
-resultout.close()
+resultsout.close()
 
 #make precision-at-plot
 print("Plotting precision at")

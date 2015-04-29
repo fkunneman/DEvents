@@ -75,7 +75,7 @@ for term in terms_predictions.keys():
         # for t in ts:
         #     dates.extend(term_dates[t])
     dates = list(set(dates))
-    prediction = perdictions_sorted[0]
+    prediction = predictions_sorted[0]
     # for prediction in predictions:
     prdate = prediction[0]
     if prdate in dates:
@@ -97,7 +97,7 @@ def score_accuracy(data,pr=False):
             print(above_thresh)
         accuracy = len([s for s in above_thresh if s[2] == "Correct"]) / len(above_thresh)
         outlist.append([str(thresh),str(accuracy)])
-        thresh -= 0.1
+        thresh -= 0.01
     return outlist
 
 print("accuracy plots")
