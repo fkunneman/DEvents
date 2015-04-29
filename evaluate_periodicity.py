@@ -39,11 +39,11 @@ n_periodics = 0
 infile = open(args.i,"r",encoding="utf-8")
 for line in infile.readlines():
     columns = line.strip().split("\t")
-    assessment = column[args.a]
-    score = float(column[args.s])
-    entities = column[args.e].split(", ") 
+    assessment = columns[args.a]
+    score = float(columns[args.s])
+    entities = columns[args.e].split(", ") 
     #pattern = [column[i] for i in args.p]
-    pattern = column[args.p]
+    pattern = columns[args.p]
     periodic = [entities,assessment,score,pattern]
     assessment_periodics[assessment] += 1
     score_periodics[score].append(periodic)
