@@ -184,7 +184,6 @@ if args.k:
     monthday_plot.close()
     print("enlisting date periodics")
     date_file = open(args.o + "date_periodics.txt","w",encoding="utf-8")
-    print(monthday_periodics)
     date_periodics = []
     for m in monthday_periodics[0].keys():
         date_periodics.extend([x for x in monthday_periodics[0][m] if re.search(r"\d",x[3][1])])
