@@ -157,8 +157,8 @@ if args.k:
         for c in p[0]:
            if c in double_entities: #possible candidates
                double = True
-       if not double:
-           filtered_periodics.append(p)
+        if not double:
+            filtered_periodics.append(p)
     print(len(periodics),"confirmed periodics, ",len(double_periodics),"double periodics, ",
        len(filtered_periodics),"final periodics")
     filtered_periodics_patternlists = []
