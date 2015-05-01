@@ -32,7 +32,7 @@ outputA = [] #list of lists
 for i,filename in enumerate(args.a):
     outputA.append([])
     infile = open(filename,"r","utf-8")
-    for line in infile.readlines():
+    for line in infile.readlines()[1:]:
         tokens = line.split("\t")
         terms = tokens[args.ta].split(",")
         assessment = tokens[args.sa]
@@ -44,7 +44,7 @@ outputB = [] #list of lists
 for i,filename in enumerate(args.b):
     outputb.append([])
     infile = open(filename,"r","utf-8")
-    for line in infile.readlines():
+    for line in infile.readlines()[1:]:
         tokens = line.split("\t")
         terms = tokens[args.tb].split(",")
         assessment = tokens[args.sb]
