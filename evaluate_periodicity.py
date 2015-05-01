@@ -3,6 +3,7 @@
 import argparse
 from collections import defaultdict
 import re
+import random
 
 """
 Programme to evaluate a file with periodicity output
@@ -22,6 +23,8 @@ parser.add_argument('-e', action = 'store', type = int, required = True,
     help = "The column with the entities")
 parser.add_argument('-p', action = 'store', type = int, required = True, 
     help = "The columns with the pattern information")
+parser.add_argument('-m', action = 'store', type = int, required = True, 
+    help = "The column with comments")
 parser.add_argument('-k', action = 'store_true', 
     help = "choose to categorize periodics into calendar characteristics (only applies if the " +
         "output is based on calendar periodicity")
@@ -48,10 +51,10 @@ for line in infile.readlines()[1:]:
     periodic = [entities,assessment,score,pattern]
     assessments_periodics[assessment] += 1
     score_periodics[score].append(periodic)
-    if len(columns) > 8:
-        if columns[8] == "Dubbel" or columns[8] == "dubbel":
+    if len(columns) > args.m:
+        if columns[args.m] == "Dubbel" or columns[args.m] == "dubbel":
             assessments_periodics["Dubbel"] += 1 
-            periodic[1] = "dubbel"
+            periodic.append("dubbel")
     all_periodics.append(periodic)
     n_periodics += 1
 
@@ -96,10 +99,13 @@ plot_raw = open(args.o + "prat.txt","w",encoding="utf-8")
 scores = sorted(score_periodics.keys(),reverse=True)
 periodics_assessment = [0,0]
 for score in scores:
-    periodics = score_periodics[score]
-    periodics_assessment[0] += len(periodics)
-    periodics_assessment[1] += len([x for x in periodics if x[1] == "1.0"])
-    plot_raw.write(str(score) + "\t" + str(periodics_assessment[1] / periodics_assessment[0]) + "\n")
+    periodics = random.shuffle(score_periodics[score])
+    for periodic in periodics:
+        periodics_assessment[0] += 1
+        if periodic[1] == "1.0":
+            periodics_assessment[1] += 1
+        #periodics_assessment[1] += len([x for x in periodics if x[1] == "1.0"])
+        plot_raw.write(str(periodics_assessment[0]) + "\t" + str(periodics_assessment[1] / periodics_assessment[0]) + "\n")
 plot_raw.close()
 
 if args.w:
@@ -118,10 +124,13 @@ if args.w:
                     dates = term_pattern_dates[term][pattern]
                     for date in dates:
                         date_tweets[date].extend(term_date_tweets[term][date])
+                print("write line 128:::   ","----------\n" + pattern + "\t" + ", ".join(terms) + "\n")
                 outfile.write("----------\n" + pattern + "\t" + ", ".join(terms) + "\n")
                 for date in sorted(date_tweets.keys()):
+                    print("write line 131:::   ","*******\n" + date + "\n")
                     outfile.write("*******\n" + date + "\n")
                     tweets = list(set(date_tweets[date]))
+                    print("write line 134:::   ","\n".join(tweets) + "\n")
                     outfile.write("\n".join([t for t in tweets if not t == "\n"]) + "\n")
     outfile.close()
 
@@ -138,20 +147,20 @@ if args.k:
     #make raw files for plots based on different pattern features
     periodics = [p for p in all_periodics if p[1] == "1.0"]
     #remove doubles
-#    double_periodics = [p for p in all_periodics if p[1] == "Dubbel" or p[1] == "Dubbel"]
-#    double_entities = []
-#    for dp in double_periodics:
-#        double_entities.extend(dp[0])
-#    filtered_periodics = []
-#    for p in periodics:
-#        double = False
-#        for c in p[0]:
-#            if c in double_entities: #possible candidates
-#                double = True
-#        if not double:
-#            filtered_periodics.append(p)
-#    print(len(periodics),"confirmed periodics, ",len(double_periodics),"double periodics, ",
-#        len(filtered_periodics),"final periodics")
+    double_periodics = [p for p in all_periodics if p[-1] == "dubbel"]
+    double_entities = []
+    for dp in double_periodics:
+        double_entities.extend(dp[0])
+    filtered_periodics = []
+    for p in periodics:
+        double = False
+        for c in p[0]:
+           if c in double_entities: #possible candidates
+               double = True
+       if not double:
+           filtered_periodics.append(p)
+    print(len(periodics),"confirmed periodics, ",len(double_periodics),"double periodics, ",
+       len(filtered_periodics),"final periodics")
     filtered_periodics_patternlists = []
     for p in periodics:
         p[3] = p[3][1:-1].split(",")
