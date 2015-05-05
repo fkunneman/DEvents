@@ -13,6 +13,8 @@ parser = argparse.ArgumentParser(description = "")
 parser.add_argument('-i', action = 'store', required = True, help = "The file with identified events")
 parser.add_argument('-p', action = 'store', required = True, help = "The predictions file")  
 parser.add_argument('-o', action = 'store', required = True, help = "The directory to write outcomes to")
+parser.add_argument('-y', action = 'store_true', help = "include only yearly patterns")
+parser.add_argument('-d', action = 'store_true', help = "divide pattern types")
 
 
 args = parser.parse_args()
@@ -40,11 +42,14 @@ for line in predictfile.readlines():
     terms = "_".join(sorted(tokens[0].split(", ")))
     pattern = tokens[1]
     fields = tokens[2][1:-1].split(", ")
-    predict_date = datetime.datetime(int(fields[5][-4:]),int(fields[6]),int(fields[7]))
-    score = float(fields[11])
-    coverage = float(fields[12])
-    consistency = float(fields[13])
-    terms_predictions[terms].append((predict_date,pattern,score,coverage,consistency))
+    if args.y and fields[0] == "v":
+        continue
+    else:
+        predict_date = datetime.datetime(int(fields[5][-4:]),int(fields[6]),int(fields[7]))
+        score = float(fields[11])
+        coverage = float(fields[12])
+        consistency = float(fields[13])
+        terms_predictions[terms].append((predict_date,pattern,score,coverage,consistency))
 
 #print(terms_predictions)
 
