@@ -795,7 +795,6 @@ def score_calendar_periodicity(pattern,entries,total):
         consistency = 0
         gaps = []
     else:
-        consistency = intervals.count(step) / len(intervals)
         gaps = []
         if consistency < 1: #locate gaps
             dummy_date = copy.deepcopy(entries[0])
@@ -810,6 +809,7 @@ def score_calendar_periodicity(pattern,entries,total):
                             gaps.append(gap)
                         else:
                             break
+        consistency = len(entries) / (len(entries) + len(gaps))
 
                     #     while gap.year < gap_end.year:
                     #         gap_date = copy.deepcopy(dummy_date)
