@@ -3,7 +3,7 @@
 import argparse
 from collections import defaultdict
 import re
-import random
+from random import shuffle
 
 """
 Programme to evaluate a file with periodicity output
@@ -96,10 +96,14 @@ resultsout.close()
 #make precision-at-plot
 print("Plotting precision at")
 plot_raw = open(args.o + "prat.txt","w",encoding="utf-8")
-scores = sorted(score_periodics.keys(),reverse=True)
+if args.k:
+    scores = sorted(score_periodics.keys(),reverse=True)
+else:
+    scores = sorted(score_periodics.keys())
 periodics_assessment = [0,0]
 for score in scores:
-    periodics = random.shuffle(score_periodics[score])
+    periodics = score_periodics[score]
+    shuffle(periodics)
     for periodic in periodics:
         periodics_assessment[0] += 1
         if periodic[1] == "1.0":
@@ -124,21 +128,21 @@ if args.w:
                     dates = term_pattern_dates[term][pattern]
                     for date in dates:
                         date_tweets[date].extend(term_date_tweets[term][date])
-                print("write line 128:::   ","----------\n" + pattern + "\t" + ", ".join(terms) + "\n")
                 outfile.write("----------\n" + pattern + "\t" + ", ".join(terms) + "\n")
                 for date in sorted(date_tweets.keys()):
-                    print("write line 131:::   ","*******\n" + date + "\n")
                     outfile.write("*******\n" + date + "\n")
                     tweets = list(set(date_tweets[date]))
-                    print("write line 134:::   ","\n".join(tweets) + "\n")
                     outfile.write("\n".join([t for t in tweets if not t == "\n"]) + "\n")
     outfile.close()
 
 def count_calendarfeat(d,i):
-    periodics_cat = [p for p in d if re.search(r"\d",p[3][i])]
+ #   print("cat",i,d[0][3],d[0][3].split(",")[i])
+    periodics_cat = [p for p in d if re.search(r"\d",p[3].split(",")[i])]
+    non_periodics_cat = [p for p in d if re.search(r"v",p[3].split(",")[i])]
+#    print("per",len(periodics_cat),"non per",len(non_periodics_cat))
     cat_periodics = defaultdict(list)
     for pc in periodics_cat:
-        cat = pc[3][i]
+        cat = pc[3].split(",")[i]
         cat_periodics[cat].append(pc)
     return [cat_periodics,periodics_cat]
 
@@ -146,25 +150,27 @@ if args.k:
     print("Extracting full periodics")
     #make raw files for plots based on different pattern features
     periodics = [p for p in all_periodics if p[1] == "1.0"]
+    print("periodics",len(periodics))
     #remove doubles
-    double_periodics = [p for p in all_periodics if p[-1] == "dubbel"]
-    double_entities = []
-    for dp in double_periodics:
-        double_entities.extend(dp[0])
-    filtered_periodics = []
-    for p in periodics:
-        double = False
-        for c in p[0]:
-           if c in double_entities: #possible candidates
-               double = True
-        if not double:
-            filtered_periodics.append(p)
-    print(len(periodics),"confirmed periodics, ",len(double_periodics),"double periodics, ",
-       len(filtered_periodics),"final periodics")
-    filtered_periodics_patternlists = []
-    for p in periodics:
-        p[3] = p[3][1:-1].split(",")
-        filtered_periodics_patternlists.append(p)
+    #double_periodics = [p for p in all_periodics if p[-1] == "dubbel"]
+    #double_entities = []
+    #for dp in double_periodics:
+    #    double_entities.extend(dp[0])
+    #filtered_periodics = []
+    #for p in periodics:
+    #    double = False
+    #    for c in p[0]:
+    #       if c in double_entities: #possible candidates
+    #           double = True
+    #    if not double:
+    #        filtered_periodics.append(p)
+    #print(len(periodics),"confirmed periodics, ",len(double_periodics),"double periodics, ",
+    #   len(filtered_periodics),"final periodics")
+    #filtered_periodics_patternlists = []
+    #for p in periodics:
+    #    p[3] = p[3][1:-1].split(",")
+    filtered_periodics_patternlists = [p for p in periodics if p[-1] != "dubbel"]
+    print("fpp",len(filtered_periodics_patternlists))
     #weekdays
     print("Plotting weekdays")
     weekday_plot = open(args.o + "weekday_plot_raw.txt","w",encoding="utf-8")
@@ -173,6 +179,7 @@ if args.k:
     weekday_periodics = count_calendarfeat(filtered_periodics_patternlists,4)
     num_periodics = len(weekday_periodics[1])
     for weekday in sorted(weekday_periodics[0].keys()):
+#        print(num_periodics,weekday)
         weekday_plot.write(wd_dict[weekday] + "\t" + \
             str(len(weekday_periodics[0][weekday]) / num_periodics) + "\n")
     weekday_plot.close()
@@ -194,8 +201,10 @@ if args.k:
     print("enlisting date periodics")
     date_file = open(args.o + "date_periodics.txt","w",encoding="utf-8")
     date_periodics = []
-    for m in monthday_periodics[0].keys():
-        date_periodics.extend([x for x in monthday_periodics[0][m] if re.search(r"\d",x[3][1])])
+    monthday_periodics_all = count_calendarfeat(periodics,3)
+    for m in monthday_periodics_all[0].keys():
+        date_periodics.extend([x for x in monthday_periodics_all[0][m] if \
+        re.search(r"\d",x[3].split(",")[1])])
     sorted_date_periodics = sorted(date_periodics,key = lambda k : k[2],reverse = True)
     for dp in sorted_date_periodics:
         date_file.write("\t".join([str(x) for x in dp]) + "\n")
@@ -229,9 +238,10 @@ if args.k:
     week_plot.close()
     print("Enlisting week periodics")
     week_file = open(args.o + "week_periodics.txt","w",encoding="utf-8")
+    week_periodics_all = count_calendarfeat(periodics,2)     
     week_periodics_el = []
-    for w in week_periodics[0].keys():
-        week_periodics_el.extend(week_periodics[0][w])
+    for w in week_periodics_all[0].keys():
+        week_periodics_el.extend(week_periodics_all[0][w])
     sorted_week_periodics = sorted(week_periodics_el,key = lambda k : k[2],reverse = True)
     for wp in sorted_week_periodics:
         week_file.write("\t".join([str(x) for x in wp]) + "\n")
@@ -239,11 +249,13 @@ if args.k:
     # #weekday-weekday
     print("Plotting weekday index")
     weekday_index_plot = open(args.o + "weeday_index_plot_raw.txt","w",encoding="utf-8")
-    periodics_index = [p for p in filtered_periodics_patternlists if re.search(r"\d",p[3][5])]
+    periodics_index = [p for p in filtered_periodics_patternlists if re.search(r"\d",p[3].split(",")[5][0])]
+    periodics_index_all = [p for p in periodics if re.search(r"\d",p[3].split(",")[5][0])]
     weekday_index_periodics = defaultdict(lambda : defaultdict(list))
     for pi in periodics_index:
-        index = pi[3][5]
-        weekday = pi[3][4]
+        index = pi[3].split(",")[5][:-1]
+#        print(pi,index)
+        weekday = pi[3].split(",")[4]
         weekday_index_periodics[index][weekday].append(pi)
     for weekday in sorted(weekday_index_periodics.keys()):
         last = -1
@@ -256,15 +268,15 @@ if args.k:
     weekday_index_plot.close()
     print("enlisting weekday index periodics")
     weekday_index_file = open(args.o + "weekday_index_periodics.txt","w",encoding="utf-8")
-    weekday_index_month = [p for p in periodics_index if p[3][0] == "e"]
+    weekday_index_month = [p for p in periodics_index_all if p[3][1] == "e"]
     sorted_weekday_index_periodics = sorted(weekday_index_month,key = lambda k : k[2],reverse = True)
-    for wip in sorted_week_periodics:
+    for wip in sorted_weekday_index_periodics:
         weekday_index_file.write("\t".join([str(x) for x in wip]) + "\n")
     weekday_index_file.close()
     #weeksequence
     print("enlisting weeksequence periodics")
     weeksequence_file = open(args.o + "weeksequence_periodics.txt","w",encoding="utf-8")
-    weeksequence_periodics = [p for p in filtered_periodics_patternlists if p[3][2] == "e"]
+    weeksequence_periodics = [p for p in periodics if p[3].split(",")[2] == "e"]
     sorted_weeksequence_periodics = sorted(weeksequence_periodics,key = lambda k : k[2],reverse = True)
     for wsp in sorted_weeksequence_periodics:
         weeksequence_file.write("\t".join([str(x) for x in wsp]) + "\n")
@@ -272,7 +284,7 @@ if args.k:
     #monthsequence
     print("enlisting monthsequence periodics")
     monthsequence_file = open(args.o + "monthsequence_periodics.txt","w",encoding="utf-8")
-    monthsequence_periodics = [p for p in filtered_periodics_patternlists if p[3][1] == "e"]
+    monthsequence_periodics = [p for p in periodics if p[3].split(",")[1] == "e"]
     sorted_monthsequence_periodics = sorted(monthsequence_periodics,key = lambda k : k[2],reverse = True)
     for msp in sorted_monthsequence_periodics:
         monthsequence_file.write("\t".join([str(x) for x in msp]) + "\n")

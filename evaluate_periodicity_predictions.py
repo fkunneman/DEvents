@@ -14,6 +14,7 @@ parser.add_argument('-i', action = 'store', required = True, help = "The file wi
 parser.add_argument('-p', action = 'store', required = True, help = "The predictions file")  
 parser.add_argument('-o', action = 'store', required = True, help = "The directory to write outcomes to")
 
+
 args = parser.parse_args()
 
 eventsfile = open(args.i,"r",encoding="utf-8")
@@ -45,7 +46,7 @@ for line in predictfile.readlines():
     consistency = float(fields[13])
     terms_predictions[terms].append((predict_date,pattern,score,coverage,consistency))
 
-print(terms_predictions["#recordstoreday"],term_dates["#recordstoreday"])
+#print(terms_predictions)
 
 print("scoring predictions")
 #match predictions with occurrences and list scores and accuracies
@@ -58,6 +59,7 @@ coverage_accuracies = []
 consistency_accuracies = []
 print("assessment")
 for term in terms_predictions.keys():
+#    print(term,terms_predictions[term])
     predictions_sorted = sorted(terms_predictions[term],key = lambda x : x[0])
     if re.search("_",term):
         dates = []
