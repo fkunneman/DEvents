@@ -146,7 +146,7 @@ def rank_accuracy(data,sdev):
         ranked_data = sorted(data,key = lambda k : k[1])
     else:
         ranked_data = sorted(data,key = lambda k : k[1],reverse = True)
-    for r in range(50,len(ranked_data,50)):
+    for r in range(50,len(ranked_data),50):
         accuracy = len([s for s in ranked_data[:r] if s[2] == "Correct"]) / len(ranked_data[:r])
         outlist.append([str(r),str(accuracy)])
     return outlist
@@ -163,7 +163,7 @@ ranked_file = open(args.o + "accuracy_by_rank.txt","w",encoding = "utf-8")
 accuracies_rank = rank_accuracy(score_accuracies,args.std)
 for rank in accuracies_rank:
     ranked_file.write(" ".join(accuracy) + "\n")
-accuracies_rank.close()
+ranked_file.close()
 
 if not args.std:
     coverage_raw = open(args.o + "coverage_raw.txt","w",encoding = "utf-8")
