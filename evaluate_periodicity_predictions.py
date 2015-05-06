@@ -142,10 +142,13 @@ def score_accuracy(data,sdev):
 
 def rank_accuracy(data,sdev):
     outlist = []
+    print(data[0])
     if sdev:
         ranked_data = sorted(data,key = lambda k : k[1])
     else:
         ranked_data = sorted(data,key = lambda k : k[1],reverse = True)
+    print(ranked_data[0])
+    print(len(ranked_data))
     for r in range(50,len(ranked_data),50):
         accuracy = len([s for s in ranked_data[:r] if s[2] == "Correct"]) / len(ranked_data[:r])
         outlist.append([str(r),str(accuracy)])
