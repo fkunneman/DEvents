@@ -15,6 +15,7 @@ parser.add_argument('-p', action = 'store', required = True, help = "The predict
 parser.add_argument('-o', action = 'store', required = True, help = "The directory to write outcomes to")
 parser.add_argument('-y', action = 'store_true', help = "include only yearly patterns")
 parser.add_argument('-d', action = 'store_true', help = "divide pattern types")
+parser.add_argument('--std', action = 'store_true', help = "specify if predictions are made by std")
 
 args = parser.parse_args()
 
@@ -24,15 +25,26 @@ predictfile = open(args.p,"r",encoding="utf-8")
 print("generating dicts")
 #generate term_dates dict from file
 term_dates = defaultdict(list)
-for line in eventsfile.readlines():
-    if line[0] == "<":
-        tokens = line.strip().split("\t")
-        terms = tokens[1].split(", ")
-        dates_raw = tokens[3].split(" > ")
-        for date in dates_raw:
-            entries = date.split("-")
-            for term in terms:
-                term_dates[term].append(datetime.datetime(int(entries[0]),int(entries[1]),int(entries[2])))
+if std:
+    for line in eventsfile.readlines():
+        if re.match(r"^\d+\.\d+",line):
+            tokens = line.strip().split("\t")
+            terms = tokens[1].split(", ")
+            dates_raw = [x[:10] for x in tokens[2].split(" > ")]
+            for date in dates_raw:
+                entries = date.split("-")
+                for term in terms:
+                    term_dates[term].append(datetime.datetime(int(entries[0]),int(entries[1]),int(entries[2])))           
+else:
+    for line in eventsfile.readlines():
+        if line[0] == "<":
+            tokens = line.strip().split("\t")
+            terms = tokens[1].split(", ")
+            dates_raw = tokens[3].split(" > ")
+            for date in dates_raw:
+                entries = date.split("-")
+                for term in terms:
+                    term_dates[term].append(datetime.datetime(int(entries[0]),int(entries[1]),int(entries[2])))
 
 #generate term_predictions dict from file
 terms_predictions = defaultdict(list)
@@ -44,19 +56,23 @@ for line in predictfile.readlines():
     if args.y and pattern[1] == "v":
         continue
     else:
-        print(pattern,pattern[1])
+        #print(pattern,pattern[1])
         predict_date = datetime.datetime(int(fields[5][-4:]),int(fields[6]),int(fields[7]))
         score = float(fields[11])
-        coverage = float(fields[12])
-        consistency = float(fields[13])
-        terms_predictions[terms].append((predict_date,pattern,score,coverage,consistency))
+        if args.std:
+            terms_predictions[terms].append((predict_date,pattern,score))
+        else:
+            coverage = float(fields[12])
+            consistency = float(fields[13])
+            terms_predictions[terms].append((predict_date,pattern,score,coverage,consistency))
+
 
 #print(terms_predictions)
 
 print("scoring predictions")
 #match predictions with occurrences and list scores and accuracies
 resultsfile = open(args.o + "results.txt","w",encoding = "utf-8")
-results9 = open(args.o + "results9.txt","w",encoding="utf-8")
+#results9 = open(args.o + "results9.txt","w",encoding="utf-8")
 scores_raw = open(args.o + "scores_raw.txt","w",encoding = "utf-8")
 coverage_raw = open(args.o + "coverage_raw.txt","w",encoding = "utf-8")
 consistency_raw = open(args.o + "consistency_raw.txt","w",encoding = "utf-8")
@@ -91,41 +107,53 @@ for term in terms_predictions.keys():
     else:
         assessment = "False"
     resultsfile.write("\t".join([term,prediction[1],str(prdate),assessment]) + "\n")
-    if prediction[2] >= 0.9:
-        results9.write("\t".join([term,prediction[1],str(prdate),assessment]) + "\n")
+    #if prediction[2] >= 0.9:
+    #    results9.write("\t".join([term,prediction[1],str(prdate),assessment]) + "\n")
     score_accuracies.append([term,prediction[2],assessment])
-    coverage_accuracies.append([term,prediction[3],assessment])
-    consistency_accuracies.append([term,prediction[4],assessment])
+    if not args.std:
+        coverage_accuracies.append([term,prediction[3],assessment])
+        consistency_accuracies.append([term,prediction[4],assessment])
 resultsfile.close()
 
-def score_accuracy(data,pr=False):
+def score_accuracy(data,pr=False,sdev=False):
     outlist = []
-    thresh = 1.0
-    while thresh >= 0:
-        above_thresh = [x for x in data if x[1] >= thresh]
-#        if thresh == 1.0 and pr:
-#            print(above_thresh)
-        accuracy = len([s for s in above_thresh if s[2] == "Correct"]) / len(above_thresh)
-        outlist.append([str(thresh),str(accuracy)])
-        thresh -= 0.01
-    return outlist
+    if sdev:
+        thresh = 0
+        while thresh <= 25:
+            below_thresh = [x for x in data if x[1] <= thresh]
+    #        if thresh == 1.0 and pr:
+    #            print(above_thresh)
+            accuracy = len([s for s in below_thresh if s[2] == "Correct"]) / len(below_thresh)
+            outlist.append([str(thresh),str(accuracy)])
+            thresh += 0.1           
+    else:
+        thresh = 1.0
+        while thresh >= 0:
+            above_thresh = [x for x in data if x[1] >= thresh]
+    #        if thresh == 1.0 and pr:
+    #            print(above_thresh)
+            accuracy = len([s for s in above_thresh if s[2] == "Correct"]) / len(above_thresh)
+            outlist.append([str(thresh),str(accuracy)])
+            thresh -= 0.01
+        return outlist
 
 print("accuracy plots")
 print("score")
-accuracies_score = score_accuracy(score_accuracies)
-print("coverage")
-accuracies_coverage = score_accuracy(coverage_accuracies)
-print("consistency")
-accuracies_consistency = score_accuracy(consistency_accuracies,pr=True)
-
+accuracies_score = score_accuracy(score_accuracies,args.std)
 for accuracy in accuracies_score:
     scores_raw.write(" ".join(accuracy) + "\n")
 scores_raw.close()
 
-for accuracy in accuracies_coverage:
-    coverage_raw.write(" ".join(accuracy) + "\n")
-coverage_raw.close()
+if not args.std:
+    print("coverage")
+    accuracies_coverage = score_accuracy(coverage_accuracies)
+    print("consistency")
+    accuracies_consistency = score_accuracy(consistency_accuracies,pr=True)
 
-for accuracy in accuracies_consistency:
-    consistency_raw.write(" ".join(accuracy) + "\n")
-consistency_raw.close()
+    for accuracy in accuracies_coverage:
+        coverage_raw.write(" ".join(accuracy) + "\n")
+    coverage_raw.close()
+
+    for accuracy in accuracies_consistency:
+        consistency_raw.write(" ".join(accuracy) + "\n")
+    consistency_raw.close()
