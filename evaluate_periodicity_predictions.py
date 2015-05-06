@@ -25,16 +25,19 @@ predictfile = open(args.p,"r",encoding="utf-8")
 print("generating dicts")
 #generate term_dates dict from file
 term_dates = defaultdict(list)
-if std:
+if args.std:
     for line in eventsfile.readlines():
         if re.match(r"^\d+\.\d+",line):
-            tokens = line.strip().split("\t")
-            terms = tokens[1].split(", ")
-            dates_raw = [x[:10] for x in tokens[2].split(" > ")]
-            for date in dates_raw:
-                entries = date.split("-")
-                for term in terms:
-                    term_dates[term].append(datetime.datetime(int(entries[0]),int(entries[1]),int(entries[2])))           
+            try:
+                tokens = line.strip().split("\t")
+                terms = tokens[1].split(", ")
+                dates_raw = [x[:10] for x in tokens[2].split(" > ")]
+                for date in dates_raw:
+                    entries = date.split("-")
+                    for term in terms:
+                        term_dates[term].append(datetime.datetime(int(entries[0]),int(entries[1]),int(entries[2])))           
+            except:
+                continue
 else:
     for line in eventsfile.readlines():
         if line[0] == "<":
@@ -74,8 +77,6 @@ print("scoring predictions")
 resultsfile = open(args.o + "results.txt","w",encoding = "utf-8")
 #results9 = open(args.o + "results9.txt","w",encoding="utf-8")
 scores_raw = open(args.o + "scores_raw.txt","w",encoding = "utf-8")
-coverage_raw = open(args.o + "coverage_raw.txt","w",encoding = "utf-8")
-consistency_raw = open(args.o + "consistency_raw.txt","w",encoding = "utf-8")
 score_accuracies = []
 coverage_accuracies = []
 consistency_accuracies = []
@@ -115,14 +116,16 @@ for term in terms_predictions.keys():
         consistency_accuracies.append([term,prediction[4],assessment])
 resultsfile.close()
 
-def score_accuracy(data,pr=False,sdev=False):
+def score_accuracy(data,sdev):
     outlist = []
     if sdev:
+ #       print("sdev")
         thresh = 0
         while thresh <= 25:
             below_thresh = [x for x in data if x[1] <= thresh]
     #        if thresh == 1.0 and pr:
     #            print(above_thresh)
+#            print(thresh,below_thresh)
             accuracy = len([s for s in below_thresh if s[2] == "Correct"]) / len(below_thresh)
             outlist.append([str(thresh),str(accuracy)])
             thresh += 0.1           
@@ -135,20 +138,23 @@ def score_accuracy(data,pr=False,sdev=False):
             accuracy = len([s for s in above_thresh if s[2] == "Correct"]) / len(above_thresh)
             outlist.append([str(thresh),str(accuracy)])
             thresh -= 0.01
-        return outlist
+    return outlist
 
 print("accuracy plots")
 print("score")
+print(args.std)
 accuracies_score = score_accuracy(score_accuracies,args.std)
 for accuracy in accuracies_score:
     scores_raw.write(" ".join(accuracy) + "\n")
 scores_raw.close()
 
 if not args.std:
+    coverage_raw = open(args.o + "coverage_raw.txt","w",encoding = "utf-8")
+    consistency_raw = open(args.o + "consistency_raw.txt","w",encoding = "utf-8")
     print("coverage")
-    accuracies_coverage = score_accuracy(coverage_accuracies)
+    accuracies_coverage = score_accuracy(coverage_accuracies,sdev=False)
     print("consistency")
-    accuracies_consistency = score_accuracy(consistency_accuracies,pr=True)
+    accuracies_consistency = score_accuracy(consistency_accuracies,sdev=True)
 
     for accuracy in accuracies_coverage:
         coverage_raw.write(" ".join(accuracy) + "\n")
