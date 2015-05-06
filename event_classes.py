@@ -401,7 +401,9 @@ class Calendar:
         good_periodics = [p for p in self.periodics if p["score"] < threshold]
         for periodic in good_periodics:
             last_date = max(sorted([e.date for e in periodic["events"]]))
-            step = int(numpy.median(periodic["intervals"]))
+            steps = [(x,periodic["intervals"].count(x)) for x in periodic["intervals"]]
+            sorted_steps = sorted(steps,key = lambda k : k[1],reverse=True)
+            step = sorted_steps[0][0]
             extend_date = last_date + datetime.timedelta(days=step)
             extentions = []
             while extend_date < until_date:
