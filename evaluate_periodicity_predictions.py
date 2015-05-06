@@ -140,13 +140,30 @@ def score_accuracy(data,sdev):
             thresh -= 0.01
     return outlist
 
+def rank_accuracy(data,sdev):
+    outlist = []
+    if sdev:
+        ranked_data = sorted(data,key = lambda k : k[1])
+    else:
+        ranked_data = sorted(data,key = lambda k : k[1],reverse = True)
+    for r in range(50,len(ranked_data,50)):
+        accuracy = len([s for s in ranked_data[:r] if s[2] == "Correct"]) / len(ranked_data[:r])
+        outlist.append([str(r),str(accuracy)])
+    return outlist
+
 print("accuracy plots")
 print("score")
-print(args.std)
 accuracies_score = score_accuracy(score_accuracies,args.std)
 for accuracy in accuracies_score:
     scores_raw.write(" ".join(accuracy) + "\n")
 scores_raw.close()
+
+print("rank")
+ranked_file = open(args.o + "accuracy_by_rank.txt","w",encoding = "utf-8")
+accuracies_rank = rank_accuracy(score_accuracies,args.std)
+for rank in accuracies_rank:
+    ranked_file.write(" ".join(accuracy) + "\n")
+accuracies_rank.close()
 
 if not args.std:
     coverage_raw = open(args.o + "coverage_raw.txt","w",encoding = "utf-8")
