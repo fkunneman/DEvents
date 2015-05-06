@@ -171,7 +171,7 @@ if not args.std:
     print("coverage")
     accuracies_coverage = score_accuracy(coverage_accuracies,sdev=False)
     print("consistency")
-    accuracies_consistency = score_accuracy(consistency_accuracies,sdev=True)
+    accuracies_consistency = score_accuracy(consistency_accuracies,sdev=False)
 
     for accuracy in accuracies_coverage:
         coverage_raw.write(" ".join(accuracy) + "\n")
