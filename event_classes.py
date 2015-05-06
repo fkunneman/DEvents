@@ -397,7 +397,7 @@ class Calendar:
                         self.expected_events.append([periodic["entities"],periodic["pattern"],last_date,date,
                             periodic["step"],periodic["score"],periodic["coverage"],periodic["consistency"]])
 
-    def predict_events_timeline(self,threshold):
+    def predict_events_timeline(self,until_date,threshold):
         good_periodics = [p for p in self.periodics if p["score"] < threshold]
         for periodic in good_periodics:
             last_date = max(sorted([e.date for e in periodic["events"]]))
