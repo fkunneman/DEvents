@@ -61,14 +61,23 @@ for i,line in enumerate(lines):
         if predict:
             if date == predict_date:
                 print("making predictions")
-                predictfile = open(args.o + "calper_predictions.txt","w",encoding="utf-8")
-                event_calendar.cluster_entities_periodicity(args.cluster)
-                event_calendar.predict_events(predict_to_date,0.25)
-                for entry in event_calendar.expected_events:
-                    predictfile.write("\t".join([", ".join(entry[0]),entry[1],
-                        ", ".join([str(x) for x in [entry[2:]]])]) + "\n")
-                predictfile.close()
-                quit()
+                event_calendar.cluster_entities_periodicity(args.cluster,args.cal)
+                if args.stdev:
+                    predictfile = open(args.o + "stdev_predictions.txt","w",encoding="utf-8")
+                    event_calendar.predict_events_timeline(predict_to_date,25)
+                    for entry in event_calendar.expected_events:
+                        predictfile.write("\t".join([", ".join(entry[0]),"-".join(entry[1]),
+                            ", ".join([str(x) for x in [entry[2:]]])]) + "\n")
+                    predictfile.close()
+                    quit()
+                else:
+                    predictfile = open(args.o + "calper_predictions.txt","w",encoding="utf-8")
+                    event_calendar.predict_events(predict_to_date,0.25)
+                    for entry in event_calendar.expected_events:
+                        predictfile.write("\t".join([", ".join(entry[0]),entry[1],
+                            ", ".join([str(x) for x in [entry[2:]]])]) + "\n")
+                    predictfile.close()
+                    quit()
     #and date <= datetime.datetime(2014,4,3):
         print(event.date,event.entities,"calper")
         event_calendar.add_event(event,args.stdev,args.cal)

@@ -373,11 +373,7 @@ class Calendar:
         #select above threshold patterns
         good_periodics = [p for p in self.periodics if p["score"] > threshold]
         #for each pattern
-        predict_date_correct = []
-        predict_periodic_correct = []
-        numper = len(good_periodics)
-        for t,periodic in enumerate(good_periodics):
-            print(t,"of",numper)
+        for periodic in good_periodics:
             if periodic["step"] > 0 and periodic["step"] <= 6:
                 last_date = max(sorted([e.date for e in periodic["events"]]))
                 extentions = []
@@ -400,3 +396,18 @@ class Calendar:
                         event.set_periodics(periodic["events"])
                         self.expected_events.append([periodic["entities"],periodic["pattern"],last_date,date,
                             periodic["step"],periodic["score"],periodic["coverage"],periodic["consistency"]])
+
+    def predict_events_timeline(self,threshold):
+        good_periodics = [p for p in self.periodics if p["score"] < threshold]
+        for periodic in good_periodics:
+            last_date = max(sorted([e.date for e in periodic["events"]]))
+            step = int(numpy.median(periodic["intervals"]))
+            extend_date = last_date + datetime.timedelta(days=step)
+            while extend_date < until_date:
+                extentions.append(extend_date)
+                extend_date = extend_date + datetime.timedelta(days=step)
+            for date in extentions:
+                event = Event("x",[date,periodic["entities"],"-",[]])
+                event.set_periodics(periodic["events"])
+                self.expected_events.append([periodic["entities"],periodic["intervals"],last_date,date,
+                    step,periodic["score"]])
