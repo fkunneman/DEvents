@@ -66,7 +66,8 @@ for i,line in enumerate(lines):
                     predictfile = open(args.o + "stdev_predictions.txt","w",encoding="utf-8")
                     event_calendar.predict_events_timeline(predict_to_date,25)
                     for entry in event_calendar.expected_events:
-                        predictfile.write("\t".join([", ".join(entry[0]),"-".join(entry[1]),
+                        predictfile.write("\t".join([", ".join(entry[0]),
+                            "-".join([str(x) for x in entry[1]]),
                             ", ".join([str(x) for x in [entry[2:]]])]) + "\n")
                     predictfile.close()
                     quit()
