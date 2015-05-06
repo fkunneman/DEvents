@@ -42,9 +42,10 @@ for line in predictfile.readlines():
     terms = "_".join(sorted(tokens[0].split(", ")))
     pattern = tokens[1]
     fields = tokens[2][1:-1].split(", ")
-    if args.y and fields[0] == "v":
+    if args.y and pattern[1] == "v":
         continue
     else:
+        print(pattern,pattern[1])
         predict_date = datetime.datetime(int(fields[5][-4:]),int(fields[6]),int(fields[7]))
         score = float(fields[11])
         coverage = float(fields[12])
@@ -56,6 +57,7 @@ for line in predictfile.readlines():
 print("scoring predictions")
 #match predictions with occurrences and list scores and accuracies
 resultsfile = open(args.o + "results.txt","w",encoding = "utf-8")
+results9 = open(args.o + "results9.txt","w",encoding="utf-8")
 scores_raw = open(args.o + "scores_raw.txt","w",encoding = "utf-8")
 coverage_raw = open(args.o + "coverage_raw.txt","w",encoding = "utf-8")
 consistency_raw = open(args.o + "consistency_raw.txt","w",encoding = "utf-8")
@@ -90,6 +92,8 @@ for term in terms_predictions.keys():
     else:
         assessment = "False"
     resultsfile.write("\t".join([term,prediction[1],str(prdate),assessment]) + "\n")
+    if prediction[2] >= 0.9:
+        results9.write("\t".join([term,prediction[1],str(prdate),assessment]) + "\n")
     score_accuracies.append([term,prediction[2],assessment])
     coverage_accuracies.append([term,prediction[3],assessment])
     consistency_accuracies.append([term,prediction[4],assessment])
@@ -100,8 +104,8 @@ def score_accuracy(data,pr=False):
     thresh = 1.0
     while thresh >= 0:
         above_thresh = [x for x in data if x[1] >= thresh]
-        if thresh == 1.0 and pr:
-            print(above_thresh)
+#        if thresh == 1.0 and pr:
+#            print(above_thresh)
         accuracy = len([s for s in above_thresh if s[2] == "Correct"]) / len(above_thresh)
         outlist.append([str(thresh),str(accuracy)])
         thresh -= 0.01
