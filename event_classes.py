@@ -403,6 +403,7 @@ class Calendar:
             last_date = max(sorted([e.date for e in periodic["events"]]))
             step = int(numpy.median(periodic["intervals"]))
             extend_date = last_date + datetime.timedelta(days=step)
+            extentions = []
             while extend_date < until_date:
                 extentions.append(extend_date)
                 extend_date = extend_date + datetime.timedelta(days=step)
