@@ -16,7 +16,6 @@ parser.add_argument('-o', action = 'store', required = True, help = "The directo
 parser.add_argument('-y', action = 'store_true', help = "include only yearly patterns")
 parser.add_argument('-d', action = 'store_true', help = "divide pattern types")
 
-
 args = parser.parse_args()
 
 eventsfile = open(args.i,"r",encoding="utf-8")
