@@ -396,11 +396,12 @@ class Event_pairs:
                 info.append(", ".join(tweet.cities))
             else:
                 info.append("-")
+            print(info)
             tweetinfo.write("\t".join(info) + "\n")
         tweetinfo.close()
 
     def write_term_scores(self,outfile):
         terminfo = open(outfile,"w",encoding = "utf-8")
         for event in self.events:
-            terminfo.write(event.entities[0] + "\t" + str(event.score) + "\n")
+            terminfo.write(event.entities[0][0] + "\t" + str(event.score) + "\n")
         terminfo.close()
