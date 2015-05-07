@@ -98,7 +98,7 @@ class Event_pairs:
                     else:
                         pattern = [0,1,2,3,5,6,7,8,4,9]           
                     if len(info) < 10:
-                        pattern[9] = []
+                        pattern[9] = False
                         if len(info) < 9:
                             if pattern[8] == 8:
                                 pattern[8] = False

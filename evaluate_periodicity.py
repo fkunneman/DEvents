@@ -4,6 +4,7 @@ import argparse
 from collections import defaultdict
 import re
 from random import shuffle
+import numpy
 
 """
 Programme to evaluate a file with periodicity output
@@ -28,6 +29,9 @@ parser.add_argument('-m', action = 'store', type = int, required = True,
 parser.add_argument('-k', action = 'store_true', 
     help = "choose to categorize periodics into calendar characteristics (only applies if the " +
         "output is based on calendar periodicity")
+parser.add_argument('-s', action = 'store_true', 
+    help = "choose to categorize periodics into timeline characteristics (only applies if the " +
+        "output is based on timeline periodicity")
 parser.add_argument('-w', action = 'store_true', 
     help = "choose to extract word statistics of periodics")
 
@@ -145,6 +149,24 @@ def count_calendarfeat(d,i):
         cat = pc[3].split(",")[i]
         cat_periodics[cat].append(pc)
     return [cat_periodics,periodics_cat]
+
+if args.s:
+    print("Extracting statistics")
+    statfile = open(args.o + "stats_tl.txt","w",encoding="utf-8")
+    periodics = [p for p in all_periodics if p[1] == "1.0"]
+    intervals = []
+    for p in periodics:
+        steps = [(x,periodic["intervals"].count(x)) for x in periodic["intervals"]]
+        sorted_steps = sorted(steps,key = lambda k : k[1],reverse=True)
+        step = sorted_steps[0][0]
+        intervals.append(step)
+    average = numpy.mean(intervals)
+    stdev = numpy.std(intervals)
+    median = numpy.median(intervals)
+    statfile.write(str(average) + " " + str(stdev) + "\n" + str(median) + "\n\n")
+    for interval in sorted(list(set(intervals))):
+        statfile.write(str(interval) + " " + str(intervals.count(interval)) + "\n")
+    statfile.close()
 
 if args.k:
     print("Extracting full periodics")
