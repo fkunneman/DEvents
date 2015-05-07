@@ -118,6 +118,7 @@ class Event_pairs:
                     fields.append(info[field])
                 else:
                     fields.append([])
+            print(fields)
             fields[2] = time_functions.return_datetime(fields[2],setting="vs").date() #tweetdate
             fields[4] = [time_functions.return_datetime(x,setting="vs").date() \
                         for x in fields[4].split(" ")] #refdates
