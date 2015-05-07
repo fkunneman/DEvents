@@ -41,10 +41,11 @@ class Event_pairs:
             self.frogger = False
         self.ucto_settingsfile = "/vol/customopt/uvt-ru/etc/ucto/tokconfig-nl-twitter"
 
+    #total procedure of event extraction in one function
     def detect_events(self,tweetfile,events = True):
         #start from last modeltweets
         print("appending modeltweets")
-        eventfile = open("tmp/modeltweets.txt","r",encoding = "utf-8")
+        eventfile = open(self.tmpdir + "modeltweets.txt","r",encoding = "utf-8")
         self.append_eventtweets(eventfile.readlines())
         eventfile.close()
         #process tweets
@@ -53,17 +54,18 @@ class Event_pairs:
         #prune tweets
         self.discard_last_day(31)
         #write modeltweets
-        self.write_modeltweets("tmp/modeltweets.txt")
+        self.write_modeltweets(self.tmpdir + "modeltweets.txt")
         if events:
             #rank events, resolve overlap and enrich events
             self.rank_events()
+            self.write_term_scores(self.tmpdir + "term_scores.txt")
             self.resolve_overlap_events()
             self.enrich_events()
             #output events
             eventdict = []
             for i,event in enumerate(sorted(self.events,key = lambda x : x.score,reverse=True)):
                 if event.tt_ratio > 0.30:
-                    #event.rank_tweets(rep=True)
+                    event.rank_tweets(rep=True)
                     event_unit = {"date":event.date,"keyterms":event.entities,"score":event.score,
                         "tweets":[{"id":x.id,"user":x.user,"date":x.date,"text":x.text,
                         "date references":",".join([str(y) for y in x.daterefs]),
@@ -76,96 +78,63 @@ class Event_pairs:
         self.events = []
         return eventdict
 
-    def append_eventtweets(self,eventtweets,ent = False):
+    #load an existing model of event tweets
+    def append_eventtweets(self,eventtweets):
         tokenizer = ucto.Tokenizer(self.ucto_settingsfile)
         for et in eventtweets:
+            ent = False
             info = et.strip().split("\t")
-            tweet = event_classes.Tweet()
             try:
+                #set information to the right field given different inputs
                 if len(info) > 12:
+                    ent = True
                     if re.search(r"\d{1}(/|-)\d{1}",info[13]):
                         continue
                     else:
-                        ent = True
-                        info[7] = time_functions.return_datetime(info[7],setting="vs").date()
-                        info[11] = [time_functions.return_datetime(x,setting="vs").date() \
-                            for x in info[11].split(" ")]
-                        units = [info[1],info[4],info[7],info[10],info[11]]
-                        units.append([x.strip() for x in info[12].split("|")]) #chunks
-                        tweet.set_meta(units)
-                        tweet.set_phrase(info[13])                    
-                        tweet.set_entities([])
-                        tweet.set_postags([])
-                        tweet.set_cities([])
+                        pattern = [1,4,7,10,11,12,[],[],13,[]]
                 else:
-                    info[2] = time_functions.return_datetime(info[2],setting="vs").date()
-                    try:    
-                        info[4] = [time_functions.return_datetime(x,setting="vs").date() \
-                            for x in info[4].split(" ")]
-                        units = info[:5]
-                        units.append([x.strip() for x in info[5].split("|")]) #chunks
-                        tweet.set_meta(units)
-                        if len(info) >= 7: #entities
-                            entities = [x.strip() for x in info[6].split(" | ")]
-                            if len(entities) == 1 and entities[0] == "--":
-                                tweet.set_entities([])
+                    if re.match(r"\d{4}-\d{2}-\d{2}",info[4]):
+                        pattern = [0,1,2,3,4,5,6,7,8,9]
+                    else:
+                        pattern = [0,1,2,3,5,6,7,8,4,9]           
+                    if len(info) < 10:
+                        pattern[9] = []
+                        if len(info) < 9:
+                            if pattern[8] == 8:
+                                pattern[8] = []
                             else:
-                                tweet.set_entities(entities)
-                            if len(info) >= 8: #postags
-                                postags = [tuple(x.split(",")) for x in info[7].split(" | ")]
-                                if len(postags) == 1 and postags[0][0] == "--":
-                                    tweet.set_postags([])
+                                pattern[7] = []
+                            if len(info) < 8:
+                                if pattern[7] == 7:
+                                    pattern[7] = []
                                 else:
-                                    tweet.set_postags(postags)
-                                if len(info) >= 9: #phrase
-                                    tweet.set_phrase(info[8])
-                                    if len(info) == 10:
-                                        cities = info[9].split(", ")
-                                        tweet.set_cities(cities)
-                                    else:
-                                        tweet.set_cities([])
-                                else:
-                                    tweet.set_cities([])
-                                    tweet.set_phrase("-")
-                            else:
-                                tweet.set_postags([])
-                                tweet.set_cities([])
-                                tweet.set_phrase("-")
-                        else:
-                            tweet.set_entities([])
-                            tweet.set_postags([])
-                            tweet.set_cities([])
-                            tweet.set_phrase("-")
-                    except(IndexError, AttributeError):
-                        info[5] = [time_functions.return_datetime(x,setting="vs").date() \
-                            for x in info[5].split(" ")]
-                        units = info[:6]
-                        units.append([x.strip() for x in info[6].split("|")]) #chunks
-                        tweet.set_meta(units,phr=True)
-                        if len(info) >= 8: #entities
-                            entities = [x.strip() for x in info[7].split(" | ")]
-                            if len(entities) == 1 and entities[0] == "--":
-                                tweet.set_entities([])
-                            else:
-                                tweet.set_entities(entities)
-                            if len(info) >= 9: #postags
-                                postags = [tuple(x.split(",")) for x in info[8].split(" | ")]
-                                if len(postags) == 1 and postags[0][0] == "--":
-                                    tweet.set_postags([])
-                                else:
-                                    tweet.set_postags(postags)
-                                if len(info) == 10:
-                                    cities = info[9].split(", ")
-                                    tweet.set_cities(cities)
-                                else:
-                                    tweet.set_cities([])
-                            else:
-                                tweet.set_postags([])
-                                tweet.set_cities([])
-                        else:
-                            tweet.set_entities([])
-                            tweet.set_postags([])
-                            tweet.set_cities([])
+                                    pattern[6] = []
+                                if len(info) < 7:
+                                    pattern[6] = []
+                #write fields to a tweet object
+                fields = []
+                for field in pattern:
+                    fields.append(info[field])
+                fields[2] = time_functions.return_datetime(fields[2],setting="vs").date() #tweetdate
+                fields[4] = [time_functions.return_datetime(x,setting="vs").date() \
+                            for x in fields[4].split(" ")] #refdates
+                fields[5] = [x.strip() for x in fields[5].split("|")] #chunks
+                if len(fields[6]) > 0:
+                    fields[6] = [x.strip() for x in fields[6].split(" | ")] #entities
+                    if len(fields[6]) == 1 and fields[6][0] == "--":
+                        fields[6] = []
+                if len(fields[7]) > 0:
+                    fields[7] = [tuple(x.split(",")) for x in fields[7].split(" | ")] #postags
+                    if len(fields[7]) == 1 and fields[7][0][0] == "--":
+                        fields[7] = []
+                if len(fields[9]) > 0:
+                    fields[9] = fields[9].split(", ") #cities
+                tweet = event_classes.Tweet()
+                tweet.set_meta(fields[:6])
+                tweet.set_entities(fields[6])
+                tweet.set_postags(fields[7])
+                tweet.set_phrase(fields[8])
+                tweet.set_cities(fields[9])
                 if ent:
                     if self.cities:
                         citymatch = calculations.return_cities(tweet.chunks,self.cities)
@@ -191,6 +160,7 @@ class Event_pairs:
                 continue
         print(len(self.tweets),"tweets")
 
+    #extract temporal information and entities from tweets
     def select_date_entity_tweets(self,new_tweets):
         tokenizer = ucto.Tokenizer(self.ucto_settingsfile)
         for tweet in new_tweets:
@@ -227,6 +197,7 @@ class Event_pairs:
                     dtweet.set_entities([x[0] for x in entities])
                     self.tweets.append(dtweet)
                        
+    #find probable events from date_entity pairs
     def rank_events(self):
         date_entity_score = []
         date_entity_tweets = defaultdict(lambda : defaultdict(list))
@@ -249,10 +220,8 @@ class Event_pairs:
                                textparts[i] = "URL"
                         date_entity_tweets_cleaned[date][entity].append(" ".join(textparts))
         #calculate goodness of fit
-        #for each pair
         total = len(self.tweets)
         for date in date_entity.keys():
-            #cluster entities
             for entity in date_entity[date].keys():
                 unique_tweets = list(set(date_entity_tweets_cleaned[date][entity]))
                 if len(unique_tweets) >= 5:
@@ -260,10 +229,10 @@ class Event_pairs:
                     ec = entity_count[entity]
                     ode = date_entity[date][entity]
                     g2 = calculations.goodness_of_fit(total,dc,ec,ode)
-                    users = [x.user for x in date_entity_tweets[date][entity]]
-                    g2_user = (len(list(set(users))) / len(users)) * g2
-                    date_entity_score.append([date,[(entity,g2_user)],g2_user,date_entity_tweets[date][entity]])
-        top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:2500]    
+                    # users = [x.user for x in date_entity_tweets[date][entity]]
+                    # g2_user = (len(list(set(users))) / len(users)) * g2
+                    date_entity_score.append([date,[(entity,g2)],g2,date_entity_tweets[date][entity]])
+        top = sorted(date_entity_score,key = lambda x: x[2],reverse=True)[:2500]
         self.events = []
         for x in range(len(top)):
             self.events.append(event_classes.Event(x,top[x]))
@@ -426,3 +395,9 @@ class Event_pairs:
                 info.append("-")
             tweetinfo.write("\t".join(info) + "\n")
         tweetinfo.close()
+
+    def write_term_scores(self,outfile):
+        terminfo = open(outfile,"w",encoding = "utf-8")
+        for event in self.events:
+            terminfo.write(event.entities[0] + "\t" + str(event.score) + "\n")
+        terminfo.close()

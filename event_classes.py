@@ -19,18 +19,13 @@ class Tweet:
     def __init__(self):
         self.e = False
 
-    def set_meta(self,units,phr = False):
+    def set_meta(self,units):
         self.id = units[0]
         self.user = units[1]
         self.date = units[2]
         self.text = units[3]
-        if phr:
-            self.phrase = units[4]
-            self.daterefs = units[5]
-            self.chunks = units[6]
-        else:
-            self.daterefs = units[4]
-            self.chunks = units[5]
+        self.daterefs = units[4]
+        self.chunks = units[5]
 
     def set_entities(self,entities):
         if len(entities) == 0:

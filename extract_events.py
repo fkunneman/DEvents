@@ -22,37 +22,15 @@ parser.add_argument('--window', type = int, action = 'store', default = 7,
     help = "The window in days of tweets on which event extraction is based (default = 7 days)")
 parser.add_argument('--start', action = 'store_true',
     help = "Choose to rank events from the existing pairs (only applies when \'-m\' is included")
+parser.add_argument('--frog', action = 'store_true', help = "specify if frog is used")
+parser.add_argument('--cities', action = 'store', required = False, 
+    help = "to extract cities, include a file with city names")
 args = parser.parse_args() 
 
-ep = Event_pairs()
-
-print("preparing ngram commonness scores")
-ep.load_commonness(args.d,args.w)
-if args.m:
-    print("loading event tweets")
-    eventfile = open(args.m,"r",encoding = "utf-8")
-    ep.append_eventtweets(eventfile.readlines())
-    eventfile.close()
-
-for infile in args.i:
-    tweetfile = open(infile,"r",encoding = "utf-8")
-    ep.select_date_entity_tweets(tweetfile.readlines(),"all",True)
+ep = Event_pairs(args.w,args.d,args.frog,args.cities)
+for tfname in args.i:
+    tweetfile = open(tfname,"r",encoding="utf-8")
+    tweets = tweetfile.read()
     tweetfile.close()
-basedir = args.o
-if not os.path.isdir(basedir):
-    os.mkdir(basedir)
-ep.discard_last_day(args.window)
-tweetinfo = open(basedir + "modeltweets.txt","w",encoding = "utf-8")
-for tweet in ep.tweets:
-    info = [tweet.id,tweet.user,str(tweet.date),tweet.text," ".join([str(x) for x in tweet.daterefs]),"|".join([x for x in tweet.chunks])]
-    if tweet.e:
-        info.append(" | ".join(tweet.entities))
-    tweetinfo.write("\t".join(info) + "\n")
-tweetinfo.close()
-print("ranking events")
-ep.rank_events("cosine")
-eventinfo = open(basedir + "events_fit.txt","w",encoding = "utf-8")
-for event in sorted(ep.events,key = lambda x : x.score,reverse=True):
-    outstr = "\n" + "\t".join([str(event.date),str(event.score)]) + "\t" + ", ".join([x[0] for x in event.entities]) + "\n" + "\n".join(event.tweets) + "\n"
-    eventinfo.write(outstr)
-eventinfo.close()
+    events = ep.detect_events(tweets)
+    print(events)
