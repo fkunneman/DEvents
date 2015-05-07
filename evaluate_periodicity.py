@@ -29,7 +29,7 @@ parser.add_argument('-m', action = 'store', type = int, required = True,
 parser.add_argument('-k', action = 'store_true', 
     help = "choose to categorize periodics into calendar characteristics (only applies if the " +
         "output is based on calendar periodicity")
-parser.add_argument('-s', action = 'store_true', 
+parser.add_argument('--st', action = 'store_true', 
     help = "choose to categorize periodics into timeline characteristics (only applies if the " +
         "output is based on timeline periodicity")
 parser.add_argument('-w', action = 'store_true', 
