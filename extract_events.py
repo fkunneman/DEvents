@@ -10,18 +10,12 @@ Interface to applying event extraction
 parser = argparse.ArgumentParser(description = "Interface to applying event extraction")
 parser.add_argument('-i', action = 'store', nargs='+',required = False, 
     help = "the input files")  
-parser.add_argument('-m', action = 'store', required = False, 
-    help = "The file with information on existing pairs")
-parser.add_argument('-w', action = 'store', nargs='+', required = False, 
+parser.add_argument('-w', action = 'store', required = False, 
     help = "The files with wikicores per n-gram")
 parser.add_argument('-d', action = 'store', required = False, 
     help = "The dict for pattern indexing")
 parser.add_argument('-o', action = 'store', 
     help = "The directory to write files to")
-parser.add_argument('--window', type = int, action = 'store', default = 7,
-    help = "The window in days of tweets on which event extraction is based (default = 7 days)")
-parser.add_argument('--start', action = 'store_true',
-    help = "Choose to rank events from the existing pairs (only applies when \'-m\' is included")
 parser.add_argument('--frog', action = 'store_true', help = "specify if frog is used")
 parser.add_argument('--cities', action = 'store', required = False, 
     help = "to extract cities, include a file with city names")
