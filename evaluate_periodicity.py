@@ -150,16 +150,22 @@ def count_calendarfeat(d,i):
         cat_periodics[cat].append(pc)
     return [cat_periodics,periodics_cat]
 
-if args.s:
+if args.st:
     print("Extracting statistics")
     statfile = open(args.o + "stats_tl.txt","w",encoding="utf-8")
     periodics = [p for p in all_periodics if p[1] == "1.0"]
     intervals = []
     for p in periodics:
-        steps = [(x,periodic["intervals"].count(x)) for x in periodic["intervals"]]
+        ints = [int(x) for x in p[3].split("-")]
+        steps = [(x,ints.count(x)) for x in list(set(ints))]
         sorted_steps = sorted(steps,key = lambda k : k[1],reverse=True)
-        step = sorted_steps[0][0]
+        shuffle(sorted_steps)
+        if not sorted_steps[0][0] == 1:
+            step = sorted_steps[0][0]
+        else:
+            step = sorted_steps[1][0]
         intervals.append(step)
+    print(intervals)
     average = numpy.mean(intervals)
     stdev = numpy.std(intervals)
     median = numpy.median(intervals)
