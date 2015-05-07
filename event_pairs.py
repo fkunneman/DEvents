@@ -91,30 +91,30 @@ class Event_pairs:
                     if re.search(r"\d{1}(/|-)\d{1}",info[13]):
                         continue
                     else:
-                        pattern = [1,4,7,10,11,12,False,False,13,False]
+                        pattern = [1,4,7,10,11,12,[],[],13,[]]
                 else:
                     if re.match(r"\d{4}-\d{2}-\d{2}",info[4]):
                         pattern = [0,1,2,3,4,5,6,7,8,9]
                     else:
                         pattern = [0,1,2,3,5,6,7,8,4,9]           
                     if len(info) < 10:
-                        pattern[9] = False
+                        pattern[9] = []
                         if len(info) < 9:
                             if pattern[8] == 8:
-                                pattern[8] = False
+                                pattern[8] = []
                             else:
-                                pattern[7] = False
+                                pattern[7] = []
                             if len(info) < 8:
                                 if pattern[7] == 7:
-                                    pattern[7] = False
+                                    pattern[7] = []
                                 else:
-                                    pattern[6] = False
+                                    pattern[6] = []
                                 if len(info) < 7:
-                                    pattern[6] = False
+                                    pattern[6] = []
                 #write fields to a tweet object
                 fields = []
                 for field in pattern:
-                    if field:
+                    if len(field) > 0:
                         fields.append(info[field])
                     else:
                         fields.append([])
