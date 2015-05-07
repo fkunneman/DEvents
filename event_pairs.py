@@ -84,80 +84,80 @@ class Event_pairs:
         for et in eventtweets:
             ent = False
             info = et.strip().split("\t")
-            try:
-                #set information to the right field given different inputs
-                if len(info) > 12:
-                    ent = True
-                    if re.search(r"\d{1}(/|-)\d{1}",info[13]):
-                        continue
-                    else:
-                        pattern = [1,4,7,10,11,12,[],[],13,[]]
+            #try:
+            #set information to the right field given different inputs
+            if len(info) > 12:
+                ent = True
+                if re.search(r"\d{1}(/|-)\d{1}",info[13]):
+                    continue
                 else:
-                    if re.match(r"\d{4}-\d{2}-\d{2}",info[4]):
-                        pattern = [0,1,2,3,4,5,6,7,8,9]
-                    else:
-                        pattern = [0,1,2,3,5,6,7,8,4,9]           
-                    if len(info) < 10:
-                        pattern[9] = []
-                        if len(info) < 9:
-                            if pattern[8] == 8:
-                                pattern[8] = []
-                            else:
+                    pattern = [1,4,7,10,11,12,[],[],13,[]]
+            else:
+                if re.match(r"\d{4}-\d{2}-\d{2}",info[4]):
+                    pattern = [0,1,2,3,4,5,6,7,8,9]
+                else:
+                    pattern = [0,1,2,3,5,6,7,8,4,9]           
+                if len(info) < 10:
+                    pattern[9] = []
+                    if len(info) < 9:
+                        if pattern[8] == 8:
+                            pattern[8] = []
+                        else:
+                            pattern[7] = []
+                        if len(info) < 8:
+                            if pattern[7] == 7:
                                 pattern[7] = []
-                            if len(info) < 8:
-                                if pattern[7] == 7:
-                                    pattern[7] = []
-                                else:
-                                    pattern[6] = []
-                                if len(info) < 7:
-                                    pattern[6] = []
-                #write fields to a tweet object
-                fields = []
-                for field in pattern:
-                    fields.append(info[field])
-                fields[2] = time_functions.return_datetime(fields[2],setting="vs").date() #tweetdate
-                fields[4] = [time_functions.return_datetime(x,setting="vs").date() \
-                            for x in fields[4].split(" ")] #refdates
-                fields[5] = [x.strip() for x in fields[5].split("|")] #chunks
-                if len(fields[6]) > 0:
-                    fields[6] = [x.strip() for x in fields[6].split(" | ")] #entities
-                    if len(fields[6]) == 1 and fields[6][0] == "--":
-                        fields[6] = []
-                if len(fields[7]) > 0:
-                    fields[7] = [tuple(x.split(",")) for x in fields[7].split(" | ")] #postags
-                    if len(fields[7]) == 1 and fields[7][0][0] == "--":
-                        fields[7] = []
-                if len(fields[9]) > 0:
-                    fields[9] = fields[9].split(", ") #cities
-                tweet = event_classes.Tweet()
-                tweet.set_meta(fields[:6])
-                tweet.set_entities(fields[6])
-                tweet.set_postags(fields[7])
-                tweet.set_phrase(fields[8])
-                tweet.set_cities(fields[9])
-                if ent:
-                    if self.cities:
-                        citymatch = calculations.return_cities(tweet.chunks,self.cities)
-                        tweet.chunks = citymatch[0]
-                        tweet.set_cities(citymatch[1])
-                    if self.frogger: 
-                        tweet.set_postags(calculations.return_postags(tweet.text,self.frogger))
-                    entities = []
-                    new_chunks = []
-                    for chunk in tweet.chunks:
-                        tokenizer.process(chunk)
-                        chunk = " ".join([x.text.lower() for x in tokenizer])
-                        new_chunks.append(chunk)
-                    tweet.chunks = new_chunks
-                    for chunk in tweet.chunks:
-                        entities.extend(calculations.extract_entity(chunk,self.classencoder,self.dmodel))
-                    entities = sorted(entities,key = lambda x: x[1],reverse=True)
-                    for chunk in tweet.chunks:
-                        entities.extend([(x,0) for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1])
-                    tweet.set_entities([x[0] for x in entities])
-                self.tweets.append(tweet)
-            except:
-                continue
+                            else:
+                                pattern[6] = []
+                            if len(info) < 7:
+                                pattern[6] = []
+            #write fields to a tweet object
+            fields = []
+            for field in pattern:
+                fields.append(info[field])
+            fields[2] = time_functions.return_datetime(fields[2],setting="vs").date() #tweetdate
+            fields[4] = [time_functions.return_datetime(x,setting="vs").date() \
+                        for x in fields[4].split(" ")] #refdates
+            fields[5] = [x.strip() for x in fields[5].split("|")] #chunks
+            if len(fields[6]) > 0:
+                fields[6] = [x.strip() for x in fields[6].split(" | ")] #entities
+                if len(fields[6]) == 1 and fields[6][0] == "--":
+                    fields[6] = []
+            if len(fields[7]) > 0:
+                fields[7] = [tuple(x.split(",")) for x in fields[7].split(" | ")] #postags
+                if len(fields[7]) == 1 and fields[7][0][0] == "--":
+                    fields[7] = []
+            if len(fields[9]) > 0:
+                fields[9] = fields[9].split(", ") #cities
+            tweet = event_classes.Tweet()
+            tweet.set_meta(fields[:6])
+            tweet.set_entities(fields[6])
+            tweet.set_postags(fields[7])
+            tweet.set_phrase(fields[8])
+            tweet.set_cities(fields[9])
+            if ent:
+                if self.cities:
+                    citymatch = calculations.return_cities(tweet.chunks,self.cities)
+                    tweet.chunks = citymatch[0]
+                    tweet.set_cities(citymatch[1])
+                if self.frogger: 
+                    tweet.set_postags(calculations.return_postags(tweet.text,self.frogger))
+                entities = []
+                new_chunks = []
+                for chunk in tweet.chunks:
+                    tokenizer.process(chunk)
+                    chunk = " ".join([x.text.lower() for x in tokenizer])
+                    new_chunks.append(chunk)
+                tweet.chunks = new_chunks
+                for chunk in tweet.chunks:
+                    entities.extend(calculations.extract_entity(chunk,self.classencoder,self.dmodel))
+                entities = sorted(entities,key = lambda x: x[1],reverse=True)
+                for chunk in tweet.chunks:
+                    entities.extend([(x,0) for x in chunk.split(" ") if re.search(r"^#",x) and len(x) > 1])
+                tweet.set_entities([x[0] for x in entities])
+            self.tweets.append(tweet)
+            #except:
+             #   continue
         print(len(self.tweets),"tweets")
 
     #extract temporal information and entities from tweets
