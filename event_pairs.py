@@ -91,31 +91,34 @@ class Event_pairs:
                     if re.search(r"\d{1}(/|-)\d{1}",info[13]):
                         continue
                     else:
-                        pattern = [1,4,7,10,11,12,[],[],13,[]]
+                        pattern = [(True,1),(True,4),(True,7),(True,10),(True,11),(True,12),
+                            (False,0),(False,0),(True,13),(False,0)]
                 else:
                     if re.match(r"\d{4}-\d{2}-\d{2}",info[4]):
-                        pattern = [0,1,2,3,4,5,6,7,8,9]
+                        pattern = [(True,0),(True,1),(True,2),(True,3),(True,4),(True,5),(True,6),
+                            (True,7),(True,8),(True,9)]
                     else:
-                        pattern = [0,1,2,3,5,6,7,8,4,9]           
+                        pattern = [(True,0),(True,1),(True,2),(True,3),(True,5),(True,6),(True,7),
+                            (True,8),(True,4),(True,9)]           
                     if len(info) < 10:
-                        pattern[9] = []
+                        pattern[9] = (False,0)
                         if len(info) < 9:
-                            if pattern[8] == 8:
-                                pattern[8] = []
+                            if pattern[8][1] == 8:
+                                pattern[8] = (False,0)
                             else:
-                                pattern[7] = []
+                                pattern[7] = (False,0)
                             if len(info) < 8:
-                                if pattern[7] == 7:
-                                    pattern[7] = []
+                                if pattern[7][1] == 7:
+                                    pattern[7] = (False,0)
                                 else:
-                                    pattern[6] = []
+                                    pattern[6] = (False,0)
                                 if len(info) < 7:
-                                    pattern[6] = []
+                                    pattern[6] = (False,0)
                 #write fields to a tweet object
                 fields = []
                 for field in pattern:
-                    if len(field) > 0:
-                        fields.append(info[field])
+                    if field[0]:
+                        fields.append(info[field[1]])
                     else:
                         fields.append([])
                 fields[2] = time_functions.return_datetime(fields[2],setting="vs").date() #tweetdate
@@ -160,7 +163,7 @@ class Event_pairs:
                     tweet.set_entities([x[0] for x in entities])
                 self.tweets.append(tweet)
             except:
-               continue
+              continue
         print(len(self.tweets),"tweets")
 
     #extract temporal information and entities from tweets
